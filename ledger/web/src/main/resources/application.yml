@@ -1,0 +1,38 @@
+# 自定义starter配置
+com:
+  www:
+    common:
+      request:
+        enable: true #开启controller的AOP日志拦截
+      code:
+        write-enable: true
+        code-redis-key: ledger:code_dict:code_data:code_type
+      securuty:
+        enable: true
+        token-prefix: ledger:token:userid
+        role-redis-key: ledger:authority_role:url_role
+#服务器配置
+server:
+  servlet:
+    #访问路径设置
+    context-path: /
+spring:
+  profiles:
+    #配置环境文件
+    active: @profileActive@
+  application:
+    name: ledger-system
+  # 返回报文json配置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss #配置返回日期格式
+    time-zone: GMT+8 #配置时间区
+    default-property-inclusion: non_empty #非空属性才返回
+#mybatis配置
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*/*.xml
+  #实现数据库下划线字段到POJO类驼峰形式的自动映射
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      update-strategy: ignored #字段更新忽略null判断

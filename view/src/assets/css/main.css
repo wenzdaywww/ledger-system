@@ -1,0 +1,34 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+html,
+body,
+#app,
+.wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #f0f0f0;
+}
+.content-box {
+    position: relative;
+    right: 0;
+    bottom: 0;
+    padding-bottom: 30px;
+    -webkit-transition: left .3s ease-in-out;
+    transition: left .3s ease-in-out;
+    background-color: #f0f0f0;
+}
+.content {
+    width: auto;
+    height: calc(90vh);
+    bottom: 100px;
+    padding: 8px;
+    overflow-y: auto;
+    background-color: #f0f0f0;
+    box-sizing: border-box;
+}
+.crumb-title{
+    margin-bottom: 5px;
+}

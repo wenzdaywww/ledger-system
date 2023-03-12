@@ -1,0 +1,32 @@
+#生产环境配置
+#服务器配置
+server:
+  port: 8090
+#spring配置
+spring:
+  #redis配置
+  redis:
+    url: 192.168.1.140:6379
+    password: www362412
+  datasource:
+    url: jdbc:mysql://192.168.1.140:3306/ledger?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ledger_ap
+    password: www362412
+    initial-size: 5 #启动程序时，在连接池中初始化多少个连接
+    min-idle: 5 #最小连接池数量
+    max-active: 20 #连接池中最多支持多少个活动会话
+    max-wait: 60000 #程序向连接池中请求连接时,超过maxWait的值后，认为本次请求失败，即连接池
+    #有两个含义： 1) Destroy线程会检测连接的间隔时间，如果连接空闲时间大于等于minEvictableIdleTimeMillis则关闭物理连接。 2) testWhileIdle的判断依据，详细看testWhileIdle属性的说明
+    time-between-eviction-runs-millis: 6000
+    min-evictable-idle-time-millis: 300000 #连接保持空闲而不被驱逐的最小时间
+    #用来检测连接是否有效的sql，要求是一个查询语句，常用select 'x'。如果validationQuery为null，testOnBorrow、testOnReturn、testWhileIdle都不会起作用。
+    validation-query: SELECT 1 FROM DUAL
+    test-on-borrow: false #申请连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能。
+    test-on-return: false #归还连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能。
+    pool-prepared-statements: false #是否缓存preparedStatement，也就是PSCache。PSCache对支持游标的数据库性能提升巨大，比如说oracle。在mysql下建议关闭。
+    filters: stat,wall #属性类型是字符串，通过别名的方式配置扩展插件，常用的插件有： 监控统计用的filter:stat 日志用的filter:log4j 防御sql注入的filter:wall
+    #要启用PSCache，必须配置大于0，当大于0时，poolPreparedStatements自动触发修改为true。在Druid中，不会存在Oracle下PSCache占用内存过多的问题，可以把这个数值配置大一些，比如说100
+    max-pool-prepared-statement-per-connection-size: 20
+    use-global-data-source-stat: true #
+    connect-properties: druid.stat.mergeSql=true,druid.stat.slowSqlMillis=500
