@@ -4,75 +4,41 @@
     <div class="crumb-title">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
-          <i class="el-icon-s-custom"></i> 店铺信息
+          <i class="el-icon-s-shop"></i> 店铺信息
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <el-card>
       <div>
-        <!-- 用户信息列表查询条件-->
+        <!-- 店铺信息列表查询条件-->
         <div class="handle-box">
-          <el-select v-model="query.stateCd" placeholder="用户状态" class="handle-select mr10">
-            <el-option v-for="item in stateCdArr" :key="item.value" :label="item.name" :value="item.value"></el-option>
-          </el-select>
-          <el-input v-model="query.userId" placeholder="用户ID" class="handle-input mr10"></el-input>
-          <el-input v-model="query.userName" placeholder="用户名称" class="handle-input mr10"></el-input>
-          <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
-          <el-button type="primary" icon="el-icon-refresh-left" @click="handleReset">重置</el-button>
+          <el-input v-model="query.shopId" placeholder="店铺ID" class="handle-input mr10"></el-input>
+          <el-input v-model="query.shopNm" placeholder="店铺名称" class="handle-input mr10"></el-input>
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round>搜索</el-button>
+          <el-button icon="el-icon-refresh-left" @click="handleReset" round>重置</el-button>
+          <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round>新增店铺</el-button>
         </div>
-        <!-- 用户信息列表-->
+        <!-- 店铺信息列表-->
         <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-          <el-table-column prop="suId" label="ID" width="55" align="center"></el-table-column>
-          <el-table-column prop="userId" label="用户ID" align="center"></el-table-column>
-          <el-table-column prop="userName" label="用户名称" align="center"></el-table-column>
-          <el-table-column label="头像(查看大图)" align="center">
-            <template #default="scope">
-              <el-image class="table-td-thumb" :src=" scope.row.photo ? scope.row.photo : 'src/assets/img/img.jpg'" :preview-src-list="[scope.row.photo]">
-              </el-image>
-            </template>
-          </el-table-column>
-          <el-table-column prop="roleName" label="角色" align="center"></el-table-column>
-          <el-table-column prop="phoneNum" label="手机号码" align="center"></el-table-column>
-          <el-table-column prop="email" label="邮箱" align="center"></el-table-column>
-          <el-table-column prop="birthday" label="出生日期" align="center"></el-table-column>
-          <el-table-column prop="sex" label="性别" align="center">
-            <template #default="scope">
-              {{ scope.row.sex === '1' ? '男' : scope.row.sex === '0' ? '女' : '未知' }}
-            </template>
-          </el-table-column>
-          <el-table-column label="用户状态" align="center">
-            <template #default="scope">
-              <el-select v-model="scope.row.stateCd" disabled size="mini">
-                <el-option v-for="item in stateCdArr" :key="item.value" :label="item.name" :value="item.value"></el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="是否未过期" align="center">
-            <template #default="scope">
-              <el-select v-model="scope.row.notExpired" disabled size="mini">
-                <el-option v-for="item in yesNoArr" :key="item.value" :label="item.name" :value="item.value"></el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="账号是否未锁定" align="center">
-            <template #default="scope">
-              <el-select v-model="scope.row.notLocked" disabled size="mini">
-                <el-option v-for="item in yesNoArr" :key="item.value" :label="item.name" :value="item.value"></el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="密码是否未过期" align="center">
-            <template #default="scope">
-              <el-select v-model="scope.row.credentialsNotExpired" disabled size="mini">
-                <el-option v-for="item in yesNoArr" :key="item.value" :label="item.name" :value="item.value"></el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column prop="createTime" label="注册时间" align="center"></el-table-column>
-          <el-table-column prop="updateTime" label="更新时间" align="center"></el-table-column>
-          <el-table-column label="操作" width="180" align="center">
+          <el-table-column prop="shopId" label="店铺ID" align="center"></el-table-column>
+          <el-table-column prop="shopNm" label="店铺名称" align="center"></el-table-column>
+          <el-table-column prop="shopTp" label="店铺平台" align="center"></el-table-column>
+          <el-table-column prop="retPro" label="店净利润" align="center"></el-table-column>
+          <el-table-column prop="retProRat" label="店净利率" align="center"></el-table-column>
+          <el-table-column prop="groPro" label="店毛利润" align="center"></el-table-column>
+          <el-table-column prop="groProRat" label="店毛利率" align="center"></el-table-column>
+          <el-table-column prop="talOrd" label="店订单数" align="center"></el-table-column>
+          <el-table-column prop="sucOrd" label="店成交单数" align="center"></el-table-column>
+          <el-table-column prop="faiOrd" label="店失败单数" align="center"></el-table-column>
+          <el-table-column prop="salAmt" label="店销售额" align="center"></el-table-column>
+          <el-table-column prop="cosAmt" label="店成本费" align="center"></el-table-column>
+          <el-table-column prop="advAmt" label="店推广费" align="center"></el-table-column>
+          <el-table-column prop="serAmt" label="店服务费" align="center"></el-table-column>
+          <el-table-column prop="virAmt" label="店刷单费" align="center"></el-table-column>
+          <el-table-column label="操作" align="center">
             <template #default="scope">
               <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑 </el-button>
+              <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.row)">删除 </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -82,39 +48,25 @@
           </el-pagination>
         </div>
       </div>
-      <!-- 编辑弹出框 -->
-      <el-dialog title="编辑" v-model="editVisible" width="450px">
-        <el-form label-width="120px">
-          <el-form-item label="用户ID">
-            <el-input v-model="form.userId" :disabled="true" style="width: 250px"></el-input>
+      <!-- 新增/编辑店铺弹出框 -->
+      <el-dialog title="修改店铺" v-model="editVisible" width="450px">
+        <el-form label-width="120px" :model="shopInfo" :rules="shopRules" ref="shopForm">
+          <el-form-item label="店铺ID">
+            <el-input v-model="shopInfo.shopId" :disabled="true" style="width: 250px"></el-input>
           </el-form-item>
-          <el-form-item label="用户名称">
-            <el-input v-model="form.userName" :disabled="true" style="width: 250px"></el-input>
+          <el-form-item label="店铺名称" prop="shopNm">
+            <el-input v-model="shopInfo.shopNm" style="width: 250px" maxlength="20" placeholder="请输入店铺名称"></el-input>
           </el-form-item>
-          <el-form-item label="用户状态">
-            <el-select v-model="form.stateCd" placeholder="用户状态" class="handle-select mr10" style="width: 250px">
-              <el-option key="1" label="有效" value="1"></el-option>
-              <el-option key="2" label="注销" value="2"></el-option>
-              <el-option key="3" label="封号" value="3"></el-option>
+          <el-form-item label="店铺平台">
+            <el-select v-model="shopInfo.shopTp" placeholder="请选择店铺平台" class="handle-select mr10" style="width: 250px">
+              <el-option v-for="item in shopTpCode" :key="item.value" :label="item.name" :value="item.value"></el-option>
             </el-select>
-          </el-form-item>
-          <el-form-item label="是否过期">
-            <el-radio v-model="form.expired" label="1">否</el-radio>
-            <el-radio v-model="form.expired" label="0">是</el-radio>
-          </el-form-item>
-          <el-form-item label="账号是否锁定">
-            <el-radio v-model="form.locked" label="1">否</el-radio>
-            <el-radio v-model="form.locked" label="0">是</el-radio>
-          </el-form-item>
-          <el-form-item label="密码是否过期">
-            <el-radio v-model="form.credentials" label="1">否</el-radio>
-            <el-radio v-model="form.credentials" label="0">是</el-radio>
           </el-form-item>
         </el-form>
         <template #footer>
         <span class="dialog-footer">
-          <el-button @click="editVisible = false">取 消</el-button>
-          <el-button type="primary" @click="saveEdit">确 定</el-button>
+          <el-button type="primary" @click="saveEdit" round>确 定</el-button>
+          <el-button @click="editVisible = false" round>取 消</el-button>
         </span>
         </template>
       </el-dialog>
@@ -132,56 +84,56 @@ export default {
   setup() {
     // 查询条件
     const query = reactive({
-      stateCd: "",
-      userId: "",
-      userName: "",
+      shopId: "",
+      shopNm: "",
       pageNum: 1,
       pageSize: 10
     });
-    // 用户状态
-    const stateCdArr = ref([]);
-    // 是否字典
-    const yesNoArr = ref([]);
+    // 编辑店铺信息
+    let shopInfo = reactive({
+      shopId: "",
+      shopNm : "",
+      shopTp: ""
+    });
+    // 店铺信息的规则校验
+    const shopRules = {
+      shopNm : [
+        { required: true, message: "店铺名称不能为空", trigger: "blur" }
+      ]
+    };
     // 表格数据
     const tableData = ref([]);
     // 页数
     const pageTotal = ref(0);
+    // 店铺平台
+    const shopTpCode = ref([]);
     // 接口请求
     const axios = getCurrentInstance().appContext.config.globalProperties;
-    // 查询数据字典
-    const getCodeDataArr = () => {
-      axios.$http.get(request.code + "userStatus", null).then(function (res) {
-        if(res.code === 200){
-          stateCdArr.value = res.data.userStatus;
-        }
-      });
-      axios.$http.get(request.code + "yesNo", null).then(function (res) {
-        if(res.code === 200){
-          yesNoArr.value = res.data.yesNo;
-        }
-      });
-    };
-    // getCodeDataArr();
+    // 新增/编辑店铺弹窗控制
+    const editVisible = ref(false);
+    // 编辑店铺表单数据
+    const shopForm = ref(null);
     // 获取表格数据
     const getData = () => {
-      axios.$http.get(request.userList,query).then(function (res) {
+      axios.$http.get(request.shopList,query).then(function (res) {
         if(res.code === 200){
           tableData.value = res.data;
           pageTotal.value = res.totalNum;
+        }else if(res.code === 500){
+          ElMessage.error('查询失败');
         }
       })
     };
-    // getData();
-    // 查询操作
+    getData();
+    // 查询
     const handleSearch = () => {
       query.pageNum = 1;
       getData();
     };
     // 重置
     const handleReset = () => {
-      query.stateCd = "";
-      query.userId = "";
-      query.userName = "";
+      query.shopId = "";
+      query.shopNm = "";
       getData();
     };
     // 分页导航
@@ -189,47 +141,61 @@ export default {
       query.pageNum = val;
       getData();
     };
-    // 表格编辑时弹窗和保存
-    const editVisible = ref(false);
-    // 表单数据
-    let form = reactive({
-      userId: "",
-      userName : "",
-      password : "",
-      phoneNum : "",
-      birthday : "",
-      sex : "",
-      photo : "",
-      email : "",
-      stateCd: "",
-      expired : "",
-      locked : "",
-      credentials : ""
-    });
-    //编辑
+    //编辑店铺
     const handleEdit = (row) => {
-      form.userId = row.userId;
-      form.userName = row.userName;
-      form.stateCd = row.stateCd;
-      form.expired = row.notExpired;
-      form.locked = row.notLocked;
-      form.credentials = row.credentialsNotExpired;
+      shopInfo.shopId = row.shopId;
+      shopInfo.shopNm = row.shopNm;
       editVisible.value = true;
     };
-    // 编辑页面的保存按钮
-    const saveEdit = () => {
-      axios.$http.post(request.userState,form).then(function (res) {
-        if(res.code === 200){
-          editVisible.value = false;
-          ElMessage.success('修改成功');
-          getData();
-        }else {
-          ElMessage.error('修改失败');
-        }
-      })
+    //删除店铺
+    const handleDelete = (row) => {
+      // 二次确认删除
+      ElMessageBox.confirm("确定要删除吗？", "提示", {type: "warning"}).then(() => {
+        axios.$http.post(request.delShop+row.shopId, null).then(function (res) {
+          if(res.code === 200){
+            ElMessage.success('删除成功');
+            getData();
+          }else {
+            ElMessage.error(res.data);
+          }
+        });
+      }).catch(() => {});
     };
-    return { stateCdArr,yesNoArr,query,tableData,pageTotal,editVisible,form,
-      handleSearch,handleReset,handlePageChange,handleEdit,saveEdit};
+    //新增店铺
+    const handleAdd = () => {
+      shopInfo.shopId = null;
+      shopInfo.shopNm = null;
+      editVisible.value = true;
+    };
+    // 查询数据字典
+    const getCodeDataArr = () => {
+      axios.$http.get(request.code + "ShopPlatform", null).then(function (res) {
+        if(res.code === 200){
+          shopTpCode.value = res.data.ShopPlatform;
+        }
+      });
+    };
+    getCodeDataArr();
+    // 新增/编辑店铺页面的保存按钮
+    const saveEdit = () => {
+      shopForm.value.validate((valid) => {
+        if (valid) {
+          axios.$http.post(shopInfo.shopId ? request.shopEdit : request.newShop,shopInfo).then(function (res) {
+            if(res.code === 200){
+              editVisible.value = false;
+              ElMessage.success(shopInfo.shopId ? '修改成功' : '新增成功');
+              getData();
+            }else {
+              ElMessage.error(res.msg);
+            }
+          });
+        } else {
+          return false;
+        }
+      });
+    };
+    return { query,tableData,pageTotal,editVisible,shopForm,shopRules,shopInfo,shopTpCode,
+      handleSearch,handleReset,handlePageChange,handleEdit,saveEdit,handleAdd,handleDelete};
   }
 };
 </script>
@@ -252,10 +218,7 @@ export default {
 .mr10 {
   margin-right: 10px;
 }
-.table-td-thumb {
-  display: block;
-  margin: auto;
-  width: 40px;
-  height: 40px;
+.red {
+  color: #ff0000;
 }
 </style>

@@ -57,28 +57,33 @@ export default {
       if(utils.isLogin()){
         items.value = [
           {
-            menuUrl: "/user",
-            menuIcon: "el-icon-s-custom",
-            menuName: "个人资料"
+            menuUrl: "/book",
+            menuIcon: "el-icon-notebook-1",
+            menuName: "我的账簿"
           },{
             menuUrl: "/shop",
-            menuIcon: "el-icon-s-custom",
+            menuIcon: "el-icon-s-shop",
             menuName: "我的店铺"
+          },{
+            menuUrl: "/year",
+            menuIcon: "el-icon-sell",
+            menuName: "年销售额"
+          },{
+            menuUrl: "/month",
+            menuIcon: "el-icon-sell",
+            menuName: "月销售额"
+          },{
+            menuUrl: "/order",
+            menuIcon: "el-icon-shopping-cart-full",
+            menuName: "订单信息"
+          },{
+            menuUrl: "/goods",
+            menuIcon: "el-icon-s-goods",
+            menuName: "商品信息"
           }
         ];
       }else {
-        // items.value = [];
-        items.value = [
-          {
-            menuUrl: "/user",
-            menuIcon: "el-icon-s-custom",
-            menuName: "个人资料"
-          },{
-            menuUrl: "/shop",
-            menuIcon: "el-icon-s-custom",
-            menuName: "我的店铺"
-          }
-        ];
+        items.value = [];
       }
     };
     getData();

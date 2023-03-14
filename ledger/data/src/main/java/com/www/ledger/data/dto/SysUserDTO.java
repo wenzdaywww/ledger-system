@@ -1,6 +1,7 @@
 package com.www.ledger.data.dto;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.Date;
  * <p>@Date 2021/11/10 22:24 </p>
  */
 @Data
+@Accessors(chain = true)//开启链式编程
 public class SysUserDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     /**

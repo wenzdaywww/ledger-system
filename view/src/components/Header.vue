@@ -24,8 +24,7 @@
           </div>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="shop">我的店铺</el-dropdown-item>
-              <el-dropdown-item command="user">个人中心</el-dropdown-item>
+              <el-dropdown-item command="book">我的账簿</el-dropdown-item>
               <el-dropdown-item command="pwd">修改密码</el-dropdown-item>
               <el-dropdown-item divided command="loginout" class="login-out">退出登录</el-dropdown-item>
             </el-dropdown-menu>
@@ -46,7 +45,7 @@ import utils from '../utils/utils';
 import request from '../utils/request';
 import {initUserRouter,clearUserRouter} from "../router";
 import {ElMessage} from "element-plus";
-import Password from "../views/user/Password.vue";
+import Password from "../views/user/info/Password.vue";
 import store from "../store";
 
 export default {
@@ -115,10 +114,8 @@ export default {
         }).catch(function (res) {
           ElMessage.error("退出失败");
         });
-      } else if (command == "user") { // 个人中心
-        router.push("/user");
-      }else if (command == "shop") { // 我的店铺
-        router.push("/shop");
+      } else if (command == "book") { // 我的账簿
+        router.push("/book");
       } else if (command == "pwd") { // 修改密码
         passwordDialog.value.shwoDialog();
       }else if(command == "index"){ //博客首页

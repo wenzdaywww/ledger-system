@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.www.ledger.data.mapper.ShopGoodsMapper">
+  <resultMap id="BaseResultMap" type="com.www.ledger.data.entity.ShopGoodsEntity">
+    <!--@Table SHOP_GOODS-->
+    <id column="SG_ID" property="sgId" />
+    <result column="GOODS_ID" property="goodsId" />
+    <result column="GOODS_NAME" property="goodsName" />
+    <result column="SHOP_ID" property="shopId" />
+    <result column="USER_ID" property="userId" />
+    <result column="GOODS_STATE" property="goodsState" />
+    <result column="UPDATE_TIME" property="updateTime" />
+    <result column="CREATE_TIME" property="createTime" />
+  </resultMap>
+</mapper>

@@ -23,7 +23,7 @@ export const initUserRouter = function (callBackFunc){
     axios.get(request.userInfo, null).then(function (res) {
         if(res.code === 200){
             //加载用户拥有的路由权限
-            let routerTemp = ["/user","/shop"];
+            let routerTemp = ["/book","/shop","/year","/month","/order","/goods"];
             store.dispatch("updateRouter",routerTemp);
         }
         if (callBackFunc && callBackFunc instanceof  Function){

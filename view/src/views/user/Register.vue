@@ -7,10 +7,10 @@
       <div class="formdata">
         <el-form label-width="120px" :model="form" :rules="addRules" ref="addForm">
           <el-form-item label="用户ID" prop="userId">
-            <el-input v-model="form.userId" maxlength="40" placeholder="请输入用户ID"></el-input>
+            <el-input v-model="form.userId" maxlength="20" placeholder="请输入用户ID"></el-input>
           </el-form-item>
           <el-form-item label="用户名称" prop="userName">
-            <el-input v-model="form.userName" maxlength="100" placeholder="请输入用户名称"></el-input>
+            <el-input v-model="form.userName" maxlength="40" placeholder="请输入用户名称"></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="password">
             <el-input v-model="form.password" type="password" maxlength="20" placeholder="请输入密码"></el-input>

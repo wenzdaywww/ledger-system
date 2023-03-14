@@ -29,7 +29,7 @@ spring:
     default-property-inclusion: non_empty #非空属性才返回
 #mybatis配置
 mybatis-plus:
-  mapper-locations: classpath*:mapper/*/*.xml
+  mapper-locations: classpath*:mapper/**/*.xml
   #实现数据库下划线字段到POJO类驼峰形式的自动映射
   configuration:
     map-underscore-to-camel-case: true

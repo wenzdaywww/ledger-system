@@ -31,11 +31,6 @@ public class RegistController {
      */
     @PostMapping("user")
     public ResponseDTO<String> createUser(SysUserDTO user){
-        try {
-            return userInfoService.createUser(user);
-        }catch (Exception e){
-            log.error("创建用户信息失败",e);
-            return new ResponseDTO<>(ResponseEnum.FAIL,"创建用户信息失败");
-        }
+        return userInfoService.createUser(user);
     }
 }

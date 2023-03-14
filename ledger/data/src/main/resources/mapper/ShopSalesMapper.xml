@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.www.ledger.data.mapper.ShopSalesMapper">
+  <resultMap id="BaseResultMap" type="com.www.ledger.data.entity.ShopSalesEntity">
+    <!--@Table SHOP_SALES-->
+    <id column="UB_ID" property="ssId" />
+    <result column="SHOP_ID" property="shopId" />
+    <result column="USER_ID" property="userId" />
+    <result column="RETAINED_PROFITS" property="retainedProfits" />
+    <result column="RETAINED_PROFITS_RATE" property="retainedProfitsRate" />
+    <result column="GROSS_PROFIT" property="grossProfit" />
+    <result column="GROSS_PROFIT_RATE" property="grossProfitRate" />
+    <result column="TOTAL_ORDER" property="totalOrder" />
+    <result column="SUCCEED_ORDER" property="succeedOrder" />
+    <result column="FAILED_ORDER" property="failedOrder" />
+    <result column="SALE_AMOUNT" property="saleAmount" />
+    <result column="COST_AMOUNT" property="costAmount" />
+    <result column="ADVERT_AMOUNT" property="advertAmount" />
+    <result column="SERVICE_AMOUNT" property="serviceAmount" />
+    <result column="VIRTUAL_AMOUNT" property="virtualAmount" />
+    <result column="UPDATE_TIME" property="updateTime" />
+    <result column="CREATE_TIME" property="createTime" />
+  </resultMap>
+  <!--  查询我的店铺信息列表-->
+  <select id="findShopList" resultType="com.www.ledger.data.dto.ShopDTO">
+    SELECT  S.SHOP_ID shopId,
+            S.SHOP_NAME shopNm,
+            S.SHOP_TYPE shopTp,
+            A.RETAINED_PROFITS retPro,
+            A.RETAINED_PROFITS_RATE retProRat,
+            A.GROSS_PROFIT groPro,
+            A.GROSS_PROFIT_RATE groProRat,
+            A.TOTAL_ORDER talOrd,
+            A.SUCCEED_ORDER sucOrd,
+            A.FAILED_ORDER faiOrd,
+            A.SALE_AMOUNT salAmt,
+            A.COST_AMOUNT cosAmt,
+            A.ADVERT_AMOUNT advAmt,
+            A.SERVICE_AMOUNT serAmt,
+            A.VIRTUAL_AMOUNT virAmt
+    FROM USER_SHOP S
+        LEFT JOIN SHOP_SALES A ON A.SHOP_ID=S.SHOP_ID
+    WHERE S.USER_ID = #{obj.userId}
+      AND S.SHOP_STATE='1'
+      <if test="obj.shopId != null">
+        AND S.SHOP_ID = #{obj.shopId}
+      </if>
+      <if test="obj.shopNm != null">
+        AND S.SHOP_NAME LIKE #{obj.shopNm}"%"
+      </if>
+    ORDER BY S.SHOP_ID ASC
+  </select>
+</mapper>

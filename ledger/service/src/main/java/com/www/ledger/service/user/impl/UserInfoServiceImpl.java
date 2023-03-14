@@ -1,6 +1,8 @@
 package com.www.ledger.service.user.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.www.common.config.code.CodeDict;
 import com.www.common.config.security.entity.SysRoleEntity;
 import com.www.common.config.security.entity.SysUserEntity;
 import com.www.common.config.security.entity.SysUserRoleEntity;
@@ -8,18 +10,23 @@ import com.www.common.config.security.mapper.SysRoleMapper;
 import com.www.common.config.security.mapper.SysUserMapper;
 import com.www.common.config.security.mapper.SysUserRoleMapper;
 import com.www.common.data.dto.response.ResponseDTO;
+import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.enums.ResponseEnum;
 import com.www.common.utils.DateUtils;
 import com.www.ledger.data.dto.SysUserDTO;
+import com.www.ledger.data.entity.UserBookEntity;
+import com.www.ledger.data.enums.CodeTypeEnum;
+import com.www.ledger.data.mapper.UserBookMapper;
+import com.www.ledger.service.entity.IShopSalesService;
 import com.www.ledger.service.user.IUserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+
 
 /**
  * <p>@Description 用户信息service实现类 </p>
@@ -27,13 +34,15 @@ import java.util.Optional;
  * <p>@Author www </p>
  * <p>@Date 2021/11/14 15:32 </p>
  */
-@Service
 @Slf4j
+@Service
 public class UserInfoServiceImpl implements IUserInfoService {
     @Autowired
     private SysUserMapper sysUserMapper;
     @Autowired
     private SysRoleMapper sysRoleMapper;
+    @Autowired
+    private UserBookMapper userBookMapper;
     @Autowired
     private SysUserRoleMapper sysUserRoleMapper;
 
@@ -48,13 +57,10 @@ public class UserInfoServiceImpl implements IUserInfoService {
     public ResponseDTO<SysUserDTO> findUser(String userId) {
         ResponseDTO<SysUserDTO> responseDTO = new ResponseDTO<>();
         if(StringUtils.isBlank(userId)){
-            responseDTO.setCode(ResponseEnum.FAIL.getCode());
-            responseDTO.setMsg("账号不能为空！");
+            responseDTO.setResponse(ResponseEnum.FAIL,null);
             return responseDTO;
         }
-        QueryWrapper<SysUserEntity> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(SysUserEntity::getUserId,userId);
-        SysUserEntity userEntity = sysUserMapper.selectOne(wrapper);
+        SysUserEntity userEntity = this.findUserById(userId);
         SysUserDTO userDTO = Optional.ofNullable(userEntity).map(entity -> {
             SysUserDTO tempDTO = new SysUserDTO();
             tempDTO.setSuId(entity.getSuId());
@@ -63,8 +69,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
             return tempDTO;
         }).orElse(null);
         if(userDTO == null){
-            responseDTO.setCode(ResponseEnum.FAIL.getCode());
-            responseDTO.setMsg("查询不到该用户信息");
+            responseDTO.setResponse(ResponseEnum.FAIL,null);
             return responseDTO;
         }
         responseDTO.setResponse(ResponseEnum.SUCCESS,userDTO);
@@ -78,15 +83,13 @@ public class UserInfoServiceImpl implements IUserInfoService {
      * @return com.www.myblog.common.pojo.ResponseDTO<java.lang.String>
      */
     @Override
-    public ResponseDTO<String> createUser(SysUserDTO user) throws Exception{
+    public ResponseDTO<String> createUser(SysUserDTO user) {
         ResponseDTO<String> responseDTO = new ResponseDTO<>();
         if(user == null || StringUtils.isAnyBlank(user.getUserId(),user.getUserName(),user.getPassword())){
             responseDTO.setResponse(ResponseEnum.FAIL,"信息不完整，创建用户失败");
             return responseDTO;
         }
-        QueryWrapper<SysUserEntity> userWrapper = new QueryWrapper<>();
-        userWrapper.lambda().eq(SysUserEntity::getUserId,user.getUserId());
-        SysUserEntity existEntity = sysUserMapper.selectOne(userWrapper);
+        SysUserEntity existEntity = this.findUserById(user.getUserId());
         if(existEntity != null){
             responseDTO.setResponse(ResponseEnum.FAIL,"用户ID已存在，请修改");
             return responseDTO;
@@ -95,10 +98,10 @@ public class UserInfoServiceImpl implements IUserInfoService {
         roleWrapper.lambda().eq(SysRoleEntity::getRoleCode,"ROLE_USER");
         SysRoleEntity roleEntity = sysRoleMapper.selectOne(roleWrapper);
         if(roleEntity == null){
-            responseDTO.setCode(ResponseEnum.FAIL.getCode()).setMsg("用户角色错误，创建用户失败");
+            responseDTO.setResponse(ResponseEnum.FAIL,"用户角色错误，创建用户失败");
             return responseDTO;
         }
-        //创建用户
+        //创建用户信息
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         SysUserEntity userEntity = new SysUserEntity();
         userEntity.setUserId(user.getUserId());
@@ -107,14 +110,99 @@ public class UserInfoServiceImpl implements IUserInfoService {
         userEntity.setCreateTime(DateUtils.getCurrentDateTime());
         userEntity.setUpdateTime(DateUtils.getCurrentDateTime());
         sysUserMapper.insert(userEntity);
-        //创建用户角色
+        //创建用户角色信息
         SysUserRoleEntity userRoleEntity = new SysUserRoleEntity();
         userRoleEntity.setUserId(userEntity.getUserId());
         userRoleEntity.setRoleId(roleEntity.getRoleId());
         userRoleEntity.setCreateTime(DateUtils.getCurrentDateTime());
         userRoleEntity.setUpdateTime(DateUtils.getCurrentDateTime());
         sysUserRoleMapper.insert(userRoleEntity);
+        //创建用户账簿信息
+        UserBookEntity bookEntity = new UserBookEntity();
+        bookEntity.setUserId(userEntity.getUserId());
+        userBookMapper.insert(bookEntity);
         responseDTO.setResponse(ResponseEnum.SUCCESS,"创建用户成功");
         return responseDTO;
+    }
+    /**
+     * <p>@Description 更新用户密码 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2021/12/8 19:58 </p>
+     * @param user 用户信息
+     * @return com.www.myblog.common.pojo.ResponseDTO<java.lang.String>
+     */
+    @Override
+    public ResponseDTO<String> updateUserPwd(SysUserDTO user) {
+        ResponseDTO<String> responseDTO = new ResponseDTO<>();
+        if(user == null || StringUtils.isAnyBlank(user.getUserId(),user.getPassword(),user.getNewPassWord())){
+            responseDTO.setResponse(ResponseEnum.FAIL,"更新用户密码失败，密码不能为空");
+            return responseDTO;
+        }
+        SysUserEntity userEntity = this.findUserById(user.getUserId());
+        if(userEntity == null){
+            responseDTO.setResponse(ResponseEnum.FAIL,"查询不到该用户");
+            return responseDTO;
+        }
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        //有输入密码则校验密码
+        if(!encoder.matches(user.getPassword(),userEntity.getPassword())){
+            responseDTO.setResponse(ResponseEnum.FAIL,"原密码不正确");
+            return responseDTO;
+        }
+        //更新用户信息
+        UpdateWrapper<SysUserEntity> userWrapper = new UpdateWrapper<>();
+        userWrapper.lambda().eq(SysUserEntity::getUserId,user.getUserId());
+        userWrapper.lambda().set(SysUserEntity::getPassword,encoder.encode(user.getNewPassWord()));
+        userWrapper.lambda().set(SysUserEntity::getUpdateTime,DateUtils.getCurrentDateTime());
+        int count = sysUserMapper.update(null,userWrapper);
+        if(count == 0){
+            responseDTO.setResponse(ResponseEnum.FAIL,"更新用户密码失败");
+        }
+        responseDTO.setResponse(ResponseEnum.SUCCESS,"更新用户密码成功");
+        return responseDTO;
+    }
+    /**
+     * <p>@Description 更新用户信息 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2021/12/8 19:58 </p>
+     * @param user 用户信息
+     * @return com.www.myblog.common.pojo.ResponseDTO<java.lang.String>
+     */
+    @Override
+    public ResponseDTO<String> updateUserInfo(SysUserDTO user) {
+        ResponseDTO<String> responseDTO = new ResponseDTO<>();
+        if(user == null || StringUtils.isAnyBlank(user.getUserId(),user.getUserName())){
+            responseDTO.setResponse(ResponseEnum.FAIL,"更新用户信息失败，用户信息有误");
+            return responseDTO;
+        }
+        SysUserEntity userEntity = this.findUserById(user.getUserId());
+        if(userEntity == null){
+            responseDTO.setResponse(ResponseEnum.FAIL,"查询不到该用户");
+            return responseDTO;
+        }
+        //更新用户信息
+        UpdateWrapper<SysUserEntity> userWrapper = new UpdateWrapper<>();
+        userWrapper.lambda().eq(SysUserEntity::getUserId,user.getUserId());
+        userWrapper.lambda().set(SysUserEntity::getUserName,user.getUserName());
+        userWrapper.lambda().set(SysUserEntity::getUpdateTime,DateUtils.getCurrentDateTime());
+        int count = sysUserMapper.update(null,userWrapper);
+        if(count == 0){
+            responseDTO.setResponse(ResponseEnum.FAIL,"更新用户信息失败");
+        }
+        responseDTO.setResponse(ResponseEnum.SUCCESS,"更新用户信息成功");
+        return responseDTO;
+    }
+    /**
+     * <p>@Description 根据用户id查询用户信息 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/12 22:27 </p>
+     * @param userId 用户id
+     * @return com.www.common.config.security.entity.SysUserEntity
+     */
+    @Override
+    public SysUserEntity findUserById(String userId){
+        QueryWrapper<SysUserEntity> userWrapper = new QueryWrapper<>();
+        userWrapper.lambda().eq(SysUserEntity::getUserId,userId);
+        return sysUserMapper.selectOne(userWrapper);
     }
 }

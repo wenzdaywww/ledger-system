@@ -5,7 +5,7 @@ export default [
     },{
         path: "/",
         name: "Home",
-        component: () => import ("../views/Home.vue"),
+        component: () => import ("../views/index/Home.vue"),
         children: [
             {
                 path: "/index",
@@ -30,17 +30,37 @@ export default [
         meta: {
             title: '店铺中心'
         },
-        component: () => import ("../views/shop/Home.vue"),
+        component: () => import ("../views/Home.vue"),
         children: [
             {
-                path: "/user",
-                name: "user",
-                meta: { title: '个人资料' },
-                component: () => import ("../views/user/info/User.vue")
+                path: "/book",
+                name: "book",
+                meta: { title: '我的账本' },
+                component: () => import ("../views/book/book.vue")
             }, {
                 path: "/shop",
                 name: "shop",
-                meta: { title: '店铺列表' },
+                meta: { title: '我的店铺' },
+                component: () => import ("../views/shop/ShopList.vue")
+            }, {
+                path: "/year",
+                name: "year",
+                meta: { title: '年销售额' },
+                component: () => import ("../views/shop/ShopList.vue")
+            }, {
+                path: "/month",
+                name: "month",
+                meta: { title: '月销售额' },
+                component: () => import ("../views/shop/ShopList.vue")
+            }, {
+                path: "/order",
+                name: "order",
+                meta: { title: '订单信息' },
+                component: () => import ("../views/shop/ShopList.vue")
+            }, {
+                path: "/goods",
+                name: "goods",
+                meta: { title: '商品信息' },
                 component: () => import ("../views/shop/ShopList.vue")
             }
         ]

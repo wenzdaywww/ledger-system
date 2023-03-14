@@ -2,7 +2,7 @@
 ### 账本管理系统
 ## 项目部署说明
 ### 1、安装mysql数据库，推荐使用docker部署
-#### 1.1、docker run -d -p 3306:3306 --restart always -v /home/www/ap/mysql/conf:/etc/mysql/conf.d -v /home/www/ap/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=www362412 --name mysql mysql --lower-case-table-names=1
+#### 1.1、docker run -d -p 3306:3306 --restart always -v /etc/localtime:/etc/localtime -v /home/www/ap/mysql/conf:/etc/mysql/conf.d -v /home/www/ap/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=www362412 --name mysql mysql --lower-case-table-names=1
 #### 1.2、创建数据库ledger及用户ledger_ap/www362412
 ##### CREATE USER `ledger_ap`@`%` IDENTIFIED WITH mysql_native_password BY 'www362412';
 ##### GRANT Delete, Insert, Select, Update ON `shop`.* TO `ledger_ap`@`%`;

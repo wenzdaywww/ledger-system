@@ -2,7 +2,7 @@
 <template>
   <el-dialog title="修改密码" v-model="editVisible" width="20%" destroy-on-close="true">
     <el-form label-width="120px" :model="form" :rules="editRules" ref="editForm">
-      <el-form-item label="旧密码：" prop="password">
+      <el-form-item label="原密码：" prop="password">
         <el-input type="password" v-model="form.password" maxlength="20" placeholder="请输入旧密码"></el-input>
       </el-form-item>
       <el-form-item label="新密码：" prop="newPassWord">
@@ -14,8 +14,8 @@
     </el-form>
     <div class="btn-save">
       <span class="dialog-footer">
-        <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="savePwd">确 定</el-button>
+        <el-button type="primary" @click="savePwd" round>确 定</el-button>
+        <el-button @click="editVisible = false" round>取 消</el-button>
       </span>
     </div>
   </el-dialog>
@@ -24,7 +24,7 @@
 <script>
 import {getCurrentInstance, reactive, ref} from "vue";
 import {ElMessage} from "element-plus";
-import request from '../../utils/request';
+import request from '../../../utils/request';
 
 export default {
   name: "Password",

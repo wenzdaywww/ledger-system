@@ -9,5 +9,21 @@ export default {
     //注册用户
     register: "api/new/user",
     //查询用户信息
-    userInfo: "api/user/info"
+    userInfo: "api/user/info",
+    //修改用户信息
+    editInfo: "api/user/edit",
+    //查询用户信息
+    modifyPwd: "api/user/pwd",
+    //查询单个数据字典数据
+    code: "api/code/code/",
+    //查询多个数据字典数据
+    codes: "api/code/codes",
+    //查询我的店铺列表
+    shopList: "api/shop/list",
+    //修改我的店铺信息
+    shopEdit: "api/shop/info",
+    //新增店铺信息
+    newShop: "api/shop/new",
+    //删除店铺信息
+    delShop: "api/shop/dlt/"
 }

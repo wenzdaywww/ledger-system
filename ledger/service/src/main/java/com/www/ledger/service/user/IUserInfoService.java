@@ -1,5 +1,6 @@
 package com.www.ledger.service.user;
 
+import com.www.common.config.security.entity.SysUserEntity;
 import com.www.common.data.dto.response.ResponseDTO;
 import com.www.ledger.data.dto.SysUserDTO;
 
@@ -25,5 +26,29 @@ public interface IUserInfoService {
      * @param user
      * @return com.www.myblog.common.pojo.ResponseDTO<java.lang.String>
      */
-    ResponseDTO<String> createUser(SysUserDTO user) throws Exception;
+    ResponseDTO<String> createUser(SysUserDTO user);
+    /**
+     * <p>@Description 更新用户密码 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2021/12/8 19:58 </p>
+     * @param user 用户信息
+     * @return com.www.myblog.common.pojo.ResponseDTO<java.lang.String>
+     */
+    ResponseDTO<String> updateUserPwd(SysUserDTO user);
+    /**
+     * <p>@Description 更新用户信息 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2021/12/8 19:58 </p>
+     * @param user 用户信息
+     * @return com.www.myblog.common.pojo.ResponseDTO<java.lang.String>
+     */
+    ResponseDTO<String> updateUserInfo(SysUserDTO user);
+    /**
+     * <p>@Description 根据用户id查询用户信息 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/12 22:27 </p>
+     * @param userId 用户id
+     * @return com.www.common.config.security.entity.SysUserEntity
+     */
+    SysUserEntity findUserById(String userId);
 }
