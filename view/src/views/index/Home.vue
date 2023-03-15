@@ -1,8 +1,8 @@
 <!-- Home父页面 -->
 <template>
   <v-header />
-  <div class="control-box">
-    <div class="content">
+  <div class="control-box main-div">
+    <div class="content content-div">
       <router-view v-slot="{ Component }"></router-view>
     </div>
   </div>
@@ -24,6 +24,12 @@ export default {
 </script>
 <style scoped>
   .content {
-    background-image: url("../static/img/pm.jpg");
+    background-image: url("/static/img/pm.jpg");
+  }
+  .main-div {
+    height: 100%;
+  }
+  .content-div {
+    overflow-y:hidden;
   }
 </style>

@@ -6,11 +6,7 @@ com:
         enable: true #开启controller的AOP日志拦截
       code:
         write-enable: true
-        code-redis-key: ledger:code_dict:code_data:code_type
-      securuty:
-        enable: true
-        token-prefix: ledger:token:userid
-        role-redis-key: ledger:authority_role:url_role
+        code-redis-key: ledger:code:code_data:code_type
 #服务器配置
 server:
   servlet:

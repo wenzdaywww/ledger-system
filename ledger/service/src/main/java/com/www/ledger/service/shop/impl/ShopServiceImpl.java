@@ -54,7 +54,7 @@ public class ShopServiceImpl implements IShopService {
     public ResponseDTO<String> createShop(ShopDTO dto) {
         ResponseDTO<String> responseDTO = new ResponseDTO<>();
         if(dto == null || StringUtils.isAnyBlank(dto.getShopNm(),dto.getShopTp())
-            || CodeDict.isIllegalValue(CodeTypeEnum.ShopPlatform.getCodeType(), dto.getShopTp())){
+            || CodeDict.isIllegalValue(CodeTypeEnum.ShopPlatform_Pdd.getType(), dto.getShopTp())){
             responseDTO.setResponse(ResponseEnum.FAIL,"用户名、店铺名称和店铺平台信息有误，新增失败");
             return responseDTO;
         }
@@ -87,7 +87,7 @@ public class ShopServiceImpl implements IShopService {
     public ResponseDTO<String> updateShop(ShopDTO dto) {
         ResponseDTO<String> responseDTO = new ResponseDTO<>();
         if(dto == null || dto.getShopId() == null || StringUtils.isAnyBlank(dto.getShopNm(),dto.getShopTp())
-                || CodeDict.isIllegalValue(CodeTypeEnum.ShopPlatform.getCodeType(), dto.getShopTp())){
+                || CodeDict.isIllegalValue(CodeTypeEnum.ShopPlatform_Pdd.getType(), dto.getShopTp())){
             responseDTO.setResponse(ResponseEnum.FAIL,"店铺名称和店铺平台信息有误，修改失败");
             return responseDTO;
         }
@@ -116,7 +116,7 @@ public class ShopServiceImpl implements IShopService {
         ResponseDTO<String> responseDTO = new ResponseDTO<>();
         UpdateWrapper<UserShopEntity> wrapper = new UpdateWrapper<>();
         wrapper.lambda().eq(UserShopEntity::getShopId,shopId)
-                .set(UserShopEntity::getShopState,CodeDict.getValue(CodeTypeEnum.ShopState.getCodeType(), CodeKeyEnum.K0.getKey()))
+                .set(UserShopEntity::getShopState,CodeDict.getValue(CodeTypeEnum.ShopState_Logout.getType(), CodeTypeEnum.ShopState_Logout.getKey()))
                 .set(UserShopEntity::getUpdateTime,DateUtils.getCurrentDateTime());
         if(userShopService.update(wrapper)){
             responseDTO.setResponse(ResponseEnum.SUCCESS,"删除成功");
@@ -144,7 +144,7 @@ public class ShopServiceImpl implements IShopService {
         List<ShopDTO> shopList =  page.getRecords();
         if(CollectionUtils.isNotEmpty(shopList)){
             shopList.forEach(d -> {
-                d.setShopTp(CodeDict.getCodeValueName(CodeTypeEnum.ShopPlatform.getCodeType(), d.getShopTp()));
+                d.setShopTp(CodeDict.getCodeValueName(CodeTypeEnum.ShopPlatform_Pdd.getType(), d.getShopTp()));
             });
         }
         ResponseDTO<List<ShopDTO>> responseDTO = new ResponseDTO<>(ResponseEnum.SUCCESS,shopList);

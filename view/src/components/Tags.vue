@@ -1,12 +1,11 @@
-<!-- 页面布局-菜单栏 -->
 <template>
   <div class="tags" v-if="showTags">
     <ul>
       <li class="tags-li" v-for="(item,index) in tagsList" :class="{'active': isActive(item.path)}" :key="index">
         <router-link :to="item.path" class="tags-li-title">{{item.title}}</router-link>
         <span class="tags-li-icon" @click="closeTags(index)">
-          <i class="el-icon-close"></i>
-        </span>
+                    <i class="el-icon-close"></i>
+                </span>
       </li>
     </ul>
     <div class="tags-close-box">
@@ -34,14 +33,12 @@ export default {
   setup() {
     const route = useRoute();
     const router = useRouter();
-    const isActive = (path) => {
-      return path === route.fullPath;
-    };
-
     const store = useStore();
     const tagsList = computed(() => store.state.tagsList);
     const showTags = computed(() => tagsList.value.length > 0);
-
+    const isActive = (path) => {
+      return path === route.fullPath;
+    };
     // 关闭单个标签
     const closeTags = (index) => {
       const delItem = tagsList.value[index];
@@ -52,14 +49,11 @@ export default {
       if (item) {
         delItem.path === route.fullPath && router.push(item.path);
       } else {
-        router.push("/user");
+        router.push("/book");
       }
     };
-
     // 设置标签
     const setTags = (route) => {
-      console.log("route");
-      console.log(route);
       const isExist = tagsList.value.some((item) => {
         return item.path === route.fullPath;
       });
@@ -78,11 +72,10 @@ export default {
     onBeforeRouteUpdate((to) => {
       setTags(to);
     });
-
     // 关闭全部标签
     const closeAll = () => {
       store.commit("clearTags");
-      router.push("/user");
+      router.push("/book");
     };
     // 关闭其他标签
     const closeOther = () => {
@@ -91,23 +84,16 @@ export default {
       });
       store.commit("closeTagsOther", curItem);
     };
-    closeOther();
     const handleTags = (command) => {
       command === "other" ? closeOther() : closeAll();
     };
     // 关闭当前页面的标签页
-    store.commit("closeCurrentTag", {
-      $router: router,
-      $route: route
-    });
-
-    return {
-      isActive,
-      tagsList,
-      showTags,
-      closeTags,
-      handleTags,
-    };
+    // store.commit("closeCurrentTag", {
+    //     $router: router,
+    //     $route: route
+    // });
+    return {isActive,tagsList,showTags,
+      closeTags,handleTags,};
   },
 };
 </script>

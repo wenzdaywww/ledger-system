@@ -10,6 +10,8 @@ export default {
     register: "api/new/user",
     //查询用户信息
     userInfo: "api/user/info",
+    //查询用户路由
+    userRouter: "api/user/router",
     //修改用户信息
     editInfo: "api/user/edit",
     //查询用户信息

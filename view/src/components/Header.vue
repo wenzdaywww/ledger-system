@@ -1,17 +1,16 @@
-<!-- 页面布局-顶部栏 -->
 <template>
   <div class="header">
     <!-- 折叠按钮 -->
     <div v-if="isAdmin" class="collapse-btn" @click="collapseChage">
-      <i v-if="!collapse" class="el-icon-s-fold" style="color: black"></i>
-      <i v-else class="el-icon-s-unfold" style="color: black"></i>
+      <i v-if="!collapse" class="el-icon-s-fold"></i>
+      <i v-else class="el-icon-s-unfold"></i>
     </div>
-    <div class="logo header-item" @click="handleCommand('index')">{{$t('i18n.blog')}}</div>
+    <div class="logo header-item" @click="handleCommand('index')">首页</div>
     <div class="header-right">
       <!-- 未登录 -->
       <div v-if="isLogin == false" style="margin-top: 20px">
         <span class="regist-span" @click="shwoLogin">登录</span>
-        <span class="regist-span" >/</span>
+        <span class="regist-span" > / </span>
         <span class="regist-span" @click="shwoRegister">注册</span>
       </div>
       <!-- 已登录 -->
@@ -37,16 +36,14 @@
   </div>
 </template>
 <script>
-
-import {computed, getCurrentInstance, onMounted, reactive, ref, inject, provide} from "vue";
+import {computed, getCurrentInstance, inject, onMounted, reactive, ref} from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import utils from '../utils/utils';
-import request from '../utils/request';
-import {initUserRouter,clearUserRouter} from "../router";
+import utils from "../utils/utils";
+import {clearUserRouter, initUserRouter} from "../router";
+import request from "../utils/request";
 import {ElMessage} from "element-plus";
 import Password from "../views/user/info/Password.vue";
-import store from "../store";
 
 export default {
   name: "Header",
@@ -59,7 +56,7 @@ export default {
     //store存储对象
     const store = useStore();
     //从父组件获取传值
-    const isAdmin = inject("isAdmin"); //是否后台首页
+    const isAdmin = inject("isAdmin"); //是否显示顶部栏折叠按钮
     // 是否已登录
     const isLogin = ref(false);
     //侧边栏是否收缩
@@ -118,12 +115,12 @@ export default {
         router.push("/book");
       } else if (command == "pwd") { // 修改密码
         passwordDialog.value.shwoDialog();
-      }else if(command == "index"){ //博客首页
+      }else if(command == "index"){ //首页
         router.push("/index");
       }
     };
     return { isAdmin,isLogin,form, collapse,shwoLogin,collapseChage, handleCommand,passwordDialog,shwoRegister};
-  }
+  },
 };
 </script>
 <style scoped>
@@ -133,8 +130,7 @@ export default {
   width: 100%;
   height: 70px;
   font-size: 22px;
-  color: #fffffa;
-  background-color: white;
+  color: #fff;
 }
 .collapse-btn {
   float: left;
@@ -142,16 +138,9 @@ export default {
   cursor: pointer;
   line-height: 70px;
 }
-.collapse-btn:hover {
-  float: left;
-  padding: 0 21px;
-  cursor: pointer;
-  line-height: 70px;
-  background-color: #f0f0f5;
-}
 .header .logo {
-  margin-left: 10px;
   float: left;
+  width: 50px;
   line-height: 70px;
 }
 .header-right {
@@ -163,34 +152,26 @@ export default {
   height: 70px;
   align-items: center;
 }
+.header-item{
+  color: white;
+  font-size: 18px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+.header-item:hover {
+  background: rgb(40,52,70);
+}
+.btn-bell .el-icon-bell {
+  color: #fff;
+}
 .user-name {
   margin-left: 10px;
 }
 .user-avator {
   margin-left: 20px;
 }
-.user-avator img {
-  display: block;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-}
 .login-out{
   color: red;
-}
-.header-item{
-  color: black;
-  font-size: 18px;
-  width: auto;
-  padding-left: 8px;
-  padding-right: 8px;
-}
-.header-item:hover {
-  background-color: #f0f0f0;
-}
-.red{
-  color: red;
-  font-size: 14px;
 }
 .regist-span{
   color: red;
@@ -203,24 +184,10 @@ export default {
   padding-bottom: 1px;
   cursor:default;
 }
-.btn-bell,
-.btn-fullscreen {
-  position: relative;
-  width: 30px;
-  height: 30px;
-  text-align: center;
-  border-radius: 15px;
-  cursor: pointer;
-  margin-left: 15px;
-}
-.btn-bell-badge {
-  position: absolute;
-  right: 0;
-  top: -2px;
-  width: 8px;
-  height: 8px;
-  border-radius: 4px;
-  background: #f56c6c;
-  color: #fff;
+.user-avator img {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
 }
 </style>

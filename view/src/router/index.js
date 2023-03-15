@@ -3,7 +3,6 @@ import routesDate from './routes';
 import request from "../utils/request";
 import store from "../store/index"
 import axios from "../utils/axios"
-const modules = import.meta.glob("../views/**/**.vue");// 接口请求
 //路由信息
 let routes = routesDate;
 /**
@@ -20,11 +19,12 @@ const router = createRouter({
  */
 export const initUserRouter = function (callBackFunc){
     //加载用户拥有的路由权限
-    axios.get(request.userInfo, null).then(function (res) {
+    axios.get(request.userRouter, null).then(function (res) {
         if(res.code === 200){
             //加载用户拥有的路由权限
-            let routerTemp = ["/book","/shop","/year","/month","/order","/goods"];
-            store.dispatch("updateRouter",routerTemp);
+            if(res.data){
+                store.dispatch("updateRouter",res.data);
+            }
         }
         if (callBackFunc && callBackFunc instanceof  Function){
             callBackFunc();
@@ -36,28 +36,6 @@ export const initUserRouter = function (callBackFunc){
  */
 export const clearUserRouter = function (){
     store.dispatch("updateRouter",null);
-}
-/**
- * 递归处理子路由
- * @deprecated 由于动态加载路由后，刷新页面会404，所以暂弃用
- * @param parent 父路由
- * @param children 子路由
- */
-const hanleChilden = function (parent,children) {
-    children.forEach (temp => {
-        const vuePath = '../views/'+temp.vuePath;
-        const tempRouter = {
-            path: temp.menuUrl,
-            name: temp.menuCode,
-            meta : { title: temp.menuName },
-            component : modules[vuePath],
-            children: []
-        };
-        parent.push(tempRouter);
-        if(temp.children){ // 有子router
-            hanleChilden(tempRouter.children,temp.children);
-        }
-    });
 }
 /**
  * 路由跳转前的处理
@@ -84,5 +62,4 @@ router.beforeEach((to, from, next) => {
         }
     }
 });
-
 export default router ;

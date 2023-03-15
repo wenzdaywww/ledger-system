@@ -1,29 +1,25 @@
 <!-- 店铺中心Home父页面-->
 <template>
-  <div>
+  <div class="about">
     <v-header />
-    <div>
-      <el-row>
-        <el-col :span="4"><v-sidebar /></el-col>
-        <el-col :span="20">
-          <div class="content-box">
-            <div class="content">
-              <router-view v-slot="{ Component }">
-                <transition name="move" mode="out-in">
-                  <keep-alive :include="tagsList">
-                    <component :is="Component" />
-                  </keep-alive>
-                </transition>
-              </router-view>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
+    <v-sidebar />
+    <div class="content-box" :class="{ 'content-collapse': collapse }">
+      <v-tags></v-tags>
+      <div class="content">
+        <router-view v-slot="{ Component }">
+          <transition name="move" mode="out-in">
+            <keep-alive :include="tagsList">
+              <component :is="Component" />
+            </keep-alive>
+          </transition>
+        </router-view>
+        <!-- <el-backtop target=".content"></el-backtop> -->
+      </div>
     </div>
   </div>
 </template>
 <script>
-import {computed, ref,provide } from "vue";
+import { computed,provide } from "vue";
 import { useStore } from "vuex";
 import vHeader from "../components/Header.vue";
 import vSidebar from "../components/Sidebar.vue";
@@ -42,12 +38,7 @@ export default {
         store.state.tagsList.map((item) => item.name)
     );
     const collapse = computed(() => store.state.collapse);
-    return {
-      tagsList,
-      collapse,
-    };
+    return {tagsList,collapse};
   },
 };
 </script>
-<style scoped>
-</style>

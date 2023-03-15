@@ -5,59 +5,58 @@ export default [
     },{
         path: "/",
         name: "Home",
+        meta: {title: '首页'},
         component: () => import ("../views/index/Home.vue"),
         children: [
             {
                 path: "/index",
-                name: "ledgerIndex",
+                name: "index",
                 meta: { title: '首页' },
                 component: () => import ("../views/index/Index.vue")
+            },{
+                path: "/login",
+                name: "Login",
+                meta: { title: '用户登录' },
+                component: () => import ("../views/user/Login.vue")
+            },{
+                path: "/register",
+                name: "Register",
+                meta: { title: '用户注册' },
+                component: () => import ("../views/user/Register.vue")
             }
         ]
     },{
-        path: "/login",
-        name: "Login",
-        meta: { title: '用户登录' },
-        component: () => import ("../views/user/Login.vue")
-    },{
-        path: "/register",
-        name: "Register",
-        meta: { title: '用户注册' },
-        component: () => import ("../views/user/Register.vue")
-    },{
         path: "/",
-        name: "Ledger",
-        meta: {
-            title: '店铺中心'
-        },
+        name: "Shop",
+        meta: {title: '店铺中心'},
         component: () => import ("../views/Home.vue"),
         children: [
             {
                 path: "/book",
                 name: "book",
-                meta: { title: '我的账本' },
+                meta: { title: '我的账簿' },
                 component: () => import ("../views/book/book.vue")
-            }, {
+            },{
                 path: "/shop",
                 name: "shop",
                 meta: { title: '我的店铺' },
                 component: () => import ("../views/shop/ShopList.vue")
-            }, {
+            },{
                 path: "/year",
                 name: "year",
                 meta: { title: '年销售额' },
                 component: () => import ("../views/shop/ShopList.vue")
-            }, {
+            },{
                 path: "/month",
                 name: "month",
                 meta: { title: '月销售额' },
                 component: () => import ("../views/shop/ShopList.vue")
-            }, {
+            },{
                 path: "/order",
                 name: "order",
                 meta: { title: '订单信息' },
                 component: () => import ("../views/shop/ShopList.vue")
-            }, {
+            },{
                 path: "/goods",
                 name: "goods",
                 meta: { title: '商品信息' },

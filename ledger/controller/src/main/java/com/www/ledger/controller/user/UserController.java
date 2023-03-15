@@ -102,6 +102,16 @@ public class UserController {
         return response;
     }
     /**
+     * <p>@Description 获取当前角色拥有的路由 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/15 19:08 </p>
+     * @return com.www.common.data.dto.response.ResponseDTO<java.util.List < java.lang.String>>
+     */
+    @GetMapping("router")
+    public ResponseDTO<List<String>> findRouter(){
+        return userInfoService.findRouter(JwtAuthorizationTokenFilter.getUserId());
+    }
+    /**
      * <p>@Description 查询单个数据字典数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2022/2/3 16:39 </p>

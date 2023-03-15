@@ -1,33 +1,30 @@
 <!-- 页面布局-侧边菜单栏 -->
 <template>
-  <div class="content">
-    <el-menu class="sidebar-el-menu el-menu-vertical-demo" :collapse="collapse" :default-active="onRoutes" unique-opened router>
+  <div class="sidebar">
+    <el-menu class="sidebar-el-menu" :default-active="onRoutes" :collapse="collapse" background-color="#324157"
+             text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router>
       <template v-for="item in items">
-        <template v-if="item.subMenu">
-          <el-submenu :index="item.menuUrl" :key="item.menuUrl">
+        <template v-if="item.subs">
+          <el-submenu :index="item.index" :key="item.index">
             <template #title>
-              <i :class="item.menuIcon"></i>
-              <span>{{ item.menuName }}</span>
+              <i :class="item.icon"></i>
+              <span>{{ item.title }}</span>
             </template>
-            <template v-for="subItem in item.subMenu">
-              <el-submenu v-if="subItem.subMenu" :index="subItem.menuUrl" :key="subItem.menuUrl">
-                <i :class="subItem.menuIcon"></i>
-                <template #title>{{ subItem.menuName }}</template>
-                <el-menu-item v-for="(threeItem, i) in subItem.subMenu" :key="i" :index="threeItem.menuUrl">
-                  {{ threeItem.menuName }}
-                </el-menu-item>
+            <template v-for="subItem in item.subs">
+              <el-submenu v-if="subItem.subs" :index="subItem.index" :key="subItem.index">
+                <template #title>{{ subItem.title }}</template>
+                <el-menu-item v-for="(threeItem, i) in subItem.subs" :key="i" :index="threeItem.index">
+                  {{ threeItem.title }}</el-menu-item>
               </el-submenu>
-              <el-menu-item v-else :index="subItem.menuUrl" :key="subItem.menuUrl">
-                <i :class="subItem.menuIcon"></i>
-                <span>{{ subItem.menuName }}</span>
+              <el-menu-item v-else :index="subItem.index" :key="subItem.index">{{ subItem.title }}
               </el-menu-item>
             </template>
           </el-submenu>
         </template>
         <template v-else>
-          <el-menu-item :index="item.menuUrl" :key="item.menuUrl">
-            <i :class="item.menuIcon"></i>
-            <template #title>{{ item.menuName }}</template>
+          <el-menu-item :index="item.index" :key="item.index">
+            <i :class="item.icon"></i>
+            <template #title>{{ item.title }}</template>
           </el-menu-item>
         </template>
       </template>
@@ -36,80 +33,67 @@
 </template>
 
 <script>
-import {computed, ref, getCurrentInstance, reactive} from "vue";
+import { computed, watch } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import utils from "../utils/utils";
-import request from "../utils/request";
-
 export default {
   setup() {
+    const items = [
+      {
+        icon: "el-icon-notebook-1",
+        index: "/book",
+        title: "我的账簿",
+      },{
+        icon: "el-icon-s-shop",
+        index: "/shop",
+        title: "我的店铺",
+      },{
+        icon: "el-icon-sell",
+        index: "/year",
+        title: "年销售额",
+      },{
+        icon: "el-icon-sell",
+        index: "/month",
+        title: "月销售额",
+      },{
+        icon: "el-icon-shopping-cart-full",
+        index: "/order",
+        title: "订单信息",
+      },{
+        icon: "el-icon-s-goods",
+        index: "/goods",
+        title: "商品信息",
+      }
+    ];
     // 路由
-    const router = useRoute();
+    const route = useRoute();
     const store = useStore();
     const collapse = computed(() => store.state.collapse);
-    // 接口请求
-    const axios = getCurrentInstance().appContext.config.globalProperties;
-    //菜单列表
-    const items = ref([]);
-    // 获取菜单
-    const getData = () => {
-      if(utils.isLogin()){
-        items.value = [
-          {
-            menuUrl: "/book",
-            menuIcon: "el-icon-notebook-1",
-            menuName: "我的账簿"
-          },{
-            menuUrl: "/shop",
-            menuIcon: "el-icon-s-shop",
-            menuName: "我的店铺"
-          },{
-            menuUrl: "/year",
-            menuIcon: "el-icon-sell",
-            menuName: "年销售额"
-          },{
-            menuUrl: "/month",
-            menuIcon: "el-icon-sell",
-            menuName: "月销售额"
-          },{
-            menuUrl: "/order",
-            menuIcon: "el-icon-shopping-cart-full",
-            menuName: "订单信息"
-          },{
-            menuUrl: "/goods",
-            menuIcon: "el-icon-s-goods",
-            menuName: "商品信息"
-          }
-        ];
-      }else {
-        items.value = [];
-      }
-    };
-    getData();
-
+    //路由跳转
     const onRoutes = computed(() => {
-      return router.path;
+      return route.path;
     });
-
-    return {
-      items,
-      onRoutes,
-      collapse,
-    };
+    return {items,onRoutes,collapse,};
   },
 };
 </script>
 
 <style scoped>
+.sidebar {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 70px;
+  bottom: 0;
+  overflow-y: scroll;
+}
 .sidebar::-webkit-scrollbar {
   width: 0;
 }
 .sidebar-el-menu:not(.el-menu--collapse) {
-  float: right;
   width: 250px;
 }
 .sidebar > ul {
-  /*height: 50%;*/
+  height: 100%;
 }
 </style>

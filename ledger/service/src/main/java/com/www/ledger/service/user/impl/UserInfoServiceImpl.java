@@ -2,30 +2,37 @@ package com.www.ledger.service.user.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.www.common.config.code.CodeDict;
+import com.www.common.config.redis.RedisOperation;
+import com.www.common.config.security.MySecurityProperties;
+import com.www.common.config.security.dto.AuthorityDTO;
+import com.www.common.config.security.entity.AuthorityRoleEntity;
 import com.www.common.config.security.entity.SysRoleEntity;
 import com.www.common.config.security.entity.SysUserEntity;
 import com.www.common.config.security.entity.SysUserRoleEntity;
+import com.www.common.config.security.mapper.AuthorityRoleMapper;
 import com.www.common.config.security.mapper.SysRoleMapper;
 import com.www.common.config.security.mapper.SysUserMapper;
 import com.www.common.config.security.mapper.SysUserRoleMapper;
+import com.www.common.data.constant.CharConstant;
 import com.www.common.data.dto.response.ResponseDTO;
-import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.enums.ResponseEnum;
 import com.www.common.utils.DateUtils;
 import com.www.ledger.data.dto.SysUserDTO;
 import com.www.ledger.data.entity.UserBookEntity;
-import com.www.ledger.data.enums.CodeTypeEnum;
 import com.www.ledger.data.mapper.UserBookMapper;
-import com.www.ledger.service.entity.IShopSalesService;
+import com.www.ledger.data.properties.LedgerProperties;
 import com.www.ledger.service.user.IUserInfoService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -44,7 +51,13 @@ public class UserInfoServiceImpl implements IUserInfoService {
     @Autowired
     private UserBookMapper userBookMapper;
     @Autowired
+    private LedgerProperties ledgerProperties;
+    @Autowired
     private SysUserRoleMapper sysUserRoleMapper;
+    @Autowired
+    private AuthorityRoleMapper authorityRoleMapper;
+    @Autowired
+    private MySecurityProperties mySecurityProperties;
 
     /**
      * <p>@Description 查询用户信息 </p>
@@ -191,6 +204,76 @@ public class UserInfoServiceImpl implements IUserInfoService {
         }
         responseDTO.setResponse(ResponseEnum.SUCCESS,"更新用户信息成功");
         return responseDTO;
+    }
+    /**
+     * <p>@Description 获取当前角色拥有的路由 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/15 19:08 </p>
+     * @param userId
+     * @return com.www.common.data.dto.response.ResponseDTO<java.util.List < java.lang.String>>
+     */
+    @Override
+    public ResponseDTO<List<String>> findRouter(String userId) {
+        List<String> routerList = null;
+        //redis中有角色路由信息则直接获取
+        if(RedisOperation.hasKey(ledgerProperties.getRouterRedisKey())){
+            routerList = (List<String>) RedisOperation.listGet(ledgerProperties.getRouterRedisKey());
+        }else {
+            //有配置使用redis保存用户的角色信息的key前缀，则从中获取用户的角色
+            if(StringUtils.isNotBlank(mySecurityProperties.getUserPrefix())){
+                String userRoleKey = mySecurityProperties.getUserPrefix() + CharConstant.COLON + userId;
+                //查询角色拥有的路由权限
+                List<String> roleList = (List<String>) RedisOperation.listGet(userRoleKey);
+                routerList = this.findRoleRouter(roleList);
+            }else {
+                routerList = this.findUserRouter(userId);
+            }
+            if(CollectionUtils.isNotEmpty(routerList)){
+                routerList.forEach(e -> {
+                    RedisOperation.listSet(ledgerProperties.getRouterRedisKey(),e);
+                });
+                RedisOperation.keyExpire(ledgerProperties.getRouterRedisKey(),ledgerProperties.getRouterExpireHour(), TimeUnit.HOURS);
+            }
+        }
+        return new ResponseDTO<>(ResponseEnum.SUCCESS,routerList);
+    }
+    /**
+     * <p>@Description 查询角色拥有的路由权限 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/15 23:04 </p>
+     * @param roleList 角色信息结合
+     * @return java.util.List<java.lang.String>
+     */
+    private List<String> findRoleRouter(List<String> roleList){
+        List<AuthorityDTO> authorityList = authorityRoleMapper.findRoleAuthority(roleList);
+        List<String> routerList = Optional.ofNullable(authorityList).filter(e ->CollectionUtils.isNotEmpty(authorityList))
+                .map(list -> {
+                    List<String> tempList = new ArrayList<>();
+                    list.forEach(dto -> {
+                        tempList.add(dto.getUrl());
+                    });
+                    return tempList;
+                }).orElse(null);
+        return routerList;
+    }
+    /**
+     * <p>@Description 查询用户角色拥有的路由权限 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/15 22:52 </p>
+     * @param userId 用户id
+     * @return java.util.List<java.lang.String>
+     */
+    private List<String> findUserRouter(String userId){
+        List<AuthorityDTO> authorityList = authorityRoleMapper.findUserAuthorityRole(userId);
+        List<String> routerList = Optional.ofNullable(authorityList).filter(e ->CollectionUtils.isNotEmpty(authorityList))
+                .map(list -> {
+                    List<String> tempList = new ArrayList<>();
+                    list.forEach(dto -> {
+                        tempList.add(dto.getUrl());
+                    });
+                    return tempList;
+                }).orElse(null);
+        return routerList;
     }
     /**
      * <p>@Description 根据用户id查询用户信息 </p>

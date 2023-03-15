@@ -4,6 +4,8 @@ import com.www.common.config.security.entity.SysUserEntity;
 import com.www.common.data.dto.response.ResponseDTO;
 import com.www.ledger.data.dto.SysUserDTO;
 
+import java.util.List;
+
 /**
  * <p>@Description 用户信息service接口 </p>
  * <p>@Version 1.0 </p>
@@ -51,4 +53,11 @@ public interface IUserInfoService {
      * @return com.www.common.config.security.entity.SysUserEntity
      */
     SysUserEntity findUserById(String userId);
+    /**
+     * <p>@Description 获取当前角色拥有的路由 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/15 19:08 </p>
+     * @return com.www.common.data.dto.response.ResponseDTO<java.util.List < java.lang.String>>
+     */
+    ResponseDTO<List<String>> findRouter(String userId);
 }
