@@ -18,11 +18,11 @@
           <div class="block" style="float: left; margin-right: 10px;">
             <el-date-picker v-model="query.month" type="month" format="YYYY-MM" value-format="YYYY-MM" placeholder="选择月份"></el-date-picker>
           </div>
-          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round>搜索</el-button>
-          <el-button icon="el-icon-refresh-left" @click="handleReset" round>重置</el-button>
-          <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round>新增订单</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
+          <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
+          <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round plain>新增月销售</el-button>
           <el-tooltip class="item" effect="light" content="根据订单信息统计每月销售额" placement="top">
-            <el-button type="primary" icon="el-icon-s-data" @click="handleCount" round>统计</el-button>
+            <el-button type="success" icon="el-icon-s-data" @click="handleCount" round plain>统计月销售</el-button>
           </el-tooltip>
         </div>
         <!-- 店铺信息列表-->

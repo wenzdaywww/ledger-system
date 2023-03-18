@@ -14,8 +14,8 @@ import com.www.ledger.data.entity.ShopSalesEntity;
 import com.www.ledger.data.entity.UserShopEntity;
 import com.www.ledger.data.enums.CodeTypeEnum;
 import com.www.ledger.data.mapper.ShopSalesMapper;
+import com.www.ledger.data.mapper.YearSalesMapper;
 import com.www.ledger.data.properties.LedgerProperties;
-import com.www.ledger.data.vo.shop.ShopAllResponse;
 import com.www.ledger.service.entity.IShopSalesService;
 import com.www.ledger.service.entity.IUserShopService;
 import com.www.ledger.service.shop.IShopService;
@@ -26,9 +26,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * <p>@Description 我的店铺service实现类 </p>
@@ -40,6 +44,8 @@ import java.util.Optional;
 @Service
 public class ShopServiceImpl implements IShopService {
     @Autowired
+    private YearSalesMapper yearSalesMapper;
+    @Autowired
     private ShopSalesMapper shopSalesMapper;
     @Autowired
     private IUserShopService userShopService;
@@ -50,6 +56,50 @@ public class ShopServiceImpl implements IShopService {
     @Autowired
     private LedgerProperties ledgerProperties;
 
+    /**
+     * <p>@Description 统计店铺销售额 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/13 22:18 </p>
+     * @param userId 用户ID
+     * @return Response<java.lang.String>
+     */
+    @Override
+    public Response<String> saveAndCountShopData(String userId) {
+        List<ShopDTO> countList = yearSalesMapper.countShopData(userId);
+        if(CollectionUtils.isEmpty(countList)){
+            return new Response<>(ResponseEnum.SUCCESS,"统计完成");
+        }
+        QueryWrapper<ShopSalesEntity> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(ShopSalesEntity::getUserId,userId);
+        List<ShopSalesEntity> shopList = shopSalesMapper.selectList(wrapper);
+        if(CollectionUtils.isEmpty(shopList)){
+            return new Response<>(ResponseEnum.SUCCESS,"统计完成");
+        }
+        Map<Long, ShopDTO> dtoMap = countList.stream().collect(Collectors.toMap(k -> k.getShopId(), month -> month));
+        shopList.forEach(entity -> {
+            if(dtoMap.containsKey(entity.getShopId())){
+                ShopDTO shopDTO = dtoMap.get(entity.getShopId());
+                entity.setTotalOrder(shopDTO.getTotalOrder()).setSucceedOrder(shopDTO.getSucceedOrder())
+                        .setFailedOrder(shopDTO.getFailedOrder()).setSaleAmount(shopDTO.getSaleAmount())
+                        .setCostAmount(shopDTO.getCostAmount()).setAdvertAmount(shopDTO.getAdvertAmount())
+                        .setServiceAmount(shopDTO.getServiceAmount()).setVirtualAmount(shopDTO.getVirtualAmount())
+                        .setUpdateTime(DateUtils.getCurrentDateTime());
+            }
+            //计算月毛利润=月销售额-月成本费
+            entity.setGrossProfit((entity.getSaleAmount().subtract(entity.getCostAmount())).setScale(2, RoundingMode.HALF_UP));
+            //计算月毛利率=月毛利润/月成本费
+            entity.setGrossProfitRate( entity.getCostAmount().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
+                    : (entity.getSaleAmount().divide(entity.getCostAmount(),4,RoundingMode.HALF_UP)).setScale(2, RoundingMode.HALF_UP));
+            //月净利润=月毛利润-月推广费-月服务费-月刷单费
+            entity.setRetainedProfits((entity.getGrossProfit().subtract(entity.getAdvertAmount())).subtract(entity.getServiceAmount()).subtract(entity.getVirtualAmount()));
+            //月净利率=月净利润/(月成本+月推广费+月服务费+月刷单费)
+            BigDecimal totalAmt = entity.getCostAmount().add(entity.getAdvertAmount()).add(entity.getServiceAmount()).add(entity.getVirtualAmount());
+            entity.setRetainedProfitsRate(totalAmt.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
+                    :(entity.getRetainedProfits().divide(totalAmt,4,RoundingMode.HALF_UP)).setScale(2,RoundingMode.HALF_UP));
+        });
+        shopSalesService.updateBatchById(shopList,100);
+        return new Response<>(ResponseEnum.SUCCESS,"统计完成");
+    }
     /**
      * <p>@Description 新增店铺信息 </p>
      * <p>@Author www </p>

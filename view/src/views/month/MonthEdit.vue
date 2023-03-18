@@ -7,7 +7,7 @@
           <el-col :span="12">
             <el-form-item label="月份" prop="month">
               <div class="block" style="float: left; margin-right: 10px;">
-                <el-date-picker style="width:250px;" v-model="monthInfo.month" type="date"
+                <el-date-picker style="width:250px;" v-model="monthInfo.month" type="month"
                                 format="YYYY-MM" value-format="YYYY-MM" placeholder="月份"></el-date-picker>
               </div>
             </el-form-item>
@@ -85,7 +85,7 @@
           <el-col :span="12">
             <el-form-item label="月服务费" prop="serAmt">
               <el-input-number v-model="monthInfo.serAmt" :precision="2" min="0" max="99999999.99"
-                               style="width: 250px" maxlength="20" placeholder="请输入月推广费"></el-input-number>
+                               style="width: 250px" maxlength="20" placeholder="请输入月服务费"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -98,8 +98,8 @@
       <template #footer>
         <div class="btn-save">
             <span class="dialog-footer">
-              <el-button type="primary" @click="saveEdit" class="el-icon-check" round>确 定</el-button>
-              <el-button @click="editVisible = false" class="el-icon-close" round>取 消</el-button>
+              <el-button type="primary" @click="saveEdit" class="el-icon-check" round plain>确定</el-button>
+              <el-button @click="editVisible = false" class="el-icon-close" round plain>取消</el-button>
             </span>
         </div>
       </template>

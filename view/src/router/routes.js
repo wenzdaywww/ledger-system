@@ -45,7 +45,7 @@ export default [
                 path: "/year",
                 name: "year",
                 meta: { title: '年销售额' },
-                component: () => import ("../views/year/YearSales.vue")
+                component: () => import ("../views/year/YearList.vue")
             },{
                 path: "/month",
                 name: "month",

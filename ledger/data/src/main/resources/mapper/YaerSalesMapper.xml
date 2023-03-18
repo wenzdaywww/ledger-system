@@ -1,24 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.www.ledger.data.mapper.YearSalesMapper">
-  <resultMap id="BaseResultMap" type="com.www.ledger.data.entity.YearSalesEntity">
-    <!--@Table YEAR_SALES-->
-    <id column="YS_ID" property="ysId" />
-    <result column="SHOP_ID" property="shopId" />
-    <result column="USER_ID" property="userId" />
-    <result column="RETAINED_PROFITS" property="retainedProfits" />
-    <result column="RETAINED_PROFITS_RATE" property="retainedProfitsRate" />
-    <result column="GROSS_PROFIT" property="grossProfit" />
-    <result column="GROSS_PROFIT_RATE" property="grossProfitRate" />
-    <result column="TOTAL_ORDER" property="totalOrder" />
-    <result column="SUCCEED_ORDER" property="succeedOrder" />
-    <result column="FAILED_ORDER" property="failedOrder" />
-    <result column="SALE_AMOUNT" property="saleAmount" />
-    <result column="COST_AMOUNT" property="costAmount" />
-    <result column="ADVERT_AMOUNT" property="advertAmount" />
-    <result column="SERVICE_AMOUNT" property="serviceAmount" />
-    <result column="VIRTUAL_AMOUNT" property="virtualAmount" />
-    <result column="UPDATE_TIME" property="updateTime" />
-    <result column="CREATE_TIME" property="createTime" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.www.ledger.data.entity.YearSalesEntity">
+        <!--@Table YEAR_SALES-->
+        <id column="YS_ID" property="ysId" />
+        <result column="SHOP_ID" property="shopId" />
+        <result column="USER_ID" property="userId" />
+        <result column="YEAR" property="year" />
+        <result column="RETAINED_PROFITS" property="retainedProfits" />
+        <result column="RETAINED_PROFITS_RATE" property="retainedProfitsRate" />
+        <result column="GROSS_PROFIT" property="grossProfit" />
+        <result column="GROSS_PROFIT_RATE" property="grossProfitRate" />
+        <result column="TOTAL_ORDER" property="totalOrder" />
+        <result column="SUCCEED_ORDER" property="succeedOrder" />
+        <result column="FAILED_ORDER" property="failedOrder" />
+        <result column="SALE_AMOUNT" property="saleAmount" />
+        <result column="COST_AMOUNT" property="costAmount" />
+        <result column="ADVERT_AMOUNT" property="advertAmount" />
+        <result column="SERVICE_AMOUNT" property="serviceAmount" />
+        <result column="VIRTUAL_AMOUNT" property="virtualAmount" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="CREATE_TIME" property="createTime" />
+    </resultMap>
+    <!--  统计店铺销售额-->
+    <select id="countShopData" resultType="com.www.ledger.data.dto.ShopDTO">
+        SELECT S.SHOP_ID shopId,
+               SUM(A.TOTAL_ORDER) totalOrder,
+               SUM(A.SUCCEED_ORDER) succeedOrder,
+               SUM(A.FAILED_ORDER) failedOrder,
+               SUM(A.SALE_AMOUNT) saleAmount,
+               SUM(A.COST_AMOUNT) costAmount,
+               SUM(A.ADVERT_AMOUNT) advertAmount,
+               SUM(A.SERVICE_AMOUNT) serviceAmount,
+               SUM(A.VIRTUAL_AMOUNT) virtualAmount
+        FROM (SELECT C.SHOP_ID,
+                     C.TOTAL_ORDER,
+                     C.SUCCEED_ORDER,
+                     C.FAILED_ORDER,
+                     C.SALE_AMOUNT,
+                     C.COST_AMOUNT,
+                     C.ADVERT_AMOUNT,
+                     C.SERVICE_AMOUNT,
+                     C.VIRTUAL_AMOUNT
+              FROM  YEAR_sales C WHERE C.USER_ID = #{userId} ) A,SHOP_SALES S WHERE S.SHOP_ID = A.SHOP_ID
+        GROUP BY A.SHOP_ID
+    </select>
+    <!--  查询年销售额列表信息-->
+    <select id="findYearList" resultType="com.www.ledger.data.dto.YearDTO">
+        SELECT DATE_FORMAT(Y.YEAR,'%Y') yearStr,
+        S.SHOP_NAME shopName,
+        Y.RETAINED_PROFITS retainedProfits,
+        Y.RETAINED_PROFITS_RATE retainedProfitsRate,
+        Y.GROSS_PROFIT grossProfit,
+        Y.GROSS_PROFIT_RATE grossProfitRate,
+        Y.TOTAL_ORDER totalOrder,
+        Y.SUCCEED_ORDER succeedOrder,
+        Y.FAILED_ORDER failedOrder,
+        Y.SALE_AMOUNT saleAmount,
+        Y.COST_AMOUNT costAmount,
+        Y.ADVERT_AMOUNT advertAmount,
+        Y.SERVICE_AMOUNT serviceAmount,
+        Y.VIRTUAL_AMOUNT virtualAmount
+        FROM YEAR_SALES Y,USER_SHOP S
+        WHERE S.USER_ID = #{obj.userId}  AND Y.USER_ID = #{obj.userId}
+        AND S.SHOP_STATE='1' AND S.SHOP_ID = Y.SHOP_ID
+        <if test="obj.shopId != null">
+            AND Y.SHOP_ID = #{obj.shopId}
+        </if>
+        <if test="obj.yearStr != null and obj.yearStr != ''">
+            AND Y.YEAR = STR_TO_DATE(#{obj.yearStr},'%Y%m%d')
+        </if>
+        ORDER BY Y.YEAR DESC
+    </select>
 </mapper>

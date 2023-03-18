@@ -21,6 +21,19 @@
     <result column="UPDATE_TIME" property="updateTime" />
     <result column="CREATE_TIME" property="createTime" />
   </resultMap>
+    <!--  统计所有店铺销售额-->
+    <select id="countAllShopData" resultType="com.www.ledger.data.dto.BookDTO">
+        SELECT SUM(A.TOTAL_ORDER) totalOrder,
+               SUM(A.SUCCEED_ORDER) succeedOrder,
+               SUM(A.FAILED_ORDER) failedOrder,
+               SUM(A.SALE_AMOUNT) saleAmount,
+               SUM(A.COST_AMOUNT) costAmount,
+               SUM(A.ADVERT_AMOUNT) advertAmount,
+               SUM(A.SERVICE_AMOUNT) serviceAmount,
+               SUM(A.VIRTUAL_AMOUNT) virtualAmount
+        FROM  SHOP_sales A WHERE A.USER_ID = #{userId}
+        GROUP BY A.USER_ID
+    </select>
   <!--  查询我的店铺信息列表-->
   <select id="findShopList" resultType="com.www.ledger.data.dto.ShopDTO">
     SELECT  S.SHOP_ID shopId,

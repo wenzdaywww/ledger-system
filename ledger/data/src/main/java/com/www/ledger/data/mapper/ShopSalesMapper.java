@@ -2,6 +2,7 @@ package com.www.ledger.data.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.www.ledger.data.dto.BookDTO;
 import com.www.ledger.data.dto.ShopDTO;
 import com.www.ledger.data.entity.ShopSalesEntity;
 import org.apache.ibatis.annotations.Mapper;
@@ -15,6 +16,14 @@ import org.apache.ibatis.annotations.Param;
  */
 @Mapper
 public interface ShopSalesMapper extends BaseMapper<ShopSalesEntity> {
+    /**
+     * <p>@Description 统计所有店铺销售额 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/19 00:46 </p>
+     * @param userId 用户ID
+     * @return
+     */
+    BookDTO countAllShopData(@Param("userId") String userId);
     /**
      * <p>@Description 查询我的店铺信息列表 </p>
      * <p>@Author www </p>

@@ -12,7 +12,6 @@ import com.www.ledger.service.shop.IShopService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,6 +50,16 @@ public class ShopController {
         return shopService.createShop(shopDTO);
     }
     /**
+     * <p>@Description 统计店铺销售额 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/13 22:18 </p>
+     * @return Response<java.lang.String>
+     */
+    @PostMapping("tal")
+    public Response<String> updateShopData(){
+        return shopService.saveAndCountShopData(JwtAuthorizationTokenFilter.getUserId());
+    }
+    /**
      * <p>@Description 修改店铺信息 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/13 22:18 </p>
@@ -73,7 +82,7 @@ public class ShopController {
      * @param shopId 店铺ID
      * @return Response<java.lang.String>
      */
-    @DeleteMapping("dlt/{shopId}")
+    @PostMapping("dlt/{shopId}")
     public Response<String> deleteShop(@PathVariable("shopId") String shopId){
         return shopService.deleteShop(shopId);
     }

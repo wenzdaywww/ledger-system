@@ -13,6 +13,14 @@ import java.util.List;
  */
 public interface IShopService {
     /**
+     * <p>@Description 统计店铺销售额 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/13 22:18 </p>
+     * @param userId 用户ID
+     * @return Response<java.lang.String>
+     */
+    Response<String> saveAndCountShopData(String userId);
+    /**
      * <p>@Description 新增店铺信息 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/13 22:18 </p>

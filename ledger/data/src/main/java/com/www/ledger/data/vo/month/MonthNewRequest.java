@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -18,8 +20,10 @@ import java.math.BigDecimal;
 public class MonthNewRequest implements Serializable {
     private static final long serialVersionUID = 1L;
     /** 月份 **/
-    private Long msId;
+    @NotBlank(message = "月份不能为空")
+    private String month;
     /** 店铺主键ID **/
+    @NotNull(message = "店铺ID不能为空")
     private Long shopId;
     /** 推广费 **/
     @Digits(integer = 8,fraction = 2,message = "月推广费整数上限8位，小数位上限2位")

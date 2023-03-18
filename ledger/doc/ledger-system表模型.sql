@@ -151,7 +151,7 @@ CREATE TABLE IF NOT EXISTS YEAR_SALES (
     YS_ID                     INT               PRIMARY KEY AUTO_INCREMENT        COMMENT '年账单主键ID',
     SHOP_ID                   INT                                                 COMMENT '店铺主键ID',
     USER_ID                   VARCHAR(40)                                         COMMENT '用户名',
-    YEAR                      YEAR                                                COMMENT '账单年份',
+    YEAR                      DATE                                                COMMENT '账单年份',
     RETAINED_PROFITS          DECIMAL(20,2)     DEFAULT 0.0                       COMMENT '年净利润',
     RETAINED_PROFITS_RATE     DECIMAL(10,2)     DEFAULT 0.0                       COMMENT '年净利率',
     GROSS_PROFIT              DECIMAL(10,2)     DEFAULT 0.0                       COMMENT '年毛利润',

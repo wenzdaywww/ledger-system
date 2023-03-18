@@ -24,10 +24,10 @@
           <el-select v-model="query.ordSta" placeholder="请选择订单状态" class="handle-select mr10" style="width: 180px">
             <el-option v-for="item in orderState" :key="item.value" :label="item.name" :value="item.value"></el-option>
           </el-select>
-          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round>搜索</el-button>
-          <el-button icon="el-icon-refresh-left" @click="handleReset" round>重置</el-button>
-          <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round>新增订单</el-button>
-          <el-button type="primary" icon="el-icon-upload2"  round>导入</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
+          <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
+          <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round plain>新增订单</el-button>
+          <el-button type="success" icon="el-icon-upload2" @click="handleImport" round plain>导入</el-button>
         </div>
         <!-- 店铺信息列表-->
         <el-table :data="tableData" border class="table" ref="multipleTable" :row-class-name="tableAddClass"
@@ -203,6 +203,10 @@ export default {
     const handleEdit = (row) => {
       orderDialog.value.openOrderDialog(row,userShop,orderState);//调用子组件方法
     };
+    //导入订单
+    const handleImport = () => {
+      //TODO 2023/3/18 19:55 导入功能，待开发
+    };
     // 获取表格数据
     const findOrderList = () => {
       axios.$http.get(request.orderList,query).then(function (res) {
@@ -238,7 +242,7 @@ export default {
     };
     getCodeDataArr();
     return { query,orderDialog,tableData,pageTotal,userShop,orderState,
-      handleSearch,handleReset,handlePageChange,handleEdit,handleAdd,handleDelete,findOrderList,tableAddClass};
+      handleSearch,handleReset,handlePageChange,handleEdit,handleAdd,handleDelete,findOrderList,tableAddClass,handleImport};
   }
 };
 </script>

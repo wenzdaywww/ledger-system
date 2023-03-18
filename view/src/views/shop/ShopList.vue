@@ -14,10 +14,12 @@
         <div class="handle-box">
           <el-input v-model="query.shopId" placeholder="店铺ID" class="handle-input mr10"></el-input>
           <el-input v-model="query.shopNm" placeholder="店铺名称" class="handle-input mr10"></el-input>
-          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round>搜索</el-button>
-          <el-button icon="el-icon-refresh-left" @click="handleReset" round>重置</el-button>
-          <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round>新增店铺</el-button>
-          <el-button type="primary" icon="el-icon-s-data"  round>统计</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
+          <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
+          <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round plain>新增店铺</el-button>
+          <el-tooltip class="item" effect="light" content="根据年销售统计店销售额" placement="top">
+            <el-button type="success" icon="el-icon-s-data" @click="handleCount" round plain>统计店销售</el-button>
+          </el-tooltip>
         </div>
         <!-- 店铺信息列表-->
         <el-table :data="tableData" border class="table" ref="multipleTable"
@@ -25,10 +27,42 @@
           <el-table-column prop="shopId" label="店铺ID" align="center"></el-table-column>
           <el-table-column prop="shopNm" label="店铺名称" align="center"></el-table-column>
           <el-table-column prop="shopTp" label="店铺平台" align="center"></el-table-column>
-          <el-table-column prop="retPro" label="店净利润" align="center"></el-table-column>
-          <el-table-column prop="retProRat" label="店净利率" align="center"></el-table-column>
-          <el-table-column prop="groPro" label="店毛利润" align="center"></el-table-column>
-          <el-table-column prop="groProRat" label="店毛利率" align="center"></el-table-column>
+          <el-table-column prop="retPro" label="店净利润" align="center">
+            <template v-slot:header='scope'>
+              <span>店净利润
+                <el-tooltip :aa="scope" class="item" effect="light" content="店净利润=店毛利润-店推广费-店服务费-店刷单费" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="retProRat" label="店净利率" align="center">
+            <template v-slot:header='scope'>
+              <span>店净利率
+                <el-tooltip :aa="scope" class="item" effect="light" content="店净利率=店净利润/(店成本+店推广费+店服务费+店刷单费)" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="groPro" label="店毛利润" align="center">
+            <template v-slot:header='scope'>
+              <span>店毛利润
+                <el-tooltip :aa="scope" class="item" effect="light" content="店毛利润=店销售额-店成本费" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="groProRat" label="店毛利率" align="center">
+            <template v-slot:header='scope'>
+              <span>店毛利率
+                <el-tooltip :aa="scope" class="item" effect="light" content="店毛利率=店毛利润/店成本费" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column prop="talOrd" label="店订单数" align="center"></el-table-column>
           <el-table-column prop="sucOrd" label="店成交单数" align="center"></el-table-column>
           <el-table-column prop="faiOrd" label="店失败单数" align="center"></el-table-column>
@@ -158,6 +192,17 @@ export default {
       shopInfo.shopNm = row.shopNm;
       editVisible.value = true;
     };
+    //统计店铺销售额
+    const handleCount = () => {
+      axios.$http.post(request.shopCount, null).then(function (res) {
+        if(res.code === 200){
+          ElMessage.success(res.data);
+          getData();
+        }else {
+          ElMessage.error(res.data);
+        }
+      });
+    };
     //删除店铺
     const handleDelete = (row) => {
       // 二次确认删除
@@ -208,7 +253,7 @@ export default {
       });
     };
     return { query,tableData,pageTotal,editVisible,shopForm,shopRules,shopInfo,shopTpCode,
-      handleSearch,handleReset,handlePageChange,handleEdit,saveEdit,handleAdd,handleDelete};
+      handleSearch,handleReset,handlePageChange,handleEdit,saveEdit,handleAdd,handleDelete,handleCount};
   }
 };
 </script>

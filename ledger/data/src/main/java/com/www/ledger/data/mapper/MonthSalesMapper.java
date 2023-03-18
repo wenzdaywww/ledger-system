@@ -3,6 +3,7 @@ package com.www.ledger.data.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.www.ledger.data.dto.MonthDTO;
+import com.www.ledger.data.dto.YearDTO;
 import com.www.ledger.data.entity.MonthSalesEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -18,13 +19,13 @@ import java.util.List;
 @Mapper
 public interface MonthSalesMapper extends BaseMapper<MonthSalesEntity> {
     /**
-     * <p>@Description 统计月销售额 </p>
+     * <p>@Description 统计年销售额 </p>
      * <p>@Author www </p>
-     * <p>@Date 2023/3/18 15:19 </p>
+     * <p>@Date 2023/3/18 21:40 </p>
      * @param userId 用户ID
      * @return
      */
-    List<MonthDTO> countMonthSale(@Param("userId") String userId);
+    List<YearDTO> countYearData(@Param("userId") String userId);
     /**
      * <p>@Description 查询月销售额列表信息 </p>
      * <p>@Author www </p>

@@ -26,10 +26,12 @@
             </div>
           </div>
           <div class="user-info-list">
-            <el-button v-if="openEdit" type="primary" @click="onSubmit" class="el-icon-check" round> 保存</el-button>
+            <el-button v-if="openEdit" type="primary" @click="onSubmit" class="el-icon-check" round plain> 保存</el-button>
             <el-link href="javascript:void(0);" type="primary" @click="openEdit ? openEdit = false : openEdit = true"
                      style="margin-left: 20px;" :underline=false class="el-icon-edit">{{openEdit ? '取消编辑' : '编辑'}}</el-link>
-            <el-button type="primary" class="el-icon-edit-outline" style="float: right;" round> 统计</el-button>
+            <el-tooltip class="item" effect="light" content="根据销售数据统计" placement="top">
+              <el-button type="success" class="el-icon-s-data" style="float: right;" @click="handleCount" round plain> 统计账簿</el-button>
+            </el-tooltip>
           </div>
         </el-card>
         <el-card shadow="hover" style="height:252px;">
@@ -38,35 +40,48 @@
               <span>数据分析</span>
             </div>
           </template>
-          净利率<el-progress :percentage="bookData.retProRat" color="#42b983"></el-progress>
-          毛利率<el-progress :percentage="bookData.groProRat" color="#f1e05a"></el-progress>
-          订单成功率<el-progress :percentage="bookData.orderRat"></el-progress>
+          净利率
+          <el-tooltip class="item" effect="light" content="净利率=净利润/(成本费+推广费+服务费+刷单费)" placement="top">
+            <el-progress :percentage="bookData.retProRat" color="#42b983"></el-progress>
+          </el-tooltip>
+          毛利率
+          <el-tooltip class="item" effect="light" content="毛利润=销售额-成本费" placement="top">
+            <el-progress :percentage="bookData.groProRat" color="#f1e05a"></el-progress>
+          </el-tooltip>
+          订单成交率
+          <el-tooltip class="item" effect="light" content="订单成交率=成功订单量 / 订单量 * 100%" placement="top">
+            <el-progress :percentage="bookData.sucOrdRat"></el-progress>
+          </el-tooltip>
         </el-card>
       </el-col>
       <!-- 账簿数据-->
       <el-col :span="16">
         <el-row :gutter="20" class="mgb20">
           <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-3">
-                <i class="el-icon-data-line grid-con-icon"></i>
-                <div class="grid-cont-right">
-                  <div class="grid-num">{{ bookData.retPro }}</div>
-                  <div>净利润</div>
+            <el-tooltip class="item" effect="light" content="净利润=毛利润-推广费-服务费-刷单费" placement="top">
+              <el-card shadow="hover" :body-style="{ padding: '0px' }">
+                <div class="grid-content grid-con-3">
+                  <i class="el-icon-data-line grid-con-icon"></i>
+                  <div class="grid-cont-right">
+                    <div class="grid-num">{{ bookData.retPro }}</div>
+                    <div>净利润</div>
+                  </div>
                 </div>
-              </div>
-            </el-card>
+              </el-card>
+            </el-tooltip>
           </el-col>
           <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-3">
-                <i class="el-icon-data-analysis grid-con-icon"></i>
-                <div class="grid-cont-right">
-                  <div class="grid-num">{{ bookData.groPro }}</div>
-                  <div>毛利润</div>
+            <el-tooltip class="item" effect="light" content="毛利润=销售额-成本费" placement="top">
+              <el-card shadow="hover" :body-style="{ padding: '0px' }">
+                <div class="grid-content grid-con-3">
+                  <i class="el-icon-data-analysis grid-con-icon"></i>
+                  <div class="grid-cont-right">
+                    <div class="grid-num">{{ bookData.groPro }}</div>
+                    <div>毛利润</div>
+                  </div>
                 </div>
-              </div>
-            </el-card>
+              </el-card>
+            </el-tooltip>
           </el-col>
           <el-col :span="8">
             <el-card shadow="hover" :body-style="{ padding: '0px' }">
@@ -201,13 +216,13 @@ export default {
     // 账簿数据
     let bookData = reactive({
       retPro: 0,
-      retProRat: 10,
+      retProRat: 0,
       groPro : 0,
-      groProRat : 20,
+      groProRat : 0,
       talOrd: 0,
       sucOrd: 0,
       faiOrd: 0,
-      orderRat : 30,
+      sucOrdRat : 0,
       salAmt : 0,
       cosAmt : 0,
       advAmt : 0,
@@ -279,6 +294,17 @@ export default {
     };
     // 表单对象
     const editForm = ref(null);
+    // 统计年销售
+    const handleCount = () => {
+      axios.$http.post(request.bookCount,null).then(function (res) {
+        if(res.code === 200){
+          ElMessage.success(res.data);
+          getBookInfoData();
+        }else{
+          ElMessage.error(res.data);
+        }
+      })
+    };
     // 获取用户数据
     const getUserData = () => {
       axios.$http.get(request.userInfo,null).then(function (res) {
@@ -291,6 +317,29 @@ export default {
       });
     };
     getUserData();
+    // 用户账簿信息
+    const getBookInfoData = () => {
+      axios.$http.get(request.bookInfo,null).then(function (res) {
+        if(res.code === 200){
+          bookData.retPro = res.data.retPro;
+          bookData.retProRat = res.data.retProRat;
+          bookData.groPro = res.data.groPro;
+          bookData.groProRat = res.data.groProRat;
+          bookData.talOrd = res.data.talOrd;
+          bookData.sucOrd = res.data.sucOrd;
+          bookData.faiOrd = res.data.faiOrd;
+          bookData.sucOrdRat = res.data.sucOrdRat;
+          bookData.salAmt = res.data.salAmt;
+          bookData.cosAmt = res.data.cosAmt;
+          bookData.advAmt = res.data.advAmt;
+          bookData.serAmt = res.data.serAmt;
+          bookData.virAmt = res.data.virAmt;
+        }else {
+          ElMessage.error(res.data);
+        }
+      });
+    };
+    getBookInfoData();
     // 保存按钮
     const onSubmit = () => {
       editForm.value.validate((valid) => {
@@ -310,7 +359,7 @@ export default {
       });
     };
     return {user,openEdit,editRules,editForm,bookData,shopSales,monthSales,
-      onSubmit};
+      onSubmit,handleCount};
   },
 };
 </script>

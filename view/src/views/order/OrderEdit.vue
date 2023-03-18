@@ -109,8 +109,8 @@
       <template #footer>
         <div class="btn-save">
             <span class="dialog-footer">
-              <el-button type="primary" @click="saveEdit" class="el-icon-check" round>确 定</el-button>
-              <el-button @click="editVisible = false" class="el-icon-close" round>取 消</el-button>
+              <el-button type="primary" @click="saveEdit" class="el-icon-check" round plain>确定</el-button>
+              <el-button @click="editVisible = false" class="el-icon-close" round plain>取消</el-button>
             </span>
         </div>
       </template>

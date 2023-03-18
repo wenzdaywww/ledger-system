@@ -41,12 +41,12 @@ public class MonthController {
      * @return
      */
     @PostMapping("new")
-    public Response<String> saveMonthData(@Validated MonthNewRequest monthRequest){
+    public Response<String> saveMonthSales(@Validated MonthNewRequest monthRequest){
         MonthDTO monthDTO = new MonthDTO();
         monthDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
-                .setMsId(monthRequest.getMsId()).setShopId(monthRequest.getShopId())
+                .setMonthDateStr(monthRequest.getMonth()).setShopId(monthRequest.getShopId())
                 .setAdvertAmount(monthRequest.getAdvAmt()).setServiceAmount(monthRequest.getSerAmt());
-        return monthService.saveMonthData(monthDTO);
+        return monthService.saveMonthSales(monthDTO);
     }
     /**
      * <p>@Description 删除月销售额数据 </p>
@@ -57,7 +57,7 @@ public class MonthController {
      */
     @PostMapping("dlt/{msId}")
     public Response<String> deleteMonthData(@PathVariable("msId") Long msId){
-        return monthService.deleteMonthData(msId);
+        return monthService.deleteMonthData(JwtAuthorizationTokenFilter.getUserId(),msId);
     }
     /**
      * <p>@Description 统计月销售额 </p>
@@ -67,7 +67,7 @@ public class MonthController {
      */
     @PostMapping("tal")
     public Response<String> saveMonthList(){
-        return monthService.saveMonthList(JwtAuthorizationTokenFilter.getUserId());
+        return monthService.saveAndCountMonthData(JwtAuthorizationTokenFilter.getUserId());
     }
     /**
      * <p>@Description 查询月销售额列表信息 </p>

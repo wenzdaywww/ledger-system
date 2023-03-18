@@ -12,6 +12,10 @@ export default {
     userInfo: "api/user/info",
     //查询用户路由
     userRouter: "api/user/router",
+    //查询用户账簿信息
+    bookInfo: "api/book/info",
+    //统计用户账簿信息
+    bookCount: "api/book/tal",
     //修改用户信息
     editInfo: "api/user/edit",
     //查询用户信息
@@ -30,11 +34,15 @@ export default {
     newShop: "api/shop/new",
     //删除店铺信息
     delShop: "api/shop/dlt/",
+    //统计店铺销售额
+    shopCount: "api/shop/tal",
     //查询年销售额列表
     yearList: "api/year/list",
+    //统计年销售额
+    yearCount: "api/year/tal",
     //查询月销售额列表
     monthList: "api/month/list",
-    //查询月销售额列表
+    //统计月销售额
     monthCount: "api/month/tal",
     //删除月销售额信息
     delMonth: "api/month/dlt/",

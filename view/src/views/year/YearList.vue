@@ -16,19 +16,54 @@
             <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
           </el-select>
           <div class="block" style="float: left; margin-right: 10px;">
-            <el-date-picker v-model="query.year" type="year" placeholder="选择年份"></el-date-picker>
+            <el-date-picker v-model="query.year" type="year" format="YYYY" value-format="YYYY" placeholder="选择年份"></el-date-picker>
           </div>
-          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round>搜索</el-button>
-          <el-button icon="el-icon-refresh-left" @click="handleReset" round>重置</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
+          <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
+          <el-tooltip class="item" effect="light" content="根据月销售统计年销售额" placement="top">
+            <el-button type="success" icon="el-icon-s-data" @click="handleCount" round plain>统计年销售</el-button>
+          </el-tooltip>
         </div>
         <!-- 店铺信息列表-->
         <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-          <el-table-column prop="shopId" label="年份" align="center"></el-table-column>
+          <el-table-column prop="year" label="年份" align="center"></el-table-column>
           <el-table-column prop="shopNm" label="店铺名称" align="center"></el-table-column>
-          <el-table-column prop="retPro" label="年净利润" align="center"></el-table-column>
-          <el-table-column prop="retProRat" label="年净利率" align="center"></el-table-column>
-          <el-table-column prop="groPro" label="年毛利润" align="center"></el-table-column>
-          <el-table-column prop="groProRat" label="年毛利率" align="center"></el-table-column>
+          <el-table-column prop="retPro" label="年净利润" align="center">
+            <template v-slot:header='scope'>
+              <span>年净利润
+                <el-tooltip :aa="scope" class="item" effect="light" content="年净利润=年毛利润-年推广费-年服务费-年刷单费" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="retProRat" label="年净利率" align="center">
+            <template v-slot:header='scope'>
+              <span>年净利率
+                <el-tooltip :aa="scope" class="item" effect="light" content="年净利率=年净利润/(年成本+年推广费+年服务费+年刷单费)" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="groPro" label="年毛利润" align="center">
+            <template v-slot:header='scope'>
+              <span>年毛利润
+                <el-tooltip :aa="scope" class="item" effect="light" content="年毛利润=年销售额-年成本费" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="groProRat" label="年毛利率" align="center">
+            <template v-slot:header='scope'>
+              <span>年毛利率
+                <el-tooltip :aa="scope" class="item" effect="light" content="年毛利率=年毛利润/年成本费" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column prop="talOrd" label="年订单数" align="center"></el-table-column>
           <el-table-column prop="sucOrd" label="年成交单数" align="center"></el-table-column>
           <el-table-column prop="faiOrd" label="年失败单数" align="center"></el-table-column>
@@ -71,45 +106,58 @@ export default {
     const pageTotal = ref(0);
     // 用户的所有店铺信息
     const userShop = ref([]);
-    // 获取表格数据
-    const getData = () => {
-      axios.$http.get(request.yearList,query).then(function (res) {
-        if(res.code === 200){
-          tableData.value = res.data;
-          pageTotal.value = res.totalNum;
-        }else if(res.code === 500){
-          ElMessage.error('查询失败');
-        }
-      })
-    };
-    getData();
-    // 查询用户的所有店铺信息
-    const getUserShopArr = () => {
-      axios.$http.get(request.userShop, null).then(function (res) {
-        if(res.code === 200){
-          shopTpCode.value = res.data;
-        }
-      });
-    };
-    getUserShopArr();
     // 查询
     const handleSearch = () => {
       query.pageNum = 1;
-      getData();
+      findYearList();
     };
     // 重置
     const handleReset = () => {
       query.shopId = "";
       query.year = "";
-      getData();
+      findYearList();
     };
     // 分页导航
     const handlePageChange = (val) => {
       query.pageNum = val;
-      getData();
+      findYearList();
     };
+    // 统计年销售
+    const handleCount = () => {
+      axios.$http.post(request.yearCount,null).then(function (res) {
+        if(res.code === 200){
+          ElMessage.success(res.data);
+          findYearList();
+        }else{
+          ElMessage.error(res.data);
+        }
+      })
+    };
+    // 获取表格数据
+    const findYearList = () => {
+      axios.$http.get(request.yearList,query).then(function (res) {
+        if(res.code === 200){
+          tableData.value = res.data;
+          pageTotal.value = res.totalNum;
+        }else{
+          ElMessage.error(res.data);
+        }
+      })
+    };
+    findYearList();
+    // 查询用户的所有店铺信息
+    const getUserShopArr = () => {
+      axios.$http.get(request.userShop, null).then(function (res) {
+        if(res.code === 200){
+          userShop.value = res.data;
+        }else{
+          ElMessage.error(res.data);
+        }
+      });
+    };
+    getUserShopArr();
     return { query,tableData,pageTotal,userShop,
-      handleSearch,handleReset,handlePageChange};
+      handleSearch,handleReset,handlePageChange,handleCount};
   }
 };
 </script>
