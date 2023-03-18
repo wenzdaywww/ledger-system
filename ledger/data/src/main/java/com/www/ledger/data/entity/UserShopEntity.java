@@ -22,7 +22,7 @@ import java.util.Date;
 public class UserShopEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     /** 店铺主键ID **/
-    @TableId(value = "SHOP_ID", type = IdType.AUTO)
+    @TableId(value = "SHOP_ID")
     private Long shopId;
     /** 店铺名 **/
     @TableField("SHOP_NAME")

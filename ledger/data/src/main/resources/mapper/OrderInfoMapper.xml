@@ -3,7 +3,8 @@
 <mapper namespace="com.www.ledger.data.mapper.OrderInfoMapper">
   <resultMap id="BaseResultMap" type="com.www.ledger.data.entity.OrderInfoEntity">
     <!--@Table ORDER_INFO-->
-    <id column="ORDER_ID" property="orderId" />
+    <id column="OI_ID" property="oiId" />
+    <result column="ORDER_ID" property="orderId" />
     <result column="SHOP_ID" property="shopId" />
     <result column="USER_ID" property="userId" />
     <result column="ORDER_DATE" property="orderDate" />
@@ -18,7 +19,51 @@
     <result column="TOTAL_COST" property="totalCost" />
     <result column="GROSS_PROFIT" property="grossProfit" />
     <result column="GROSS_PROFIT_RATE" property="grossProfitRate" />
+    <result column="REMARK" property="remark" />
     <result column="UPDATE_TIME" property="updateTime" />
     <result column="CREATE_TIME" property="createTime" />
   </resultMap>
+  <!--  查询订单信息-->
+  <select id="findOrdeList" resultType="com.www.ledger.data.dto.OrderDTO">
+        SELECT O.OI_ID oiId,
+               O.ORDER_ID orderId,
+               O.SHOP_ID shopId,
+               S.SHOP_NAME shopName,
+               DATE_FORMAT(O.ORDER_DATE,'%Y-%m-%d') orderDateStr,
+               O.SUPPLY_ID supplyId,
+               O.GOODS_ID goodsId,
+               O.GOODS_NAME goodsName,
+               G.GOODS_URL goodsUrl,
+               O.ORDER_STATE orderState,
+               O.SALE_AMOUNT saleAmount,
+               O.PAYMENT_AMOUNT paymentAmount,
+               O.COST_AMOUNT costAmount,
+               O.PAYOUT_AMOUNT payoutAmount,
+               O.TOTAL_COST totalCost,
+               O.GROSS_PROFIT grossProfit,
+               O.GROSS_PROFIT_RATE grossProfitRate,
+               O.REMARK remark
+        FROM USER_SHOP S,ORDER_INFO O
+          LEFT JOIN SHOP_GOODS G ON G.GOODS_ID = O.GOODS_ID AND G.SHOP_ID = O.SHOP_ID
+        WHERE O.SHOP_ID = S.SHOP_ID AND O.USER_ID = #{obj.userId} AND S.USER_ID = #{obj.userId}
+        <if test="obj.orderDateStr != null and obj.orderDateStr != ''">
+          AND O.ORDER_DATE = STR_TO_DATE(#{obj.orderDateStr},'%Y-%m-%d')
+        </if>
+        <if test="obj.orderId != null and obj.orderId != ''">
+          AND O.ORDER_ID = #{obj.orderId}
+        </if>
+        <if test="obj.shopId != null and obj.shopId != ''">
+          AND O.SHOP_ID = #{obj.shopId}
+        </if>
+        <if test="obj.supplyId != null and obj.supplyId != ''">
+          AND O.SUPPLY_ID = #{obj.supplyId}
+        </if>
+        <if test="obj.goodsId != null and obj.goodsId != ''">
+          AND O.GOODS_ID = #{obj.goodsId}
+        </if>
+        <if test="obj.orderState != null and obj.orderState != ''">
+          AND O.ORDER_STATE = #{obj.orderState}
+        </if>
+        ORDER BY O.ORDER_DATE DESC,O.ORDER_ID DESC
+  </select>
 </mapper>

@@ -30,6 +30,9 @@ public class ShopGoodsEntity implements Serializable {
     /** 商品名称 **/
     @TableField("GOODS_NAME")
     private String goodsName;
+    /** 商品链接 **/
+    @TableField("GOODS_URL")
+    private String goodsUrl;
     /** 店铺主键ID **/
     @TableField("SHOP_ID")
     private Long shopId;

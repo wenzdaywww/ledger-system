@@ -23,8 +23,11 @@ import java.util.Date;
 public class OrderInfoEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     /** 订单主键ID **/
-    @TableId(value = "ORDER_ID", type = IdType.AUTO)
-    private Long orderId;
+    @TableId(value = "OI_ID", type = IdType.AUTO)
+    private String oiId;
+    /** 订单ID **/
+    @TableField(value = "ORDER_ID")
+    private String orderId;
     /** 店铺主键ID **/
     @TableField("SHOP_ID")
     private Long shopId;
@@ -67,6 +70,9 @@ public class OrderInfoEntity implements Serializable {
     /** 毛利率 **/
     @TableField("GROSS_PROFIT_RATE")
     private BigDecimal grossProfitRate;
+    /** 备注 **/
+    @TableField("REMARK")
+    private String remark;
     /** 更新时间 **/
     @TableField("UPDATE_TIME")
     private Date updateTime;

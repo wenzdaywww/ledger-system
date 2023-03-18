@@ -19,33 +19,33 @@ public class ShopDTO implements Serializable {
     /** 店铺主键ID **/
     private Long shopId;
     /** 店铺名称 **/
-    private String shopNm;
+    private String shopName;
     /** 店铺平台 **/
-    private String shopTp;
+    private String shopType;
     /** 用户名 **/
     private String userId;
     /** 店净利润 **/
-    private BigDecimal retPro;
+    private BigDecimal retainedProfits;
     /** 店净利率 **/
-    private BigDecimal retProRat;
+    private BigDecimal retainedProfitsRate;
     /** 店毛利润 **/
-    private BigDecimal groPro;
+    private BigDecimal grossProfit;
     /** 店毛利率 **/
-    private BigDecimal groProRat;
+    private BigDecimal grossProfitRate;
     /** 店订单数 **/
-    private Long talOrd;
+    private Long totalOrder;
     /** 店成交单数 **/
-    private Long sucOrd;
+    private Long succeedOrder;
     /** 店失败单数 **/
-    private Long faiOrd;
+    private Long failedOrder;
     /** 店销售额 **/
-    private BigDecimal salAmt;
+    private BigDecimal saleAmount;
     /** 店成本费 **/
-    private BigDecimal cosAmt;
+    private BigDecimal costAmount;
     /** 店推广费 **/
-    private BigDecimal advAmt;
+    private BigDecimal advertAmount;
     /** 店服务费 **/
-    private BigDecimal serAmt;
+    private BigDecimal serviceAmount;
     /** 店刷单费 **/
-    private BigDecimal virAmt;
+    private BigDecimal virtualAmount;
 }

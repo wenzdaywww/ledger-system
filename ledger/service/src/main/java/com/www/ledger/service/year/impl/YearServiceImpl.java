@@ -1,6 +1,6 @@
 package com.www.ledger.service.year.impl;
 
-import com.www.ledger.service.month.IMonthService;
+import com.www.ledger.service.year.IYearService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -12,5 +12,5 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
-public class YearServiceImpl implements IMonthService {
+public class YearServiceImpl implements IYearService {
 }

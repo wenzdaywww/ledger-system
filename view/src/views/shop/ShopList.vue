@@ -17,9 +17,11 @@
           <el-button type="primary" icon="el-icon-search" @click="handleSearch" round>搜索</el-button>
           <el-button icon="el-icon-refresh-left" @click="handleReset" round>重置</el-button>
           <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round>新增店铺</el-button>
+          <el-button type="primary" icon="el-icon-s-data"  round>统计</el-button>
         </div>
         <!-- 店铺信息列表-->
-        <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+        <el-table :data="tableData" border class="table" ref="multipleTable"
+                  :row-style="{height:'55px'}" :cell-style="{padding:'0px'}" header-cell-class-name="table-header">
           <el-table-column prop="shopId" label="店铺ID" align="center"></el-table-column>
           <el-table-column prop="shopNm" label="店铺名称" align="center"></el-table-column>
           <el-table-column prop="shopTp" label="店铺平台" align="center"></el-table-column>
@@ -37,8 +39,12 @@
           <el-table-column prop="virAmt" label="店刷单费" align="center"></el-table-column>
           <el-table-column label="操作" align="center">
             <template #default="scope">
-              <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑 </el-button>
-              <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.row)">删除 </el-button>
+              <el-tooltip class="item" effect="light" content="新增" placement="top">
+                <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)"></el-button>
+              </el-tooltip>
+              <el-tooltip class="item" effect="light" content="删除" placement="top">
+                <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.row)"></el-button>
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -57,17 +63,19 @@
           <el-form-item label="店铺名称" prop="shopNm">
             <el-input v-model="shopInfo.shopNm" style="width: 250px" maxlength="20" placeholder="请输入店铺名称"></el-input>
           </el-form-item>
-          <el-form-item label="店铺平台">
+          <el-form-item label="店铺平台" prop="shopTp">
             <el-select v-model="shopInfo.shopTp" placeholder="请选择店铺平台" class="handle-select mr10" style="width: 250px">
               <el-option v-for="item in shopTpCode" :key="item.value" :label="item.name" :value="item.value"></el-option>
             </el-select>
           </el-form-item>
         </el-form>
         <template #footer>
-        <span class="dialog-footer">
-          <el-button type="primary" @click="saveEdit" round>确 定</el-button>
-          <el-button @click="editVisible = false" round>取 消</el-button>
-        </span>
+        <div class="btn-save">
+          <span class="dialog-footer">
+            <el-button type="primary" @click="saveEdit" class="el-icon-check" round>确 定</el-button>
+            <el-button @click="editVisible = false" class="el-icon-close" round>取 消</el-button>
+          </span>
+        </div>
         </template>
       </el-dialog>
     </el-card>
@@ -99,6 +107,9 @@ export default {
     const shopRules = {
       shopNm : [
         { required: true, message: "店铺名称不能为空", trigger: "blur" }
+      ],
+      shopTp : [
+        { required: true, message: "店铺平台不能为空", trigger: "blur" }
       ]
     };
     // 表格数据
@@ -119,8 +130,8 @@ export default {
         if(res.code === 200){
           tableData.value = res.data;
           pageTotal.value = res.totalNum;
-        }else if(res.code === 500){
-          ElMessage.error('查询失败');
+        }else{
+          ElMessage.error(res.data);
         }
       })
     };
@@ -169,9 +180,11 @@ export default {
     };
     // 查询数据字典
     const getCodeDataArr = () => {
-      axios.$http.get(request.code + "ShopPlatform", null).then(function (res) {
+      axios.$http.get(request.code+"ShopPlatform", null).then(function (res) {
         if(res.code === 200){
           shopTpCode.value = res.data.ShopPlatform;
+        }else {
+          ElMessage.error(res.data);
         }
       });
     };
@@ -186,7 +199,7 @@ export default {
               ElMessage.success(shopInfo.shopId ? '修改成功' : '新增成功');
               getData();
             }else {
-              ElMessage.error(res.msg);
+              ElMessage.error(res.data);
             }
           });
         } else {
@@ -201,6 +214,9 @@ export default {
 </script>
 
 <style scoped>
+.btn-save{
+  text-align: center;
+}
 .handle-box {
   margin-bottom: 20px;
 }

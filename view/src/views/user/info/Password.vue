@@ -14,8 +14,8 @@
     </el-form>
     <div class="btn-save">
       <span class="dialog-footer">
-        <el-button type="primary" @click="savePwd" round>确 定</el-button>
-        <el-button @click="editVisible = false" round>取 消</el-button>
+        <el-button type="primary" @click="savePwd" class="el-icon-check" round>确 定</el-button>
+        <el-button @click="editVisible = false" class="el-icon-close" round>取 消</el-button>
       </span>
     </div>
   </el-dialog>

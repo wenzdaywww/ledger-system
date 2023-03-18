@@ -20,6 +20,9 @@ public class LedgerProperties {
     /** 角色拥有的路由数据的redis的key **/
     @Value("${com.www.ledger.router-redis-key}")
     private String routerRedisKey;
+    /** redis生成店铺ID的redis的key **/
+    @Value("${com.www.ledger.shopid-redis-key}")
+    private String shopidRedisKey;
     /** 角色拥有的路由数据的redis的key的过期时间（小时） **/
     @Value("${com.www.ledger.router-expire-hour}")
     private long routerExpireHour;

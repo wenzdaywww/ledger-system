@@ -35,7 +35,7 @@ export default [
                 path: "/book",
                 name: "book",
                 meta: { title: '我的账簿' },
-                component: () => import ("../views/book/book.vue")
+                component: () => import ("../views/book/Book.vue")
             },{
                 path: "/shop",
                 name: "shop",
@@ -45,22 +45,22 @@ export default [
                 path: "/year",
                 name: "year",
                 meta: { title: '年销售额' },
-                component: () => import ("../views/shop/ShopList.vue")
+                component: () => import ("../views/year/YearSales.vue")
             },{
                 path: "/month",
                 name: "month",
                 meta: { title: '月销售额' },
-                component: () => import ("../views/shop/ShopList.vue")
+                component: () => import ("../views/month/MonthList.vue")
             },{
                 path: "/order",
                 name: "order",
                 meta: { title: '订单信息' },
-                component: () => import ("../views/shop/ShopList.vue")
+                component: () => import ("../views/order/OrderList.vue")
             },{
                 path: "/goods",
                 name: "goods",
                 meta: { title: '商品信息' },
-                component: () => import ("../views/shop/ShopList.vue")
+                component: () => import ("../views/goods/GoodsList.vue")
             }
         ]
     }, {

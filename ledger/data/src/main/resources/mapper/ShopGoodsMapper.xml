@@ -6,6 +6,7 @@
     <id column="SG_ID" property="sgId" />
     <result column="GOODS_ID" property="goodsId" />
     <result column="GOODS_NAME" property="goodsName" />
+    <result column="goods_url" property="goodsUrl" />
     <result column="SHOP_ID" property="shopId" />
     <result column="USER_ID" property="userId" />
     <result column="GOODS_STATE" property="goodsState" />

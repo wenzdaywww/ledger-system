@@ -48,11 +48,11 @@ export default {
         index: "/shop",
         title: "我的店铺",
       },{
-        icon: "el-icon-sell",
+        icon: "el-icon-data-analysis",
         index: "/year",
         title: "年销售额",
       },{
-        icon: "el-icon-sell",
+        icon: "el-icon-data-line",
         index: "/month",
         title: "月销售额",
       },{
@@ -91,7 +91,7 @@ export default {
   width: 0;
 }
 .sidebar-el-menu:not(.el-menu--collapse) {
-  width: 250px;
+  width: 200px;
 }
 .sidebar > ul {
   height: 100%;

@@ -24,20 +24,20 @@
   <!--  查询我的店铺信息列表-->
   <select id="findShopList" resultType="com.www.ledger.data.dto.ShopDTO">
     SELECT  S.SHOP_ID shopId,
-            S.SHOP_NAME shopNm,
-            S.SHOP_TYPE shopTp,
-            A.RETAINED_PROFITS retPro,
-            A.RETAINED_PROFITS_RATE retProRat,
-            A.GROSS_PROFIT groPro,
-            A.GROSS_PROFIT_RATE groProRat,
-            A.TOTAL_ORDER talOrd,
-            A.SUCCEED_ORDER sucOrd,
-            A.FAILED_ORDER faiOrd,
-            A.SALE_AMOUNT salAmt,
-            A.COST_AMOUNT cosAmt,
-            A.ADVERT_AMOUNT advAmt,
-            A.SERVICE_AMOUNT serAmt,
-            A.VIRTUAL_AMOUNT virAmt
+            S.SHOP_NAME shopName,
+            S.SHOP_TYPE shopType,
+            A.RETAINED_PROFITS retainedProfits,
+            A.RETAINED_PROFITS_RATE retainedProfitsRate,
+            A.GROSS_PROFIT grossProfit,
+            A.GROSS_PROFIT_RATE grossProfitRate,
+            A.TOTAL_ORDER totalOrder,
+            A.SUCCEED_ORDER succeedOrder,
+            A.FAILED_ORDER failedOrder,
+            A.SALE_AMOUNT saleAmount,
+            A.COST_AMOUNT costAmount,
+            A.ADVERT_AMOUNT advertAmount,
+            A.SERVICE_AMOUNT serviceAmount,
+            A.VIRTUAL_AMOUNT virtualAmount
     FROM USER_SHOP S
         LEFT JOIN SHOP_SALES A ON A.SHOP_ID=S.SHOP_ID
     WHERE S.USER_ID = #{obj.userId}
@@ -45,8 +45,8 @@
       <if test="obj.shopId != null">
         AND S.SHOP_ID = #{obj.shopId}
       </if>
-      <if test="obj.shopNm != null">
-        AND S.SHOP_NAME LIKE #{obj.shopNm}"%"
+      <if test="obj.shopName != null and obj.shopName != ''">
+        AND S.SHOP_NAME LIKE #{obj.shopName}"%"
       </if>
     ORDER BY S.SHOP_ID ASC
   </select>

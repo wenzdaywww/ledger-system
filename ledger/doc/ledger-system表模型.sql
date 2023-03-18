@@ -1,6 +1,6 @@
 -- 1、用户店铺信息
 CREATE TABLE IF NOT EXISTS USER_SHOP (
-    SHOP_ID                   INT          PRIMARY KEY AUTO_INCREMENT             COMMENT '店铺主键ID',
+    SHOP_ID                   INT          PRIMARY KEY                            COMMENT '店铺主键ID',
     SHOP_NAME                 VARCHAR(40)                                         COMMENT '店铺名',
     USER_ID                   VARCHAR(40)                                         COMMENT '用户名',
     SHOP_TYPE                 VARCHAR(2)                                          COMMENT '店铺平台(code=ShopPlatform)',
@@ -60,7 +60,8 @@ CREATE INDEX    INDEX_USER_ID       ON  SHOP_SALES (USER_ID);
 CREATE TABLE IF NOT EXISTS SHOP_GOODS (
     SG_ID                     INT          PRIMARY KEY AUTO_INCREMENT             COMMENT '商品主键ID',
     GOODS_ID                  VARCHAR(40)                                         COMMENT '商品ID',
-    GOODS_NAME                VARCHAR(256)                                        COMMENT '商品名称',
+    GOODS_NAME                VARCHAR(60)                                         COMMENT '商品名称',
+    GOODS_URL                 VARCHAR(500)                                        COMMENT '商品链接',
     SHOP_ID                   INT                                                 COMMENT '店铺主键ID',
     USER_ID                   VARCHAR(40)                                         COMMENT '用户名',
     GOODS_STATE               CHAR(1)      DEFAULT '1'                            COMMENT '商品状态(code=GoodsState)：0删除，1上架，2下架',
@@ -93,13 +94,14 @@ CREATE INDEX    INDEX_SHOP_ID        ON  GOODS_STYLE (SHOP_ID);
 CREATE INDEX    INDEX_USER_ID        ON  GOODS_STYLE (USER_ID);
 -- 6、订单信息
 CREATE TABLE IF NOT EXISTS ORDER_INFO (
-    ORDER_ID                  VARCHAR(40)          PRIMARY KEY                    COMMENT '订单主键ID',
+    OI_ID                     INT                 PRIMARY KEY AUTO_INCREMENT      COMMENT '订单主键ID',
+    ORDER_ID                  VARCHAR(40)                                         COMMENT '订单ID',
     SHOP_ID                   INT                                                 COMMENT '店铺主键ID',
     USER_ID                   VARCHAR(40)                                         COMMENT '用户名',
     ORDER_DATE                DATE                                                COMMENT '订单日期',
     SUPPLY_ID                 VARCHAR(40)                                         COMMENT '1688订单ID',
     GOODS_ID                  VARCHAR(40)                                         COMMENT '商品ID',
-    GOODS_NAME                VARCHAR(256)                                        COMMENT '商品名称',
+    GOODS_NAME                VARCHAR(60)                                         COMMENT '商品名称',
     ORDER_STATE               VARCHAR(2)                                          COMMENT '订单状态(code=OrderState)',
     SALE_AMOUNT               DECIMAL(10,2)        DEFAULT 0.0                    COMMENT '商品总价',
     PAYMENT_AMOUNT            DECIMAL(10,2)        DEFAULT 0.0                    COMMENT '实付金额',

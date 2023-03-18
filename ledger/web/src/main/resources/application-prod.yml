@@ -4,17 +4,18 @@ com:
     #本地开发配置
     ledger:
       router-redis-key: ledger:app:role_router
-      router-expire-hour: 24
+      router-expire-hour: 48
+      shopid-redis-key: ledger:app:shop_id:generator
     ommon:
       securuty:
         enable: true
         secret-key: wenzday
         token-prefix: ledger:securuty:user_token:userid
-        token-expire-hour: 24
+        token-expire-hour: 48
         user-prefix: ledger:securuty:user_role:userid
-        user-expire-hour: 24
+        user-expire-hour: 48
         auth-redis-key: ledger:securuty:authority_role
-        auth-expire-hour: 24
+        auth-expire-hour: 48
 #服务器配置
 server:
   port: 8090

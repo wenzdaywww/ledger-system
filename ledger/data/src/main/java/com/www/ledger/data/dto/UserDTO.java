@@ -14,26 +14,16 @@ import java.util.Date;
  */
 @Data
 @Accessors(chain = true)//开启链式编程
-public class SysUserDTO implements Serializable {
+public class UserDTO implements Serializable {
     private static final long serialVersionUID = 1L;
-    /**
-    * 用户主键
-    */
+    /** 用户主键 */
     private Long suId;
-    /**
-    * 用户ID
-    */
+    /** 用户ID */
     private String userId;
-    /**
-     * 新密码
-     */
+    /** 新密码 */
     private String newPassWord;
-    /**
-     * 密码
-     */
+    /** 密码 */
     private String password;
-    /**
-    * 用户昵称
-    */
+    /** 用户昵称 */
     private String userName;
 }

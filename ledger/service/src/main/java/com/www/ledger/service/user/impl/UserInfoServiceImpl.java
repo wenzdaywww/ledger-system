@@ -5,22 +5,21 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.www.common.config.redis.RedisOperation;
 import com.www.common.config.security.MySecurityProperties;
 import com.www.common.config.security.dto.AuthorityDTO;
-import com.www.common.config.security.entity.AuthorityRoleEntity;
 import com.www.common.config.security.entity.SysRoleEntity;
 import com.www.common.config.security.entity.SysUserEntity;
 import com.www.common.config.security.entity.SysUserRoleEntity;
 import com.www.common.config.security.mapper.AuthorityRoleMapper;
-import com.www.common.config.security.mapper.SysRoleMapper;
 import com.www.common.config.security.mapper.SysUserMapper;
 import com.www.common.config.security.mapper.SysUserRoleMapper;
 import com.www.common.data.constant.CharConstant;
-import com.www.common.data.dto.response.ResponseDTO;
 import com.www.common.data.enums.ResponseEnum;
+import com.www.common.data.response.Response;
 import com.www.common.utils.DateUtils;
-import com.www.ledger.data.dto.SysUserDTO;
+import com.www.ledger.data.dto.UserDTO;
 import com.www.ledger.data.entity.UserBookEntity;
 import com.www.ledger.data.mapper.UserBookMapper;
 import com.www.ledger.data.properties.LedgerProperties;
+import com.www.ledger.service.user.IUserInfoCheckService;
 import com.www.ledger.service.user.IUserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -47,8 +46,6 @@ public class UserInfoServiceImpl implements IUserInfoService {
     @Autowired
     private SysUserMapper sysUserMapper;
     @Autowired
-    private SysRoleMapper sysRoleMapper;
-    @Autowired
     private UserBookMapper userBookMapper;
     @Autowired
     private LedgerProperties ledgerProperties;
@@ -58,61 +55,52 @@ public class UserInfoServiceImpl implements IUserInfoService {
     private AuthorityRoleMapper authorityRoleMapper;
     @Autowired
     private MySecurityProperties mySecurityProperties;
+    @Autowired
+    private IUserInfoCheckService userInfoCheckService;
 
     /**
      * <p>@Description 查询用户信息 </p>
      * <p>@Author www </p>
      * <p>@Date 2021/12/8 19:43 </p>
      * @param userId 用户ID
-     * @return com.www.myblog.common.pojo.ResponseDTO<com.www.myblog.base.data.dto.SysUserDTO>
+     * @return com.www.myblog.common.pojo.Response<com.www.myblog.base.data.dto.SysUserDTO>
      */
     @Override
-    public ResponseDTO<SysUserDTO> findUser(String userId) {
-        ResponseDTO<SysUserDTO> responseDTO = new ResponseDTO<>();
+    public Response<UserDTO> findUser(String userId) {
+        Response<UserDTO> response = new Response<>();
         if(StringUtils.isBlank(userId)){
-            responseDTO.setResponse(ResponseEnum.FAIL,null);
-            return responseDTO;
+            response.setResponse(ResponseEnum.FAIL,null);
+            return response;
         }
         SysUserEntity userEntity = this.findUserById(userId);
-        SysUserDTO userDTO = Optional.ofNullable(userEntity).map(entity -> {
-            SysUserDTO tempDTO = new SysUserDTO();
+        UserDTO userDTO = Optional.ofNullable(userEntity).map(entity -> {
+            UserDTO tempDTO = new UserDTO();
             tempDTO.setSuId(entity.getSuId());
             tempDTO.setUserId(entity.getUserId());
             tempDTO.setUserName(entity.getUserName());
             return tempDTO;
         }).orElse(null);
         if(userDTO == null){
-            responseDTO.setResponse(ResponseEnum.FAIL,null);
-            return responseDTO;
+            response.setResponse(ResponseEnum.FAIL,null);
+            return response;
         }
-        responseDTO.setResponse(ResponseEnum.SUCCESS,userDTO);
-        return responseDTO;
+        response.setResponse(ResponseEnum.SUCCESS,userDTO);
+        return response;
     }
     /**
      * <p>@Description 创建用户信息 </p>
      * <p>@Author www </p>
      * <p>@Date 2021/12/7 21:03 </p>
      * @param user
-     * @return com.www.myblog.common.pojo.ResponseDTO<java.lang.String>
+     * @return com.www.myblog.common.pojo.Response<java.lang.String>
      */
     @Override
-    public ResponseDTO<String> createUser(SysUserDTO user) {
-        ResponseDTO<String> responseDTO = new ResponseDTO<>();
-        if(user == null || StringUtils.isAnyBlank(user.getUserId(),user.getUserName(),user.getPassword())){
-            responseDTO.setResponse(ResponseEnum.FAIL,"信息不完整，创建用户失败");
-            return responseDTO;
-        }
-        SysUserEntity existEntity = this.findUserById(user.getUserId());
-        if(existEntity != null){
-            responseDTO.setResponse(ResponseEnum.FAIL,"用户ID已存在，请修改");
-            return responseDTO;
-        }
-        QueryWrapper<SysRoleEntity> roleWrapper = new QueryWrapper<>();
-        roleWrapper.lambda().eq(SysRoleEntity::getRoleCode,"ROLE_USER");
-        SysRoleEntity roleEntity = sysRoleMapper.selectOne(roleWrapper);
+    public Response<String> createUser(UserDTO user) {
+        Response<String> response = new Response<>();
+        //创建用户信息前校验
+        SysRoleEntity roleEntity = userInfoCheckService.checkBeforeCreateUser(user,response);
         if(roleEntity == null){
-            responseDTO.setResponse(ResponseEnum.FAIL,"用户角色错误，创建用户失败");
-            return responseDTO;
+            return response;
         }
         //创建用户信息
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
@@ -134,33 +122,29 @@ public class UserInfoServiceImpl implements IUserInfoService {
         UserBookEntity bookEntity = new UserBookEntity();
         bookEntity.setUserId(userEntity.getUserId());
         userBookMapper.insert(bookEntity);
-        responseDTO.setResponse(ResponseEnum.SUCCESS,"创建用户成功");
-        return responseDTO;
+        response.setResponse(ResponseEnum.SUCCESS,"创建用户成功");
+        return response;
     }
     /**
      * <p>@Description 更新用户密码 </p>
      * <p>@Author www </p>
      * <p>@Date 2021/12/8 19:58 </p>
      * @param user 用户信息
-     * @return com.www.myblog.common.pojo.ResponseDTO<java.lang.String>
+     * @return com.www.myblog.common.pojo.Response<java.lang.String>
      */
     @Override
-    public ResponseDTO<String> updateUserPwd(SysUserDTO user) {
-        ResponseDTO<String> responseDTO = new ResponseDTO<>();
-        if(user == null || StringUtils.isAnyBlank(user.getUserId(),user.getPassword(),user.getNewPassWord())){
-            responseDTO.setResponse(ResponseEnum.FAIL,"更新用户密码失败，密码不能为空");
-            return responseDTO;
-        }
+    public Response<String> updateUserPwd(UserDTO user) {
+        Response<String> response = new Response<>();
         SysUserEntity userEntity = this.findUserById(user.getUserId());
         if(userEntity == null){
-            responseDTO.setResponse(ResponseEnum.FAIL,"查询不到该用户");
-            return responseDTO;
+            response.setResponse(ResponseEnum.FAIL,"查询不到该用户");
+            return response;
         }
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         //有输入密码则校验密码
         if(!encoder.matches(user.getPassword(),userEntity.getPassword())){
-            responseDTO.setResponse(ResponseEnum.FAIL,"原密码不正确");
-            return responseDTO;
+            response.setResponse(ResponseEnum.FAIL,"原密码不正确");
+            return response;
         }
         //更新用户信息
         UpdateWrapper<SysUserEntity> userWrapper = new UpdateWrapper<>();
@@ -169,29 +153,26 @@ public class UserInfoServiceImpl implements IUserInfoService {
         userWrapper.lambda().set(SysUserEntity::getUpdateTime,DateUtils.getCurrentDateTime());
         int count = sysUserMapper.update(null,userWrapper);
         if(count == 0){
-            responseDTO.setResponse(ResponseEnum.FAIL,"更新用户密码失败");
+            response.setResponse(ResponseEnum.FAIL,"更新用户密码失败");
         }
-        responseDTO.setResponse(ResponseEnum.SUCCESS,"更新用户密码成功");
-        return responseDTO;
+        response.setResponse(ResponseEnum.SUCCESS,"更新用户密码成功");
+        return response;
     }
     /**
      * <p>@Description 更新用户信息 </p>
      * <p>@Author www </p>
      * <p>@Date 2021/12/8 19:58 </p>
      * @param user 用户信息
-     * @return com.www.myblog.common.pojo.ResponseDTO<java.lang.String>
+     * @return com.www.myblog.common.pojo.Response<java.lang.String>
      */
     @Override
-    public ResponseDTO<String> updateUserInfo(SysUserDTO user) {
-        ResponseDTO<String> responseDTO = new ResponseDTO<>();
-        if(user == null || StringUtils.isAnyBlank(user.getUserId(),user.getUserName())){
-            responseDTO.setResponse(ResponseEnum.FAIL,"更新用户信息失败，用户信息有误");
-            return responseDTO;
-        }
+    public Response<String> updateUserInfo(UserDTO user) {
+        Response<String> response = new Response<>();
+        //更新用户信息前校验
         SysUserEntity userEntity = this.findUserById(user.getUserId());
         if(userEntity == null){
-            responseDTO.setResponse(ResponseEnum.FAIL,"查询不到该用户");
-            return responseDTO;
+            response.setResponse(ResponseEnum.FAIL,"查询不到该用户");
+            return response;
         }
         //更新用户信息
         UpdateWrapper<SysUserEntity> userWrapper = new UpdateWrapper<>();
@@ -200,20 +181,20 @@ public class UserInfoServiceImpl implements IUserInfoService {
         userWrapper.lambda().set(SysUserEntity::getUpdateTime,DateUtils.getCurrentDateTime());
         int count = sysUserMapper.update(null,userWrapper);
         if(count == 0){
-            responseDTO.setResponse(ResponseEnum.FAIL,"更新用户信息失败");
+            response.setResponse(ResponseEnum.FAIL,"更新用户信息失败");
         }
-        responseDTO.setResponse(ResponseEnum.SUCCESS,"更新用户信息成功");
-        return responseDTO;
+        response.setResponse(ResponseEnum.SUCCESS,"更新用户信息成功");
+        return response;
     }
     /**
      * <p>@Description 获取当前角色拥有的路由 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/15 19:08 </p>
      * @param userId
-     * @return com.www.common.data.dto.response.ResponseDTO<java.util.List < java.lang.String>>
+     * @return Response<java.util.List < java.lang.String>>
      */
     @Override
-    public ResponseDTO<List<String>> findRouter(String userId) {
+    public Response<List<String>> findRouter(String userId) {
         List<String> routerList = null;
         //redis中有角色路由信息则直接获取
         if(RedisOperation.hasKey(ledgerProperties.getRouterRedisKey())){
@@ -235,7 +216,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
                 RedisOperation.keyExpire(ledgerProperties.getRouterRedisKey(),ledgerProperties.getRouterExpireHour(), TimeUnit.HOURS);
             }
         }
-        return new ResponseDTO<>(ResponseEnum.SUCCESS,routerList);
+        return new Response<>(ResponseEnum.SUCCESS,routerList);
     }
     /**
      * <p>@Description 查询角色拥有的路由权限 </p>

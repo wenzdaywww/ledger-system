@@ -22,10 +22,28 @@ export default {
     codes: "api/code/codes",
     //查询我的店铺列表
     shopList: "api/shop/list",
+    //查询我的所有店铺
+    userShop: "api/shop/all",
     //修改我的店铺信息
     shopEdit: "api/shop/info",
     //新增店铺信息
     newShop: "api/shop/new",
     //删除店铺信息
-    delShop: "api/shop/dlt/"
+    delShop: "api/shop/dlt/",
+    //查询年销售额列表
+    yearList: "api/year/list",
+    //查询月销售额列表
+    monthList: "api/month/list",
+    //查询月销售额列表
+    monthCount: "api/month/tal",
+    //删除月销售额信息
+    delMonth: "api/month/dlt/",
+    //编辑月销售额信息
+    editMonth: "api/month/new",
+    //查询订单信息列表
+    orderList: "api/order/list",
+    //编辑/新增订单信息
+    editOrder: "api/order/new",
+    //删除订单信息
+    delOrder: "api/order/dlt/"
 }
