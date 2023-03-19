@@ -1,13 +1,6 @@
 <!-- 订单信息列表 -->
 <template>
   <div>
-    <div class="crumb-title">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item>
-          <i class="el-icon-shopping-cart-full"></i> 订单信息
-        </el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
     <el-card>
       <div>
         <!-- 店铺信息列表查询条件-->

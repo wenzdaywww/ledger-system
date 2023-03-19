@@ -1,13 +1,6 @@
 <!-- 年销售额 -->
 <template>
   <div>
-    <div class="crumb-title">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item>
-          <i class="el-icon-data-analysis"></i> 年销售额
-        </el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
     <el-card>
       <div>
         <!-- 年销售额列表查询条件-->

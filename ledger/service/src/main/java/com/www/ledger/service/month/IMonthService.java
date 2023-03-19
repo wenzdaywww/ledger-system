@@ -13,6 +13,14 @@ import java.util.List;
  */
 public interface IMonthService {
     /**
+     * <p>@Description 增加/减少月销售推广及服务费用  </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/19 16:09 </p>
+     * @param monthDTO 费用信息
+     * @return
+     */
+    Response<String> updateMonthAmt(MonthDTO monthDTO);
+    /**
      * <p>@Description 编辑月销售额数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 18:26 </p>

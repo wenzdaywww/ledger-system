@@ -46,7 +46,7 @@ public class OrderCheckServiceImpl implements IOrderCheckService {
             response.setResponse(ResponseEnum.FAIL,"订单状态错误");
             return null;
         }
-        Date orderDate = DateUtils.parse(orderDTO.getOrderDateStr(), DateFormatEnum.YYYY_MM_DD);
+        Date orderDate = DateUtils.parse(orderDTO.getOrderDateStr(), DateFormatEnum.YYYYMMDD1);
         if(orderDate == null){
             response.setResponse(ResponseEnum.FAIL,"订单日期错误");
             return null;

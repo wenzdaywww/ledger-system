@@ -91,9 +91,9 @@ public class OrderServiceImpl implements IOrderService {
                 : (orderEntity.getGrossProfit().divide(orderEntity.getCostAmount(),4,RoundingMode.HALF_UP)
                     .multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));
         if(orderInfoService.saveOrUpdate(orderEntity)){
-            response.setResponse(ResponseEnum.SUCCESS,"新增成功");
+            response.setResponse(ResponseEnum.SUCCESS,"保存成功");
         }else {
-            response.setResponse(ResponseEnum.FAIL,"新增失败");
+            response.setResponse(ResponseEnum.FAIL,"保存失败");
         }
         return response;
     }

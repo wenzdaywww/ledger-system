@@ -69,7 +69,7 @@ public class YearServiceImpl implements IYearService {
         List<Long> deleteList = new ArrayList<>();//待删除的数据
         //数据转换处理，key=店铺ID+年份日期（默认为年份01月01日），如：101320230101
         Map<String,YearSalesEntity> entityMap = CollectionUtils.isEmpty(yearList) ? new HashMap<>()
-                : yearList.stream().collect(Collectors.toMap(k -> k.getShopId() + DateUtils.format(k.getYear(), DateFormatEnum.YYYYMMDD), month -> month));
+                : yearList.stream().collect(Collectors.toMap(k -> k.getShopId() + DateUtils.format(k.getYear(), DateFormatEnum.YYYYMMDD5), month -> month));
         Map<String,YearDTO> dtoMap = CollectionUtils.isEmpty(countList) ? new HashMap<>()
                 : countList.stream().collect(Collectors.toMap(k -> k.getShopId() + k.getYearStr(), month -> month));
         //处理统计的年销售额
@@ -88,7 +88,7 @@ public class YearServiceImpl implements IYearService {
                 updateList.add(yearEntity);
             }else {//统计出的年销售额中没有存在的entity数据，则插入数据
                 YearSalesEntity yearEntity = new YearSalesEntity();
-                yearEntity.setShopId(v.getShopId()).setUserId(userId).setYear(DateUtils.parse(v.getYearStr(),DateFormatEnum.YYYYMMDD))
+                yearEntity.setShopId(v.getShopId()).setUserId(userId).setYear(DateUtils.parse(v.getYearStr(),DateFormatEnum.YYYYMMDD5))
                         .setTotalOrder(v.getTotalOrder() == null ? 0L : v.getTotalOrder())
                         .setSucceedOrder(v.getSucceedOrder() == null ? 0L : v.getSucceedOrder())
                         .setFailedOrder(v.getFailedOrder() == null ? 0L : v.getFailedOrder())
@@ -102,7 +102,7 @@ public class YearServiceImpl implements IYearService {
         });
         //查询已存在的年销售额数据（yearList）的主键在统计的年销售额（dtoMap）不存在，则说明没有年销售额数据，需要删除已存在的数据
         yearList.forEach(e -> {
-            if(!dtoMap.containsKey(e.getShopId() + DateUtils.format(e.getYear(), DateFormatEnum.YYYYMMDD))){
+            if(!dtoMap.containsKey(e.getShopId() + DateUtils.format(e.getYear(), DateFormatEnum.YYYYMMDD5))){
                 deleteList.add(e.getYsId());
             }
         });

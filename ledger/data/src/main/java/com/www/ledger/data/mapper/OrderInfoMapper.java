@@ -19,6 +19,25 @@ import java.util.List;
 @Mapper
 public interface OrderInfoMapper extends BaseMapper<OrderInfoEntity> {
     /**
+     * <p>@Description 查询销量前1店铺近10日的销售额 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/19 19:19 </p>
+     * @param userId 用户ID
+     * @param shopList 前3店铺ID
+     * @param minDate 10日前日期
+     * @param maxDate 订单最大日期
+     * @return
+     */
+    List<OrderDTO> findMaxSalesOrder(@Param("userId") String userId, @Param("shop") List<Long> shopList, @Param("minDt") String minDate, @Param("maxDt") String maxDate);
+    /**
+     * <p>@Description 获取订单中最大的日期 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/19 19:08 </p>
+     * @param userId 用户ID
+     * @return 最大的日期
+     */
+    String getMaxOrderDate(@Param("userId") String userId);
+    /**
      * <p>@Description 统计月销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 15:19 </p>

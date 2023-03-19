@@ -7,6 +7,10 @@ package com.www.ledger.data.enums;
  * <p>@Date 2021/12/2 21:04 </p>
  */
 public enum CodeTypeEnum {
+    /** 是否：否 **/
+    YesOrNo_No("YesOrNo","是否","K0","否"),
+    /** 是否：是 **/
+    YesOrNo_Yes("YesOrNo","是否","K1","是"),
     /** 性别：男 **/
     Sex_Boy("Sex","性别","K1","男"),
     /** 性别：女 **/

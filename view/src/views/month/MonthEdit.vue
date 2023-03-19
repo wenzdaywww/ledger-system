@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 新增/编辑月销售额弹出框 -->
-    <el-dialog title="编辑月销售额" v-model="editVisible" width="850px">
+    <el-dialog :title="monthInfo.title" v-model="editVisible" width="850px">
       <el-form label-width="120px" :model="monthInfo" :rules="monthRules" ref="monthForm">
         <el-row>
           <el-col :span="12">
@@ -120,9 +120,9 @@ export default {
     const axios = getCurrentInstance().appContext.config.globalProperties;
     // 新增/编辑店铺弹窗控制
     const editVisible = ref(false);
-    // 编辑订单信息
+    // 编辑月销售数据
     let monthInfo = ref({});
-    // 订单信息的规则校验
+    // 月销售数据的规则校验
     const monthRules = {
       month : [
         { required: true, message: "月份不能为空", trigger: "blur" }
@@ -137,13 +137,15 @@ export default {
     const userShop = ref([]);
     /**
      * 打开新增/编辑订单弹窗
-     * @param month 订单信息
+     * @param titleDialog 弹窗名称
+     * @param month 月销售数据
      * @param shopArr 用户的所有店铺信息
      */
-    const openMonthDialog = (month,shopArr) => {
+    const openMonthDialog = (titleDialog,month,shopArr) => {
       editVisible.value = true;
       userShop.value = shopArr.value;
       monthInfo.value = month ? month : {};
+      monthInfo.value.title = titleDialog;
     }
     // 新增/编辑店铺页面的保存按钮
     const saveEdit = () => {

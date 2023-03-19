@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -27,8 +28,10 @@ public class MonthNewRequest implements Serializable {
     private Long shopId;
     /** 推广费 **/
     @Digits(integer = 8,fraction = 2,message = "月推广费整数上限8位，小数位上限2位")
+    @Min(value = 0,message = "月推广费不能为负数")
     private BigDecimal advAmt;
     /** 服务费 **/
     @Digits(integer = 8,fraction = 2,message = "月服务费整数上限8位，小数位上限2位")
+    @Min(value = 0,message = "月服务费不能为负数")
     private BigDecimal serAmt;
 }

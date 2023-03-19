@@ -1,8 +1,13 @@
 package com.www.ledger.controller.month;
 
+import com.www.common.config.code.CodeDict;
 import com.www.common.config.security.meta.JwtAuthorizationTokenFilter;
+import com.www.common.data.enums.ResponseEnum;
 import com.www.common.data.response.Response;
+import com.www.common.utils.MoneyUtils;
 import com.www.ledger.data.dto.MonthDTO;
+import com.www.ledger.data.enums.CodeTypeEnum;
+import com.www.ledger.data.vo.month.MonthAmtRequest;
 import com.www.ledger.data.vo.month.MonthListRequest;
 import com.www.ledger.data.vo.month.MonthListResponse;
 import com.www.ledger.data.vo.month.MonthNewRequest;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +39,30 @@ import java.util.Optional;
 public class MonthController {
     @Autowired
     private IMonthService monthService;
+
+    /**
+     * <p>@Description 增加/减少月销售推广及服务费用  </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/19 16:09 </p>
+     * @param amtRequest 费用信息
+     * @return
+     */
+    @PostMapping("amt")
+    public Response<String> updateMonthAmt(@Validated MonthAmtRequest amtRequest){
+        if(CodeDict.isIllegalValue(CodeTypeEnum.YesOrNo_No.getType(), amtRequest.getType())){
+            return new Response<>(ResponseEnum.FAIL,"操作类型错误");
+        }
+        MonthDTO monthDTO = new MonthDTO();
+        monthDTO.setMsId(amtRequest.getMsId()).setUserId(JwtAuthorizationTokenFilter.getUserId());
+        monthDTO.setAdvertAmount(MoneyUtils.nullToZero(amtRequest.getAdvStep()))
+                .setServiceAmount(MoneyUtils.nullToZero(amtRequest.getSerStep()));
+        //操作类型是否，即为减少费用,则直接成负数-1
+        if(StringUtils.equals(amtRequest.getType(),CodeDict.getValue(CodeTypeEnum.YesOrNo_No.getType(),CodeTypeEnum.YesOrNo_No.getKey()))){
+            monthDTO.setAdvertAmount(monthDTO.getAdvertAmount().multiply(new BigDecimal("-1")))
+                    .setServiceAmount(monthDTO.getServiceAmount().multiply(new BigDecimal("-1")));
+        }
+        return monthService.updateMonthAmt(monthDTO);
+    }
     /**
      * <p>@Description 编辑月销售额数据 </p>
      * <p>@Author www </p>

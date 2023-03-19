@@ -1,12 +1,6 @@
+<!-- 我的账簿 -->
 <template>
   <div>
-    <div class="crumb-title">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item>
-          <i class="el-icon-notebook-1"></i> 我的账簿
-        </el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
     <el-row :gutter="20">
       <el-col :span="8">
         <!-- 用户信息-->
@@ -34,7 +28,7 @@
             </el-tooltip>
           </div>
         </el-card>
-        <el-card shadow="hover" style="height:252px;">
+        <el-card shadow="hover" style="height:193px;">
           <template #header>
             <div class="clearfix">
               <span>数据分析</span>
@@ -204,11 +198,13 @@
     </el-row>
     <el-row :gutter="20">
       <el-col :span="12">
+        <!-- 最近一年销售趋势图-->
         <el-card shadow="hover">
           <schart ref="bar" class="schart" canvasId="bar" :options="shopSales"></schart>
         </el-card>
       </el-col>
       <el-col :span="12">
+        <!-- 销售额最高店铺近10天销售额趋势图-->
         <el-card shadow="hover">
           <schart ref="line" class="schart" canvasId="line" :options="monthSales"></schart>
         </el-card>
@@ -234,63 +230,28 @@ export default {
     const user = ref([]);
     // 账簿数据
     const bookData = ref([]);
-    // 编辑用户的规则校验
-    const shopSales = {
+    // 最近一年销售趋势图数据
+    const shopSales = ref({
       type: "bar",
-      title: {
-        text: "最近一年销售额前3名店铺销售趋势图",
-      },
-      xRorate: 25,
-      labels: ["1月", "2月", "3月",  "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+      title: {text: "最近一年销售趋势图"},
+      xRorate: 20,
+      labels: [],
       datasets: [
         {
-          label: "店铺1",
-          data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        },
-        {
-          label: "店铺2",
-          data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        },
-        {
-          label: "店铺3",
-          data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+          label: "销售额",
+          data: [],
         }
-      ],
-    };
-    // 编辑用户的规则校验
-    const monthSales = {
+      ]
+    });
+    // 销售额最高店铺近10天销售额趋势图
+    const monthSales = ref({
       type: "line",
-      title: {
-        text: "近10天销售额前3名店铺销售额趋势图",
-      },
-      labels: [
-          "2023.1.1", "2023.1.2", "2023.1.3", "2023.1.4", "2023.1.5",
-          "2023.1.6", "2023.1.7", "2023.1.8", "2023.1.9", "2023.1.10"
-      ],
-      datasets: [
-        {
-          label: "家电",
-          data: [
-            1, 2, 3, 4, 5,
-            6, 7, 8, 9, 10
-          ]
-        },
-        {
-          label: "百货",
-          data: [
-            11, 12, 13, 14, 15,
-            16, 17, 18, 19, 20
-          ]
-        },
-        {
-          label: "食品",
-          data: [
-            21, 22, 23, 24, 25,
-            26, 27, 28, 29, 30
-          ]
-        }
-      ],
-    };
+      title: {text: "销售额最高店铺近10天销售额趋势图"},
+      //labels:["2023.1.1", "2023.1.2", "2023.1.3", "2023.1.4", "2023.1.5"]
+      labels: [],
+      //datasets:[{label: "家电",ata: [1, 2, 3, 4, 5,6, 7, 8, 9, 10]}]
+      datasets: []
+    });
     // 编辑用户的规则校验
     const editRules = {
       userName : [
@@ -316,7 +277,7 @@ export default {
         if(res.code === 200){
           user.value = res.data;
         }else {
-          ElMessage.success('查询用户信息失败');
+          ElMessage.success(res.data);
         }
       });
     };
@@ -332,13 +293,50 @@ export default {
       });
     };
     getBookInfoData();
+    // 查询最近一年销售趋势图
+    const getLastYeatData = () => {
+      axios.$http.get(request.bookYear,null).then(function (res) {
+        if(res.code === 200){
+          res.data.forEach(function (item) {
+            shopSales.value.labels.push(item.month);
+            shopSales.value.datasets[0].data.push(item.sales);
+          });
+        }else {
+          ElMessage.error(res.data);
+        }
+      });
+    };
+    getLastYeatData();
+    // 查询销售额最高店铺近10天销售额趋势图
+    const getLast10DayData = () => {
+      axios.$http.get(request.bookDay,null).then(function (res) {
+        if(res.code === 200){
+          let dateData = [];//日期坐标
+          //res.data = [{shopNm:"test",day:[{day:2021/01/01,sales:100}]}]
+          res.data.forEach(function (item) {
+            let shopData = {label:item.shopNm,data:[]};
+            item.day.forEach(function (dayItem){
+              shopData.data.push(dayItem.sales);
+              if (dateData.length < item.day.length){
+                dateData.push(dayItem.day);
+              }
+            });
+            monthSales.value.datasets.push(shopData);
+          });
+          monthSales.value.labels = dateData;
+        }else {
+          ElMessage.error(res.data);
+        }
+      });
+    };
+    getLast10DayData();
     // 保存按钮
     const onSubmit = () => {
       editForm.value.validate((valid) => {
         if (valid) {
           axios.$http.post(request.editInfo,user).then(function (res) {
             if(res.code === 200){
-              ElMessage.success('修改成功');
+              ElMessage.success(res.data);
               openEdit.value = false;
               getUserData();
             }else {
@@ -361,29 +359,24 @@ export default {
   font-size: 30px;
   color: #606266;
 }
-
 .el-row {
-  margin-bottom: 20px;
+  margin-bottom: -3px;
 }
-
 .grid-content {
   display: flex;
   align-items: center;
   height: 100px;
 }
-
 .grid-cont-right {
   flex: 1;
   text-align: center;
   font-size: 14px;
   color: #999;
 }
-
 .grid-num {
   font-size: 30px;
   font-weight: bold;
 }
-
 .grid-con-icon {
   font-size: 50px;
   width: 100px;
@@ -392,38 +385,30 @@ export default {
   line-height: 100px;
   color: #fff;
 }
-
 .grid-con-1 .grid-con-icon {
   background: rgb(45, 140, 240);
 }
-
 .grid-con-1 .grid-num {
   color: rgb(45, 140, 240);
 }
-
 .grid-con-2 .grid-con-icon {
   background: rgb(100, 213, 114);
 }
-
 .grid-con-2 .grid-num {
   color: rgb(45, 140, 240);
 }
-
 .grid-con-3 .grid-con-icon {
   background: rgb(242, 94, 67);
 }
-
 .grid-con-3 .grid-num {
   color: rgb(242, 94, 67);
 }
 .grid-con-4 .grid-con-icon {
   background: rgb(242, 157, 67);
 }
-
 .grid-con-4 .grid-num {
   color: rgb(242, 157, 67);
 }
-
 .user-info {
   display: flex;
   align-items: center;
@@ -431,48 +416,32 @@ export default {
   border-bottom: 2px solid #ccc;
   margin-bottom: 20px;
 }
-
 .user-avator {
   width: 120px;
   height: 120px;
   border-radius: 50%;
 }
-
 .user-info-cont {
   padding-left: 50px;
   flex: 1;
   font-size: 20px;
   color: #000000;
 }
-
 .user-info-cont div:first-child {
   font-size: 30px;
   color: #222;
 }
-
 .user-info-list {
   font-size: 14px;
   color: #999;
   line-height: 25px;
 }
-
 .user-info-list span {
   margin-left: 70px;
 }
-
 .mgb20 {
   margin-bottom: 20px;
 }
-
-.todo-item {
-  font-size: 14px;
-}
-
-.todo-item-del {
-  text-decoration: line-through;
-  color: #999;
-}
-
 .schart {
   width: 100%;
   height: 300px;

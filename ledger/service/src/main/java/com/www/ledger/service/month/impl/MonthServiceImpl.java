@@ -48,6 +48,44 @@ public class MonthServiceImpl implements IMonthService {
     @Autowired
     private IMonthSalesService monthSalesService;
 
+
+    /**
+     * <p>@Description 增加/减少月销售推广及服务费用  </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/19 16:09 </p>
+     * @param monthDTO 费用信息
+     * @return
+     */
+    @Override
+    public Response<String> updateMonthAmt(MonthDTO monthDTO) {
+        monthDTO.setAdvertAmount(MoneyUtils.nullToZero(monthDTO.getAdvertAmount()));
+        monthDTO.setServiceAmount(MoneyUtils.nullToZero(monthDTO.getServiceAmount()));
+        if(monthDTO.getAdvertAmount().compareTo(BigDecimal.ZERO) == 0 && monthDTO.getServiceAmount().compareTo(BigDecimal.ZERO) == 0){
+            return new Response<>(ResponseEnum.FAIL,"推广费和服务费不能都为0");
+        }
+        QueryWrapper<MonthSalesEntity> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(MonthSalesEntity::getUserId,monthDTO.getUserId())
+                .eq(MonthSalesEntity::getMsId,monthDTO.getMsId());
+        MonthSalesEntity monthEntity = monthSalesMapper.selectOne(wrapper);
+        if(monthEntity == null){
+            return new Response<>(ResponseEnum.FAIL,"月销售数据不存在");
+        }
+        //增加月销售推广及服务费用
+        monthEntity.setAdvertAmount((monthEntity.getAdvertAmount().add(monthDTO.getAdvertAmount())).setScale(2,RoundingMode.HALF_UP))
+                .setServiceAmount((monthEntity.getServiceAmount().add(monthDTO.getServiceAmount())).setScale(2,RoundingMode.HALF_UP));
+        if(monthEntity.getAdvertAmount().compareTo(BigDecimal.ZERO) == -1){
+            return new Response<>(ResponseEnum.FAIL,"推广费不能为负数");
+        }
+        if(monthEntity.getServiceAmount().compareTo(BigDecimal.ZERO) == -1){
+            return new Response<>(ResponseEnum.FAIL,"服务费不能为负数");
+        }
+        //计算月销售额数据
+        this.computeMonthData(monthEntity);
+        if(monthSalesMapper.updateById(monthEntity) != 0){
+            return new Response<>(ResponseEnum.SUCCESS,"修改成功");
+        }
+        return new Response<>(ResponseEnum.FAIL,"修改失败");
+    }
     /**
      * <p>@Description 编辑月销售额数据 </p>
      * <p>@Author www </p>
@@ -57,7 +95,7 @@ public class MonthServiceImpl implements IMonthService {
      */
     @Override
     public Response<String> saveMonthSales(MonthDTO monthDTO) {
-        Date monthDate = DateUtils.parse(monthDTO.getMonthDateStr() + "-01",DateFormatEnum.YYYY_MM_DD);
+        Date monthDate = DateUtils.parse(monthDTO.getMonthDateStr() + "-01",DateFormatEnum.YYYYMMDD1);
         if(monthDate == null){
             return new Response<>(ResponseEnum.FAIL,"月份格式错误");
         }
@@ -124,7 +162,7 @@ public class MonthServiceImpl implements IMonthService {
         List<MonthSalesEntity> updateList = new ArrayList<>();//待更新的数据
         //数据转换处理，key=店铺ID+月份日期（默认为月份01日），如：101320230201
         Map<String,MonthSalesEntity> entityMap = CollectionUtils.isEmpty(monthList) ? new HashMap<>()
-                : monthList.stream().collect(Collectors.toMap(k -> k.getShopId() + DateUtils.format(k.getMonthDate(), DateFormatEnum.YYYY_MM_DD), month -> month));
+                : monthList.stream().collect(Collectors.toMap(k -> k.getShopId() + DateUtils.format(k.getMonthDate(), DateFormatEnum.YYYYMMDD5), month -> month));
         Map<String,MonthDTO> dtoMap = CollectionUtils.isEmpty(countList) ? new HashMap<>()
                 : countList.stream().collect(Collectors.toMap(k -> k.getShopId() + k.getMonthDateStr(), month -> month));
         //处理统计出的月销售额
@@ -144,7 +182,7 @@ public class MonthServiceImpl implements IMonthService {
             }else {//统计出的月销售额中没有存在的entity数据，则插入数据
                 MonthSalesEntity monthEntity = new MonthSalesEntity();
                 monthEntity.setShopId(v.getShopId()).setUserId(userId)
-                        .setMonthDate(DateUtils.parse(v.getMonthDateStr(),DateFormatEnum.YYYY_MM_DD))
+                        .setMonthDate(DateUtils.parse(v.getMonthDateStr(),DateFormatEnum.YYYYMMDD1))
                         .setTotalOrder(v.getTotalOrder() == null ? 0L : v.getTotalOrder())
                         .setSucceedOrder(v.getSucceedOrder() == null ? 0L : v.getSucceedOrder())
                         .setAdvertAmount(BigDecimal.ZERO).setServiceAmount(BigDecimal.ZERO)
@@ -158,7 +196,7 @@ public class MonthServiceImpl implements IMonthService {
         });
         //待更新的数据的数据转换
         Map<String,MonthSalesEntity> updateMap = CollectionUtils.isEmpty(updateList) ? new HashMap<>()
-                : updateList.stream().collect(Collectors.toMap(k -> k.getShopId() + DateUtils.format(k.getMonthDate(), DateFormatEnum.YYYY_MM_DD), month -> month));
+                : updateList.stream().collect(Collectors.toMap(k -> k.getShopId() + DateUtils.format(k.getMonthDate(), DateFormatEnum.YYYYMMDD1), month -> month));
         //处理已存在的entity数据
         entityMap.forEach((k,v) -> {
             //待更新的是数据中没有当前entity，说明没有当前店铺的月销售数据，则需要更新数据
@@ -196,6 +234,7 @@ public class MonthServiceImpl implements IMonthService {
         BigDecimal totalAmt = monthEntity.getCostAmount().add(monthEntity.getAdvertAmount()).add(monthEntity.getServiceAmount()).add(monthEntity.getVirtualAmount());
         monthEntity.setRetainedProfitsRate(totalAmt.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
                 :(monthEntity.getRetainedProfits().divide(totalAmt,5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));
+        monthEntity.setUpdateTime(DateUtils.getCurrentDateTime());
     }
     /**
      * <p>@Description 查询月销售额列表信息 </p>
