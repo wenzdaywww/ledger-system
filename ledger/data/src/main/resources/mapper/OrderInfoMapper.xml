@@ -66,7 +66,8 @@
         O.REMARK remark
         FROM USER_SHOP S,ORDER_INFO O
         LEFT JOIN SHOP_GOODS G ON G.GOODS_ID = O.GOODS_ID AND G.SHOP_ID = O.SHOP_ID
-        WHERE O.SHOP_ID = S.SHOP_ID AND O.USER_ID = #{obj.userId} AND S.USER_ID = #{obj.userId}
+        WHERE O.SHOP_ID = S.SHOP_ID AND S.SHOP_STATE='1'
+            AND O.USER_ID = #{obj.userId} AND S.USER_ID = #{obj.userId}
         <if test="obj.orderDateStr != null and obj.orderDateStr != ''">
             AND O.ORDER_DATE = STR_TO_DATE(#{obj.orderDateStr},'%Y-%m-%d')
         </if>

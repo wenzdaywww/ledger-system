@@ -7,6 +7,8 @@ com:
       router-expire-hour: 24
       shopid-redis-key: ledger:app:shop_id:generator
     common:
+      request:
+        enable: true #开启controller的AOP日志拦截
       securuty:
         enable: true
         secret-key: wenzday

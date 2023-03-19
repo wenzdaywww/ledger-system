@@ -132,24 +132,7 @@ export default {
     // 新增/编辑订单弹窗控制
     const editVisible = ref(false);
     // 编辑订单信息
-    let orderInfo = reactive({
-      ordId: "",
-      shopId : "",
-      shopNm : "",
-      ordDat: "",
-      supId: "",
-      gdsId: "",
-      gdsName: "",
-      ordSta: "",
-      salAmt: "",
-      payAmt: "",
-      cosAmt: "",
-      othAmt: "",
-      talCos: "",
-      groPro: "",
-      groProRat: "",
-      remark: ""
-    });
+    let orderInfo = ref({});
     // 订单信息的规则校验
     const orderRules = {
       ordId : [
@@ -211,32 +194,16 @@ export default {
       editVisible.value = true;
       userShop.value = shopArr.value;
       orderSate.value = stateArr.value;
-      orderInfo.oiId = order && order.oiId ? order.oiId : null;
-      orderInfo.ordId = order && order.ordId ? order.ordId : null;
-      orderInfo.shopId = order && order.shopId ? order.shopId : null;
-      orderInfo.shopNm = order && order.shopNm ? order.shopNm : null;
-      orderInfo.ordDat = order && order.ordDat ? order.ordDat : null;
-      orderInfo.supId = order && order.supId ? order.supId : null;
-      orderInfo.gdsId = order && order.gdsId ? order.gdsId : null;
-      orderInfo.gdsName = order && order.gdsName ? order.gdsName : null;
-      orderInfo.ordSta = order && order.ordSta ? order.ordSta : null;
-      orderInfo.salAmt = order && order.salAmt ? order.salAmt : null;
-      orderInfo.payAmt = order && order.payAmt ? order.payAmt : null;
-      orderInfo.cosAmt = order && order.cosAmt ? order.cosAmt : null;
-      orderInfo.othAmt = order && order.othAmt ? order.othAmt : null;
-      orderInfo.talCos = order && order.talCos ? order.talCos : null;
-      orderInfo.groPro = order && order.groPro ? order.groPro : null;
-      orderInfo.groProRat = order && order.groProRat ? order.groProRat : null;
-      orderInfo.remark = order && order.remark ? order.remark : null;
+      orderInfo.value = order ? order : {};
     }
     // 新增/编辑店铺页面的保存按钮
     const saveEdit = () => {
       orderForm.value.validate((valid) => {
         if (valid) {
-          axios.$http.post(request.editOrder,orderInfo).then(function (res) {
+          axios.$http.post(request.editOrder,orderInfo.value).then(function (res) {
             if(res.code === 200){
               editVisible.value = false;
-              ElMessage.success(orderInfo.shopId ? '修改成功' : '新增成功');
+              ElMessage.success(res.data);
               emit('findOrderList',null);//调用父组件OrderList.vue的findOrderList方法
             }else {
               ElMessage.error(res.data);

@@ -44,7 +44,7 @@
           <el-table-column prop="retProRat" label="月净利率" align="center">
             <template v-slot:header='scope'>
               <span>月净利率
-                <el-tooltip :aa="scope" class="item" effect="light" content="月净利率=月净利润/(月成本+月推广费+月服务费+月刷单费)" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="月净利率=月净利润 / (月成本+月推广费+月服务费+月刷单费) * 100%" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -62,7 +62,7 @@
           <el-table-column prop="groProRat" label="月毛利率" align="center">
             <template v-slot:header='scope'>
               <span>月毛利率
-                <el-tooltip :aa="scope" class="item" effect="light" content="月毛利率=月毛利润/月成本费" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="月毛利率=月毛利润 / 月成本费 * 100%" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -157,7 +157,7 @@ export default {
     //删除月销售额数据
     const handleDelete = (row) => {
       // 二次确认删除
-      ElMessageBox.confirm("确定要删除吗？", "提示", {type: "warning"}).then(() => {
+      ElMessageBox.confirm("确定要删除店铺【" + row.shopNm + "】" + row.month + "月份的销售数据吗？", "提示", {type: "warning"}).then(() => {
         axios.$http.post(request.delMonth+row.msId, null).then(function (res) {
           if(res.code === 200){
             ElMessage.success(res.data);

@@ -41,11 +41,11 @@
             </div>
           </template>
           净利率
-          <el-tooltip class="item" effect="light" content="净利率=净利润/(成本费+推广费+服务费+刷单费)" placement="top">
-            <el-progress :percentage="bookData.retProRat" color="#42b983"></el-progress>
+          <el-tooltip class="item" effect="light" content="净利率=净利润 / (成本费+推广费+服务费+刷单费) * 100%" placement="top">
+            <el-progress :percentage="bookData.retProRat" color="red"></el-progress>
           </el-tooltip>
           毛利率
-          <el-tooltip class="item" effect="light" content="毛利润=销售额-成本费" placement="top">
+          <el-tooltip class="item" effect="light" content="毛利率=毛利润 / 成本费 * 100%" placement="top">
             <el-progress :percentage="bookData.groProRat" color="#f1e05a"></el-progress>
           </el-tooltip>
           订单成交率
@@ -113,7 +113,7 @@
                 <i class="el-icon-shopping-cart-1 grid-con-icon"></i>
                 <div class="grid-cont-right">
                   <div class="grid-num">{{ bookData.sucOrd }}</div>
-                  <div>成功订单量</div>
+                  <div>订单成交量</div>
                 </div>
               </div>
             </el-card>
@@ -124,7 +124,7 @@
                 <i class="el-icon-shopping-cart-2 grid-con-icon"></i>
                 <div class="grid-cont-right">
                   <div class="grid-num">{{ bookData.faiOrd }}</div>
-                  <div>失败订单量</div>
+                  <div>订单流失量</div>
                 </div>
               </div>
             </el-card>
@@ -168,11 +168,33 @@
         <el-row :gutter="20" class="mgb20">
           <el-col :span="8">
             <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-2">
+              <div class="grid-content grid-con-4">
                 <i class="el-icon-shopping-bag-2 grid-con-icon"></i>
                 <div class="grid-cont-right">
                   <div class="grid-num">{{ bookData.virAmt }}</div>
                   <div>刷单费</div>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="8">
+            <el-card shadow="hover" :body-style="{ padding: '0px' }">
+              <div class="grid-content grid-con-4">
+                <i class="el-icon-s-shop grid-con-icon"></i>
+                <div class="grid-cont-right">
+                  <div class="grid-num">{{ bookData.shopNum }}</div>
+                  <div>店铺数</div>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="8">
+            <el-card shadow="hover" :body-style="{ padding: '0px' }">
+              <div class="grid-content grid-con-4">
+                <i class="el-icon-goods grid-con-icon"></i>
+                <div class="grid-cont-right">
+                  <div class="grid-num">{{ bookData.gdsNum }}</div>
+                  <div>商品数</div>
                 </div>
               </div>
             </el-card>
@@ -209,26 +231,9 @@ export default {
     //打开编辑
     const openEdit = ref(false);
     // 用户信息
-    let user = reactive({
-      userId: "",
-      userName : ""
-    });
+    const user = ref([]);
     // 账簿数据
-    let bookData = reactive({
-      retPro: 0,
-      retProRat: 0,
-      groPro : 0,
-      groProRat : 0,
-      talOrd: 0,
-      sucOrd: 0,
-      faiOrd: 0,
-      sucOrdRat : 0,
-      salAmt : 0,
-      cosAmt : 0,
-      advAmt : 0,
-      serAmt : 0,
-      virAmt : 0
-    });
+    const bookData = ref([]);
     // 编辑用户的规则校验
     const shopSales = {
       type: "bar",
@@ -309,8 +314,7 @@ export default {
     const getUserData = () => {
       axios.$http.get(request.userInfo,null).then(function (res) {
         if(res.code === 200){
-          user.userId = res.data.userId;
-          user.userName = res.data.userName;
+          user.value = res.data;
         }else {
           ElMessage.success('查询用户信息失败');
         }
@@ -321,19 +325,7 @@ export default {
     const getBookInfoData = () => {
       axios.$http.get(request.bookInfo,null).then(function (res) {
         if(res.code === 200){
-          bookData.retPro = res.data.retPro;
-          bookData.retProRat = res.data.retProRat;
-          bookData.groPro = res.data.groPro;
-          bookData.groProRat = res.data.groProRat;
-          bookData.talOrd = res.data.talOrd;
-          bookData.sucOrd = res.data.sucOrd;
-          bookData.faiOrd = res.data.faiOrd;
-          bookData.sucOrdRat = res.data.sucOrdRat;
-          bookData.salAmt = res.data.salAmt;
-          bookData.cosAmt = res.data.cosAmt;
-          bookData.advAmt = res.data.advAmt;
-          bookData.serAmt = res.data.serAmt;
-          bookData.virAmt = res.data.virAmt;
+          bookData.value = res.data;
         }else {
           ElMessage.error(res.data);
         }
@@ -423,6 +415,13 @@ export default {
 
 .grid-con-3 .grid-num {
   color: rgb(242, 94, 67);
+}
+.grid-con-4 .grid-con-icon {
+  background: rgb(242, 157, 67);
+}
+
+.grid-con-4 .grid-num {
+  color: rgb(242, 157, 67);
 }
 
 .user-info {

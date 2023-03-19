@@ -33,7 +33,7 @@
                SUM(A.ADVERT_AMOUNT) advertAmount,
                SUM(A.SERVICE_AMOUNT) serviceAmount,
                SUM(A.VIRTUAL_AMOUNT) virtualAmount
-        FROM (SELECT C.SHOP_ID,
+        FROM (SELECT S.SHOP_ID,
                      C.TOTAL_ORDER,
                      C.SUCCEED_ORDER,
                      C.FAILED_ORDER,
@@ -42,7 +42,8 @@
                      C.ADVERT_AMOUNT,
                      C.SERVICE_AMOUNT,
                      C.VIRTUAL_AMOUNT
-              FROM  YEAR_sales C WHERE C.USER_ID = #{userId} ) A,SHOP_SALES S WHERE S.SHOP_ID = A.SHOP_ID
+              FROM  YEAR_SALES C,USER_SHOP S WHERE C.USER_ID = #{userId} AND S.SHOP_STATE='1' AND S.SHOP_ID = C.SHOP_ID
+              ) A,SHOP_SALES S WHERE S.SHOP_ID = A.SHOP_ID
         GROUP BY A.SHOP_ID
     </select>
     <!--  查询年销售额列表信息-->

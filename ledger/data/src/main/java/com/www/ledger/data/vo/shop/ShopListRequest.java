@@ -20,6 +20,8 @@ public class ShopListRequest implements Serializable {
     private Long shopId;
     /** 店铺名称 **/
     private String shopNm;
+    /** 店铺平台 **/
+    private String shopTp;
     /** 当前页面 **/
     @Min(value = 1,message = "当前页码必须大于0")
     private int pageNum;

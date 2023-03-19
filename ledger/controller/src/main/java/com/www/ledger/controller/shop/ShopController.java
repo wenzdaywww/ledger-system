@@ -97,14 +97,15 @@ public class ShopController {
     public Response<List<ShopListResponse>> findShopList(@Validated ShopListRequest shopRequest){
         ShopDTO shopDTO = new ShopDTO();
         shopDTO.setShopId(shopRequest.getShopId()).setShopName(shopRequest.getShopNm())
-           .setUserId(JwtAuthorizationTokenFilter.getUserId());
+           .setUserId(JwtAuthorizationTokenFilter.getUserId()).setShopType(shopRequest.getShopTp());
         Response<List<ShopDTO>> dtoResponse = shopService.findShopList(shopDTO,shopRequest.getPageNum(),shopRequest.getPageSize());
         List<ShopListResponse> shopList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
                 .map(list -> {
                     List<ShopListResponse> tempList = new ArrayList<>();
                     list.forEach(shop -> {
                         ShopListResponse ruslut = new ShopListResponse();
-                        ruslut.setShopId(shop.getShopId()).setShopNm(shop.getShopName()).setShopTp(shop.getShopType())
+                        ruslut.setShopId(shop.getShopId()).setShopNm(shop.getShopName())
+                              .setShopTp(shop.getShopType()).setShopTpNm(shop.getShopTypeName())
                               .setRetPro(shop.getRetainedProfits()).setRetProRat(shop.getRetainedProfitsRate())
                               .setGroPro(shop.getGrossProfit()).setGroProRat(shop.getGrossProfitRate())
                               .setTalOrd(shop.getTotalOrder()).setSucOrd(shop.getSucceedOrder())

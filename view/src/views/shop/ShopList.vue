@@ -14,6 +14,9 @@
         <div class="handle-box">
           <el-input v-model="query.shopId" placeholder="店铺ID" class="handle-input mr10"></el-input>
           <el-input v-model="query.shopNm" placeholder="店铺名称" class="handle-input mr10"></el-input>
+          <el-select v-model="query.shopTp" placeholder="请选择店铺平台" class="handle-select mr10" style="width: 250px">
+            <el-option v-for="item in shopTpCode" :key="item.value" :label="item.name" :value="item.value"></el-option>
+          </el-select>
           <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
           <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
           <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round plain>新增店铺</el-button>
@@ -26,7 +29,8 @@
                   :row-style="{height:'55px'}" :cell-style="{padding:'0px'}" header-cell-class-name="table-header">
           <el-table-column prop="shopId" label="店铺ID" align="center"></el-table-column>
           <el-table-column prop="shopNm" label="店铺名称" align="center"></el-table-column>
-          <el-table-column prop="shopTp" label="店铺平台" align="center"></el-table-column>
+          <el-table-column prop="shopTp" label="店铺平台ID" v-if="false" align="center"></el-table-column>
+          <el-table-column prop="shopTpNm" label="店铺平台" align="center"></el-table-column>
           <el-table-column prop="retPro" label="店净利润" align="center">
             <template v-slot:header='scope'>
               <span>店净利润
@@ -39,7 +43,7 @@
           <el-table-column prop="retProRat" label="店净利率" align="center">
             <template v-slot:header='scope'>
               <span>店净利率
-                <el-tooltip :aa="scope" class="item" effect="light" content="店净利率=店净利润/(店成本+店推广费+店服务费+店刷单费)" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="店净利率=店净利润 / (店成本+店推广费+店服务费+店刷单费) * 100%" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -57,7 +61,7 @@
           <el-table-column prop="groProRat" label="店毛利率" align="center">
             <template v-slot:header='scope'>
               <span>店毛利率
-                <el-tooltip :aa="scope" class="item" effect="light" content="店毛利率=店毛利润/店成本费" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="店毛利率=店毛利润 / 店成本费 * 100%" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -83,35 +87,13 @@
           </el-table-column>
         </el-table>
         <div class="pagination">
-          <el-pagination background layout="total, prev, pager, next" :current-page="query.pageNum"
+          <el-pagination background layout="total, prev, pager, next" :current-page.sync="query.pageNum"
                          :page-size="query.pageSize" :total="pageTotal" @current-change="handlePageChange">
           </el-pagination>
         </div>
       </div>
       <!-- 新增/编辑店铺弹出框 -->
-      <el-dialog title="修改店铺" v-model="editVisible" width="450px">
-        <el-form label-width="120px" :model="shopInfo" :rules="shopRules" ref="shopForm">
-          <el-form-item label="店铺ID">
-            <el-input v-model="shopInfo.shopId" :disabled="true" style="width: 250px"></el-input>
-          </el-form-item>
-          <el-form-item label="店铺名称" prop="shopNm">
-            <el-input v-model="shopInfo.shopNm" style="width: 250px" maxlength="20" placeholder="请输入店铺名称"></el-input>
-          </el-form-item>
-          <el-form-item label="店铺平台" prop="shopTp">
-            <el-select v-model="shopInfo.shopTp" placeholder="请选择店铺平台" class="handle-select mr10" style="width: 250px">
-              <el-option v-for="item in shopTpCode" :key="item.value" :label="item.name" :value="item.value"></el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <template #footer>
-        <div class="btn-save">
-          <span class="dialog-footer">
-            <el-button type="primary" @click="saveEdit" class="el-icon-check" round>确 定</el-button>
-            <el-button @click="editVisible = false" class="el-icon-close" round>取 消</el-button>
-          </span>
-        </div>
-        </template>
-      </el-dialog>
+      <shop-edit ref="shopDialog" @findShopList="findShopList"></shop-edit>
     </el-card>
   </div>
 </template>
@@ -120,46 +102,57 @@
 import { ref, reactive, getCurrentInstance } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import request from '../../utils/request';
+import shopEdit from "./ShopEdit.vue";
 
 export default {
   name: "shopList",
+  components: { shopEdit },
   setup() {
+    // 接口请求
+    const axios = getCurrentInstance().appContext.config.globalProperties;
     // 查询条件
-    const query = reactive({
+    let query = reactive({
       shopId: "",
       shopNm: "",
+      shopTp: "",
       pageNum: 1,
       pageSize: 10
     });
-    // 编辑店铺信息
-    let shopInfo = reactive({
-      shopId: "",
-      shopNm : "",
-      shopTp: ""
-    });
-    // 店铺信息的规则校验
-    const shopRules = {
-      shopNm : [
-        { required: true, message: "店铺名称不能为空", trigger: "blur" }
-      ],
-      shopTp : [
-        { required: true, message: "店铺平台不能为空", trigger: "blur" }
-      ]
-    };
+    //店铺弹出窗对象
+    const shopDialog = ref();
     // 表格数据
     const tableData = ref([]);
     // 页数
     const pageTotal = ref(0);
     // 店铺平台
     const shopTpCode = ref([]);
-    // 接口请求
-    const axios = getCurrentInstance().appContext.config.globalProperties;
-    // 新增/编辑店铺弹窗控制
-    const editVisible = ref(false);
-    // 编辑店铺表单数据
-    const shopForm = ref(null);
+    // 查询
+    const handleSearch = () => {
+      query.pageNum = 1;
+      findShopList();
+    };
+    // 重置
+    const handleReset = () => {
+      query.shopId = "";
+      query.shopNm = "";
+      query.shopTp = "";
+      findShopList();
+    };
+    // 分页导航
+    const handlePageChange = (val) => {
+      query.pageNum = val;
+      findShopList();
+    };
+    //编辑店铺
+    const handleEdit = (row) => {
+      shopDialog.value.openShopDialog(row,shopTpCode);//调用子组件方法
+    };
+    //新增店铺
+    const handleAdd = () => {
+      shopDialog.value.openShopDialog(null,shopTpCode);//调用子组件方法
+    };
     // 获取表格数据
-    const getData = () => {
+    const findShopList = () => {
       axios.$http.get(request.shopList,query).then(function (res) {
         if(res.code === 200){
           tableData.value = res.data;
@@ -169,35 +162,13 @@ export default {
         }
       })
     };
-    getData();
-    // 查询
-    const handleSearch = () => {
-      query.pageNum = 1;
-      getData();
-    };
-    // 重置
-    const handleReset = () => {
-      query.shopId = "";
-      query.shopNm = "";
-      getData();
-    };
-    // 分页导航
-    const handlePageChange = (val) => {
-      query.pageNum = val;
-      getData();
-    };
-    //编辑店铺
-    const handleEdit = (row) => {
-      shopInfo.shopId = row.shopId;
-      shopInfo.shopNm = row.shopNm;
-      editVisible.value = true;
-    };
+    findShopList();
     //统计店铺销售额
     const handleCount = () => {
       axios.$http.post(request.shopCount, null).then(function (res) {
         if(res.code === 200){
           ElMessage.success(res.data);
-          getData();
+          findShopList();
         }else {
           ElMessage.error(res.data);
         }
@@ -206,22 +177,16 @@ export default {
     //删除店铺
     const handleDelete = (row) => {
       // 二次确认删除
-      ElMessageBox.confirm("确定要删除吗？", "提示", {type: "warning"}).then(() => {
+      ElMessageBox.confirm("确定要删除店铺【" + row.shopNm + "】及其所有销售数据吗？", "提示", {type: "warning"}).then(() => {
         axios.$http.post(request.delShop+row.shopId, null).then(function (res) {
           if(res.code === 200){
             ElMessage.success('删除成功');
-            getData();
+            findShopList();
           }else {
             ElMessage.error(res.data);
           }
         });
       }).catch(() => {});
-    };
-    //新增店铺
-    const handleAdd = () => {
-      shopInfo.shopId = null;
-      shopInfo.shopNm = null;
-      editVisible.value = true;
     };
     // 查询数据字典
     const getCodeDataArr = () => {
@@ -234,26 +199,8 @@ export default {
       });
     };
     getCodeDataArr();
-    // 新增/编辑店铺页面的保存按钮
-    const saveEdit = () => {
-      shopForm.value.validate((valid) => {
-        if (valid) {
-          axios.$http.post(shopInfo.shopId ? request.shopEdit : request.newShop,shopInfo).then(function (res) {
-            if(res.code === 200){
-              editVisible.value = false;
-              ElMessage.success(shopInfo.shopId ? '修改成功' : '新增成功');
-              getData();
-            }else {
-              ElMessage.error(res.data);
-            }
-          });
-        } else {
-          return false;
-        }
-      });
-    };
-    return { query,tableData,pageTotal,editVisible,shopForm,shopRules,shopInfo,shopTpCode,
-      handleSearch,handleReset,handlePageChange,handleEdit,saveEdit,handleAdd,handleDelete,handleCount};
+    return { query,tableData,pageTotal,shopTpCode,shopDialog,
+      handleSearch,handleReset,handlePageChange,handleEdit,handleAdd,handleDelete,handleCount,findShopList};
   }
 };
 </script>

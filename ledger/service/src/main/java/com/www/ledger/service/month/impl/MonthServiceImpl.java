@@ -116,39 +116,59 @@ public class MonthServiceImpl implements IMonthService {
     public Response<String> saveAndCountMonthData(String userId) {
         //统计月销售额
         List<MonthDTO> countList = orderInfoMapper.countMonthSale(userId);
-        //没有统计月销售额数据，则统计完成
-        if(CollectionUtils.isEmpty(countList)){
-            return new Response<>(ResponseEnum.SUCCESS,"统计完成");
-        }
         //查询存在的月销售额数据
         QueryWrapper<MonthSalesEntity> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(MonthSalesEntity::getUserId,userId);
         List<MonthSalesEntity> monthList = monthSalesMapper.selectList(wrapper);
         List<MonthSalesEntity> insertList = new ArrayList<>();//待插入的数据
         List<MonthSalesEntity> updateList = new ArrayList<>();//待更新的数据
+        //数据转换处理，key=店铺ID+月份日期（默认为月份01日），如：101320230201
         Map<String,MonthSalesEntity> entityMap = CollectionUtils.isEmpty(monthList) ? new HashMap<>()
                 : monthList.stream().collect(Collectors.toMap(k -> k.getShopId() + DateUtils.format(k.getMonthDate(), DateFormatEnum.YYYY_MM_DD), month -> month));
-        Map<String,MonthDTO> dtoMap = countList.stream().collect(Collectors.toMap(k -> k.getShopId() + k.getMonthDateStr(), month -> month));
+        Map<String,MonthDTO> dtoMap = CollectionUtils.isEmpty(countList) ? new HashMap<>()
+                : countList.stream().collect(Collectors.toMap(k -> k.getShopId() + k.getMonthDateStr(), month -> month));
+        //处理统计出的月销售额
         dtoMap.forEach((k,v) -> {
-            //dtoMap中有entity数据，则更新数据
+            //统计出的月销售额中已有存在的entity数据，则更新数据
             if(entityMap.containsKey(k)){
                 MonthSalesEntity monthEntity = entityMap.get(k);
-                monthEntity.setTotalOrder(v.getTotalOrder()).setSucceedOrder(v.getSucceedOrder()).setUpdateTime(DateUtils.getCurrentDateTime())
-                        .setSaleAmount(v.getSaleAmount()).setCostAmount(v.getCostAmount()).setVirtualAmount(v.getVirtualAmount());
+                monthEntity.setTotalOrder(v.getTotalOrder() == null ? 0L : v.getTotalOrder())
+                        .setSucceedOrder(v.getSucceedOrder() == null ? 0L : v.getSucceedOrder())
+                        .setUpdateTime(DateUtils.getCurrentDateTime())
+                        .setSaleAmount(MoneyUtils.nullToZero(v.getSaleAmount()))
+                        .setCostAmount(MoneyUtils.nullToZero(v.getCostAmount()))
+                        .setVirtualAmount(MoneyUtils.nullToZero(v.getVirtualAmount()));
                 //计算月销售额数据
                 this.computeMonthData(monthEntity);
                 updateList.add(monthEntity);
-            }else {//dtoMap中没有entity数据，则插入数据
+            }else {//统计出的月销售额中没有存在的entity数据，则插入数据
                 MonthSalesEntity monthEntity = new MonthSalesEntity();
                 monthEntity.setShopId(v.getShopId()).setUserId(userId)
                         .setMonthDate(DateUtils.parse(v.getMonthDateStr(),DateFormatEnum.YYYY_MM_DD))
-                        .setTotalOrder(v.getTotalOrder()).setSucceedOrder(v.getSucceedOrder())
+                        .setTotalOrder(v.getTotalOrder() == null ? 0L : v.getTotalOrder())
+                        .setSucceedOrder(v.getSucceedOrder() == null ? 0L : v.getSucceedOrder())
                         .setAdvertAmount(BigDecimal.ZERO).setServiceAmount(BigDecimal.ZERO)
-                        .setSaleAmount(v.getSaleAmount()).setCostAmount(v.getCostAmount())
-                        .setVirtualAmount(v.getVirtualAmount());
+                        .setSaleAmount(MoneyUtils.nullToZero(v.getSaleAmount()))
+                        .setCostAmount(MoneyUtils.nullToZero(v.getCostAmount()))
+                        .setVirtualAmount(MoneyUtils.nullToZero(v.getVirtualAmount()));
                 //计算月销售额数据
                 this.computeMonthData(monthEntity);
                 insertList.add(monthEntity);
+            }
+        });
+        //待更新的数据的数据转换
+        Map<String,MonthSalesEntity> updateMap = CollectionUtils.isEmpty(updateList) ? new HashMap<>()
+                : updateList.stream().collect(Collectors.toMap(k -> k.getShopId() + DateUtils.format(k.getMonthDate(), DateFormatEnum.YYYY_MM_DD), month -> month));
+        //处理已存在的entity数据
+        entityMap.forEach((k,v) -> {
+            //待更新的是数据中没有当前entity，说明没有当前店铺的月销售数据，则需要更新数据
+            if(!updateMap.containsKey(k)){
+                v.setTotalOrder(0L).setSucceedOrder(0L)
+                  .setSaleAmount(BigDecimal.ZERO).setCostAmount(BigDecimal.ZERO)
+                  .setVirtualAmount(BigDecimal.ZERO).setUpdateTime(DateUtils.getCurrentDateTime());
+                //计算月销售额数据
+                this.computeMonthData(v);
+                updateList.add(v);
             }
         });
         monthSalesService.updateBatchById(updateList,100);
@@ -168,14 +188,14 @@ public class MonthServiceImpl implements IMonthService {
         //计算月毛利润=月销售额-月成本费
         monthEntity.setGrossProfit((monthEntity.getSaleAmount().subtract(monthEntity.getCostAmount())).setScale(2, RoundingMode.HALF_UP));
         //计算月毛利率=月毛利润/月成本费
-        monthEntity.setGrossProfitRate( monthEntity.getCostAmount().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
-                : (monthEntity.getSaleAmount().divide(monthEntity.getCostAmount(),4,RoundingMode.HALF_UP)).setScale(2, RoundingMode.HALF_UP));
+        monthEntity.setGrossProfitRate(monthEntity.getCostAmount().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
+                : (monthEntity.getGrossProfit().divide(monthEntity.getCostAmount(),5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2, RoundingMode.HALF_UP));
         //月净利润=月毛利润-月推广费-月服务费-月刷单费
         monthEntity.setRetainedProfits((monthEntity.getGrossProfit().subtract(monthEntity.getAdvertAmount())).subtract(monthEntity.getServiceAmount()).subtract(monthEntity.getVirtualAmount()));
         //月净利率=月净利润/(月成本+月推广费+月服务费+月刷单费)
         BigDecimal totalAmt = monthEntity.getCostAmount().add(monthEntity.getAdvertAmount()).add(monthEntity.getServiceAmount()).add(monthEntity.getVirtualAmount());
         monthEntity.setRetainedProfitsRate(totalAmt.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
-                :(monthEntity.getRetainedProfits().divide(totalAmt,4,RoundingMode.HALF_UP)).setScale(2,RoundingMode.HALF_UP));
+                :(monthEntity.getRetainedProfits().divide(totalAmt,5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));
     }
     /**
      * <p>@Description 查询月销售额列表信息 </p>

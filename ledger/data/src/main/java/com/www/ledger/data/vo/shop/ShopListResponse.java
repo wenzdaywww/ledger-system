@@ -22,6 +22,8 @@ public class ShopListResponse implements Serializable {
     private String shopNm;
     /** 店铺平台 **/
     private String shopTp;
+    /** 店铺平台名称 **/
+    private String shopTpNm;
     /** 店净利润 **/
     private BigDecimal retPro;
     /** 店净利率 **/

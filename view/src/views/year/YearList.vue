@@ -40,7 +40,7 @@
           <el-table-column prop="retProRat" label="年净利率" align="center">
             <template v-slot:header='scope'>
               <span>年净利率
-                <el-tooltip :aa="scope" class="item" effect="light" content="年净利率=年净利润/(年成本+年推广费+年服务费+年刷单费)" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="年净利率=年净利润 / (年成本+年推广费+年服务费+年刷单费) * 100%" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -58,7 +58,7 @@
           <el-table-column prop="groProRat" label="年毛利率" align="center">
             <template v-slot:header='scope'>
               <span>年毛利率
-                <el-tooltip :aa="scope" class="item" effect="light" content="年毛利率=年毛利润/年成本费" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="年毛利率=年毛利润 / 年成本费 * 100%" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>

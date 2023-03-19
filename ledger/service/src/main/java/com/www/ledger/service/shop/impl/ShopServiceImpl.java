@@ -8,6 +8,7 @@ import com.www.common.config.security.entity.SysUserEntity;
 import com.www.common.data.enums.ResponseEnum;
 import com.www.common.data.response.Response;
 import com.www.common.utils.DateUtils;
+import com.www.common.utils.MoneyUtils;
 import com.www.common.utils.UidGeneratorUtils;
 import com.www.ledger.data.dto.ShopDTO;
 import com.www.ledger.data.entity.ShopSalesEntity;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -65,37 +67,47 @@ public class ShopServiceImpl implements IShopService {
      */
     @Override
     public Response<String> saveAndCountShopData(String userId) {
+        //统计的店销售额
         List<ShopDTO> countList = yearSalesMapper.countShopData(userId);
-        if(CollectionUtils.isEmpty(countList)){
-            return new Response<>(ResponseEnum.SUCCESS,"统计完成");
-        }
+        //查询的店销售额
         QueryWrapper<ShopSalesEntity> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(ShopSalesEntity::getUserId,userId);
         List<ShopSalesEntity> shopList = shopSalesMapper.selectList(wrapper);
-        if(CollectionUtils.isEmpty(shopList)){
-            return new Response<>(ResponseEnum.SUCCESS,"统计完成");
-        }
-        Map<Long, ShopDTO> dtoMap = countList.stream().collect(Collectors.toMap(k -> k.getShopId(), month -> month));
+        //数据转换处理，key=店铺ID，如：1013
+        Map<Long, ShopSalesEntity> entityMap = CollectionUtils.isEmpty(shopList) ? new HashMap<>()
+                : shopList.stream().collect(Collectors.toMap(k -> k.getShopId(), month -> month));
+        Map<Long, ShopDTO> dtoMap =  CollectionUtils.isEmpty(countList) ? new HashMap<>()
+                : countList.stream().collect(Collectors.toMap(k -> k.getShopId(), month -> month));
+        //处理查询的店销售额
         shopList.forEach(entity -> {
+            //如果查下的店销售额(shopList)在统计出的店销售额(dtoMap)中有数据，则更新对应数据字段
             if(dtoMap.containsKey(entity.getShopId())){
                 ShopDTO shopDTO = dtoMap.get(entity.getShopId());
-                entity.setTotalOrder(shopDTO.getTotalOrder()).setSucceedOrder(shopDTO.getSucceedOrder())
-                        .setFailedOrder(shopDTO.getFailedOrder()).setSaleAmount(shopDTO.getSaleAmount())
-                        .setCostAmount(shopDTO.getCostAmount()).setAdvertAmount(shopDTO.getAdvertAmount())
-                        .setServiceAmount(shopDTO.getServiceAmount()).setVirtualAmount(shopDTO.getVirtualAmount())
-                        .setUpdateTime(DateUtils.getCurrentDateTime());
+                entity.setTotalOrder(shopDTO.getTotalOrder() == null ? 0L : shopDTO.getTotalOrder())
+                        .setSucceedOrder(shopDTO.getSucceedOrder() == null ? 0L : shopDTO.getSucceedOrder())
+                        .setFailedOrder(shopDTO.getFailedOrder() == null ? 0L : shopDTO.getFailedOrder())
+                        .setSaleAmount(MoneyUtils.nullToZero(shopDTO.getSaleAmount()))
+                        .setCostAmount(MoneyUtils.nullToZero(shopDTO.getCostAmount()))
+                        .setAdvertAmount(MoneyUtils.nullToZero(shopDTO.getAdvertAmount()))
+                        .setServiceAmount(MoneyUtils.nullToZero(shopDTO.getServiceAmount()))
+                        .setVirtualAmount(MoneyUtils.nullToZero(shopDTO.getVirtualAmount()));
+            }else {//如果查下的店销售额(shopList)在统计出的店销售额(dtoMap)中没有数据，则对应数据字段设置为0
+                entity.setTotalOrder(0L).setSucceedOrder(0L).setFailedOrder(0L).setSaleAmount(BigDecimal.ZERO)
+                      .setCostAmount(BigDecimal.ZERO).setAdvertAmount(BigDecimal.ZERO)
+                      .setServiceAmount(BigDecimal.ZERO).setVirtualAmount(BigDecimal.ZERO);
             }
+            entity.setUpdateTime(DateUtils.getCurrentDateTime());
             //计算月毛利润=月销售额-月成本费
             entity.setGrossProfit((entity.getSaleAmount().subtract(entity.getCostAmount())).setScale(2, RoundingMode.HALF_UP));
             //计算月毛利率=月毛利润/月成本费
             entity.setGrossProfitRate( entity.getCostAmount().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
-                    : (entity.getSaleAmount().divide(entity.getCostAmount(),4,RoundingMode.HALF_UP)).setScale(2, RoundingMode.HALF_UP));
+                    : (entity.getGrossProfit().divide(entity.getCostAmount(),5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2, RoundingMode.HALF_UP));
             //月净利润=月毛利润-月推广费-月服务费-月刷单费
             entity.setRetainedProfits((entity.getGrossProfit().subtract(entity.getAdvertAmount())).subtract(entity.getServiceAmount()).subtract(entity.getVirtualAmount()));
             //月净利率=月净利润/(月成本+月推广费+月服务费+月刷单费)
             BigDecimal totalAmt = entity.getCostAmount().add(entity.getAdvertAmount()).add(entity.getServiceAmount()).add(entity.getVirtualAmount());
             entity.setRetainedProfitsRate(totalAmt.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
-                    :(entity.getRetainedProfits().divide(totalAmt,4,RoundingMode.HALF_UP)).setScale(2,RoundingMode.HALF_UP));
+                    :(entity.getRetainedProfits().divide(totalAmt,5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));
         });
         shopSalesService.updateBatchById(shopList,100);
         return new Response<>(ResponseEnum.SUCCESS,"统计完成");
@@ -199,7 +211,7 @@ public class ShopServiceImpl implements IShopService {
         List<ShopDTO> shopList =  page.getRecords();
         if(CollectionUtils.isNotEmpty(shopList)){
             shopList.forEach(d -> {
-                d.setShopType(CodeDict.getCodeValueName(CodeTypeEnum.ShopPlatform_Pdd.getType(), d.getShopType()));
+                d.setShopTypeName(CodeDict.getCodeValueName(CodeTypeEnum.ShopPlatform_Pdd.getType(), d.getShopType()));
             });
         }
         Response<List<ShopDTO>> response = new Response<>(ResponseEnum.SUCCESS,shopList);

@@ -107,7 +107,7 @@
       </div>
       <!-- 新增/编辑订单弹出框 -->
       <!-- @findOrderList="findOrderList" 设置子弹窗可以调用父页面的方法 -->
-      <order-eidt ref="orderDialog" @findOrderList="findOrderList"></order-eidt>
+      <order-edit ref="orderDialog" @findOrderList="findOrderList"></order-edit>
     </el-card>
   </div>
 </template>
@@ -116,12 +116,14 @@
 import { ref, reactive, getCurrentInstance } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import request from '../../utils/request';
-import orderEidt from "./OrderEdit.vue";
+import orderEdit from "./OrderEdit.vue";
 
 export default {
   name: "orderList",
-  components: { orderEidt },
+  components: { orderEdit },
   setup() {
+    // 接口请求
+    const axios = getCurrentInstance().appContext.config.globalProperties;
     // 查询条件
     const query = reactive({
       ordDat: "",
@@ -143,9 +145,6 @@ export default {
     const userShop = ref([]);
     // 订单状态
     const orderState = ref([]);
-    // 接口请求
-    const axios = getCurrentInstance().appContext.config.globalProperties;
-
     // 查询
     const tableAddClass = ({row,rowIndex}) => {
       //【交易成功】、【已发货，待签收】设置红色
@@ -184,7 +183,7 @@ export default {
     //删除店铺
     const handleDelete = (row) => {
       // 二次确认删除
-      ElMessageBox.confirm("确定要删除吗？", "提示", {type: "warning"}).then(() => {
+      ElMessageBox.confirm("确定要删除店铺【" + row.shopNm + "】订单ID：" + row.ordId + "的数据吗？", "提示", {type: "warning"}).then(() => {
         axios.$http.post(request.delOrder+row.oiId, null).then(function (res) {
           if(res.code === 200){
             ElMessage.success(res.data);

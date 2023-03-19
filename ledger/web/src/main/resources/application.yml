@@ -2,8 +2,6 @@
 com:
   www:
     common:
-      request:
-        enable: true #开启controller的AOP日志拦截
       code:
         write-enable: true
         code-redis-key: ledger:code:code_data:code_type

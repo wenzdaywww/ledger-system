@@ -121,24 +121,7 @@ export default {
     // 新增/编辑店铺弹窗控制
     const editVisible = ref(false);
     // 编辑订单信息
-    let monthInfo = reactive({
-      msId: "",
-      month : "",
-      shopId : "",
-      shopNm : "",
-      retPro: "",
-      retProRat: "",
-      groPro: "",
-      groProRat: "",
-      talOrd: "",
-      sucOrd: "",
-      faiOrd: "",
-      salAmt: "",
-      cosAmt: "",
-      advAmt: "",
-      serAmt: "",
-      virAmt: ""
-    });
+    let monthInfo = ref({});
     // 订单信息的规则校验
     const monthRules = {
       month : [
@@ -160,31 +143,16 @@ export default {
     const openMonthDialog = (month,shopArr) => {
       editVisible.value = true;
       userShop.value = shopArr.value;
-      monthInfo.msId = month && month.msId ? month.msId : null;
-      monthInfo.month = month && month.month ? month.month : null;
-      monthInfo.shopId = month && month.shopId ? month.shopId : null;
-      monthInfo.shopNm = month && month.shopNm ? month.shopNm : null;
-      monthInfo.retPro = month && month.retPro ? month.retPro : null;
-      monthInfo.retProRat = month && month.retProRat ? month.retProRat : null;
-      monthInfo.groPro = month && month.groPro ? month.groPro : null;
-      monthInfo.groProRat = month && month.groProRat ? month.groProRat : null;
-      monthInfo.talOrd = month && month.talOrd ? month.talOrd : null;
-      monthInfo.sucOrd = month && month.sucOrd ? month.sucOrd : null;
-      monthInfo.faiOrd = month && month.faiOrd ? month.faiOrd : null;
-      monthInfo.salAmt = month && month.salAmt ? month.salAmt : null;
-      monthInfo.cosAmt = month && month.cosAmt ? month.cosAmt : null;
-      monthInfo.advAmt = month && month.advAmt ? month.advAmt : null;
-      monthInfo.serAmt = month && month.serAmt ? month.serAmt : null;
-      monthInfo.virAmt = month && month.virAmt ? month.virAmt : null;
+      monthInfo.value = month ? month : {};
     }
     // 新增/编辑店铺页面的保存按钮
     const saveEdit = () => {
       monthForm.value.validate((valid) => {
         if (valid) {
-          axios.$http.post(request.editMonth,monthInfo).then(function (res) {
+          axios.$http.post(request.editMonth,monthInfo.value).then(function (res) {
             if(res.code === 200){
               editVisible.value = false;
-              ElMessage.success(monthInfo.msId ? '修改成功' : '新增成功');
+              ElMessage.success(monthInfo.value.msId ? '修改成功' : '新增成功');
               emit('findMonthList',null);//调用父组件OrderList.vue的findOrderList方法
             }else {
               ElMessage.error(res.data);

@@ -22,6 +22,8 @@ public class ShopDTO implements Serializable {
     private String shopName;
     /** 店铺平台 **/
     private String shopType;
+    /** 店铺平台名称 **/
+    private String shopTypeName;
     /** 用户名 **/
     private String userId;
     /** 店净利润 **/
