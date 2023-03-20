@@ -53,6 +53,8 @@ public class MonthDTO implements Serializable {
     private BigDecimal serviceAmount;
     /** 月刷单费 **/
     private BigDecimal virtualAmount;
+    /** 月支出费 **/
+    private BigDecimal totalCost;
     /** 更新时间 **/
     private Date updateTime;
     /** 创建时间 **/

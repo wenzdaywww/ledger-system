@@ -17,8 +17,8 @@ import com.www.common.data.response.Response;
 import com.www.common.utils.DateUtils;
 import com.www.ledger.data.dto.UserDTO;
 import com.www.ledger.data.entity.UserBookEntity;
-import com.www.ledger.data.mapper.UserBookMapper;
 import com.www.ledger.data.properties.LedgerProperties;
+import com.www.ledger.service.entity.IUserBookService;
 import com.www.ledger.service.user.IUserInfoCheckService;
 import com.www.ledger.service.user.IUserInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +46,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
     @Autowired
     private SysUserMapper sysUserMapper;
     @Autowired
-    private UserBookMapper userBookMapper;
+    private IUserBookService userBookService;
     @Autowired
     private LedgerProperties ledgerProperties;
     @Autowired
@@ -121,7 +121,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
         //创建用户账簿信息
         UserBookEntity bookEntity = new UserBookEntity();
         bookEntity.setUserId(userEntity.getUserId());
-        userBookMapper.insert(bookEntity);
+        userBookService.save(bookEntity);
         response.setResponse(ResponseEnum.SUCCESS,"创建用户成功");
         return response;
     }

@@ -53,4 +53,6 @@ public class YearDTO implements Serializable {
     private BigDecimal serviceAmount;
     /** 年刷单费 **/
     private BigDecimal virtualAmount;
+    /** 年支出费 **/
+    private BigDecimal totalCost;
 }

@@ -35,7 +35,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="monthInfo.isAdd == true ? '增加推广费' : '减少推广费'">
+            <el-form-item :label="monthInfo.isAdd == true ? '增加服务费' : '减少服务费'">
               <el-input-number v-model="monthInfo.serStep" :precision="2" min="0" max="99999999.99"
                                style="width: 250px" maxlength="20" :placeholder="monthInfo.isAdd == true ? '请输入要增加的服务费' : '请输入要减少的服务费'"></el-input-number>
             </el-form-item>

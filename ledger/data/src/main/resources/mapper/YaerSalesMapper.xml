@@ -19,6 +19,7 @@
         <result column="ADVERT_AMOUNT" property="advertAmount" />
         <result column="SERVICE_AMOUNT" property="serviceAmount" />
         <result column="VIRTUAL_AMOUNT" property="virtualAmount" />
+        <result column="TOTAL_COST" property="totalCost" />
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
@@ -49,19 +50,20 @@
     <!--  查询年销售额列表信息-->
     <select id="findYearList" resultType="com.www.ledger.data.dto.YearDTO">
         SELECT DATE_FORMAT(Y.YEAR,'%Y') yearStr,
-        S.SHOP_NAME shopName,
-        Y.RETAINED_PROFITS retainedProfits,
-        Y.RETAINED_PROFITS_RATE retainedProfitsRate,
-        Y.GROSS_PROFIT grossProfit,
-        Y.GROSS_PROFIT_RATE grossProfitRate,
-        Y.TOTAL_ORDER totalOrder,
-        Y.SUCCEED_ORDER succeedOrder,
-        Y.FAILED_ORDER failedOrder,
-        Y.SALE_AMOUNT saleAmount,
-        Y.COST_AMOUNT costAmount,
-        Y.ADVERT_AMOUNT advertAmount,
-        Y.SERVICE_AMOUNT serviceAmount,
-        Y.VIRTUAL_AMOUNT virtualAmount
+                S.SHOP_NAME shopName,
+                Y.RETAINED_PROFITS retainedProfits,
+                Y.RETAINED_PROFITS_RATE retainedProfitsRate,
+                Y.GROSS_PROFIT grossProfit,
+                Y.GROSS_PROFIT_RATE grossProfitRate,
+                Y.TOTAL_ORDER totalOrder,
+                Y.SUCCEED_ORDER succeedOrder,
+                Y.FAILED_ORDER failedOrder,
+                Y.SALE_AMOUNT saleAmount,
+                Y.COST_AMOUNT costAmount,
+                Y.ADVERT_AMOUNT advertAmount,
+                Y.SERVICE_AMOUNT serviceAmount,
+                Y.VIRTUAL_AMOUNT virtualAmount,
+                Y.TOTAL_COST totalCost
         FROM YEAR_SALES Y,USER_SHOP S
         WHERE S.USER_ID = #{obj.userId}  AND Y.USER_ID = #{obj.userId}
         AND S.SHOP_STATE='1' AND S.SHOP_ID = Y.SHOP_ID

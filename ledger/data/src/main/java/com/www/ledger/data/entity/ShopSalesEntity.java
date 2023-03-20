@@ -67,6 +67,9 @@ public class ShopSalesEntity implements Serializable {
     /** 店刷单费 **/
     @TableField("VIRTUAL_AMOUNT")
     private BigDecimal virtualAmount;
+    /** 店支出费 **/
+    @TableField("TOTAL_COST")
+    private BigDecimal totalCost;
     /** 更新时间 **/
     @TableField("UPDATE_TIME")
     private Date updateTime;

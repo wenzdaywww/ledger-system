@@ -94,6 +94,13 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="月支出费">
+              <el-input v-model="monthInfo.talCos" :disabled="true" style="width: 250px"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <template #footer>
         <div class="btn-save">
@@ -154,7 +161,7 @@ export default {
           axios.$http.post(request.editMonth,monthInfo.value).then(function (res) {
             if(res.code === 200){
               editVisible.value = false;
-              ElMessage.success(monthInfo.value.msId ? '修改成功' : '新增成功');
+              ElMessage.success(res.data);
               emit('findMonthList',null);//调用父组件OrderList.vue的findOrderList方法
             }else {
               ElMessage.error(res.data);

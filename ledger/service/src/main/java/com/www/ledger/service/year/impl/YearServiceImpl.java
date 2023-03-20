@@ -1,6 +1,5 @@
 package com.www.ledger.service.year.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.enums.ResponseEnum;
@@ -9,8 +8,7 @@ import com.www.common.utils.DateUtils;
 import com.www.common.utils.MoneyUtils;
 import com.www.ledger.data.dto.YearDTO;
 import com.www.ledger.data.entity.YearSalesEntity;
-import com.www.ledger.data.mapper.MonthSalesMapper;
-import com.www.ledger.data.mapper.YearSalesMapper;
+import com.www.ledger.service.entity.IMonthSalesService;
 import com.www.ledger.service.entity.IYearSalesService;
 import com.www.ledger.service.year.IYearService;
 import lombok.extern.slf4j.Slf4j;
@@ -36,9 +34,7 @@ import java.util.stream.Collectors;
 @Service
 public class YearServiceImpl implements IYearService {
     @Autowired
-    private YearSalesMapper yearSalesMapper;
-    @Autowired
-    private MonthSalesMapper monthSalesMapper;
+    private IMonthSalesService monthSalesService;
     @Autowired
     private IYearSalesService yearSalesService;
 
@@ -52,14 +48,12 @@ public class YearServiceImpl implements IYearService {
     @Override
     public Response<String> saveAndCountYearData(String userId) {
         //统计的年销售额
-        List<YearDTO> countList = monthSalesMapper.countYearData(userId);
+        List<YearDTO> countList = monthSalesService.countYearData(userId);
         //查询存在的年销售额数据
-        QueryWrapper<YearSalesEntity> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(YearSalesEntity::getUserId,userId);
-        List<YearSalesEntity> yearList = yearSalesMapper.selectList(wrapper);
+        List<YearSalesEntity> yearList = yearSalesService.findYearList(userId);
         if(CollectionUtils.isEmpty(countList) && CollectionUtils.isNotEmpty(yearList)){
             //没有统计的年销售额但有年销售额数据，则需要删除年销售数据
-            if(yearSalesMapper.delete(wrapper) != 0){
+            if(yearSalesService.deleteYearList(userId)){
                 return new Response<>(ResponseEnum.SUCCESS,"统计完成");
             }
             return new Response<>(ResponseEnum.FAIL,"统计失败");
@@ -82,7 +76,7 @@ public class YearServiceImpl implements IYearService {
                         .setFailedOrder(v.getFailedOrder() == null ? 0L : v.getFailedOrder())
                         .setSaleAmount(MoneyUtils.nullToZero(v.getSaleAmount())).setCostAmount(MoneyUtils.nullToZero(v.getCostAmount()))
                         .setAdvertAmount(MoneyUtils.nullToZero(v.getAdvertAmount())).setServiceAmount(MoneyUtils.nullToZero(v.getServiceAmount()))
-                        .setVirtualAmount(MoneyUtils.nullToZero(v.getVirtualAmount())).setUpdateTime(DateUtils.getCurrentDateTime());
+                        .setVirtualAmount(MoneyUtils.nullToZero(v.getVirtualAmount()));
                 //计算月销售额数据
                 this.computeYearData(yearEntity);
                 updateList.add(yearEntity);
@@ -94,7 +88,7 @@ public class YearServiceImpl implements IYearService {
                         .setFailedOrder(v.getFailedOrder() == null ? 0L : v.getFailedOrder())
                         .setSaleAmount(MoneyUtils.nullToZero(v.getSaleAmount())).setCostAmount(MoneyUtils.nullToZero(v.getCostAmount()))
                         .setAdvertAmount(MoneyUtils.nullToZero(v.getAdvertAmount())).setServiceAmount(MoneyUtils.nullToZero(v.getServiceAmount()))
-                        .setVirtualAmount(MoneyUtils.nullToZero(v.getVirtualAmount())).setUpdateTime(DateUtils.getCurrentDateTime());
+                        .setVirtualAmount(MoneyUtils.nullToZero(v.getVirtualAmount()));
                 //计算月销售额数据
                 this.computeYearData(yearEntity);
                 insertList.add(yearEntity);
@@ -119,17 +113,20 @@ public class YearServiceImpl implements IYearService {
      * @return
      */
     private void computeYearData(YearSalesEntity yearEntity){
-        //计算月毛利润=月销售额-月成本费
-        yearEntity.setGrossProfit((yearEntity.getSaleAmount().subtract(yearEntity.getCostAmount())).setScale(2, RoundingMode.HALF_UP));
-        //计算月毛利率=月毛利润/月成本费
+        //计算年支出费=年成本费+年推广费+年服务费+年刷单费
+        yearEntity.setTotalCost(yearEntity.getCostAmount().add(yearEntity.getAdvertAmount()).add(yearEntity.getServiceAmount()).add(yearEntity.getVirtualAmount()));
+        //计算年毛利润=年销售额-年成本费
+        yearEntity.setGrossProfit(yearEntity.getSaleAmount().subtract(yearEntity.getCostAmount()));
+        //计算年毛利率=年毛利润/年成本费 * 100%
         yearEntity.setGrossProfitRate( yearEntity.getCostAmount().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
                 : (yearEntity.getGrossProfit().divide(yearEntity.getCostAmount(),5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2, RoundingMode.HALF_UP));
-        //月净利润=月毛利润-月推广费-月服务费-月刷单费
+        //年净利润=年销售额-年支出费
         yearEntity.setRetainedProfits((yearEntity.getGrossProfit().subtract(yearEntity.getAdvertAmount())).subtract(yearEntity.getServiceAmount()).subtract(yearEntity.getVirtualAmount()));
-        //月净利率=月净利润/(月成本+月推广费+月服务费+月刷单费)
-        BigDecimal totalAmt = yearEntity.getCostAmount().add(yearEntity.getAdvertAmount()).add(yearEntity.getServiceAmount()).add(yearEntity.getVirtualAmount());
-        yearEntity.setRetainedProfitsRate(totalAmt.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
-                :(yearEntity.getRetainedProfits().divide(totalAmt,5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));
+        //年净利率=年净利润/年支出费 * 100%
+        yearEntity.setRetainedProfitsRate(yearEntity.getTotalCost().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
+                :(yearEntity.getRetainedProfits().divide(yearEntity.getTotalCost(),5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));
+        //更新时间
+        yearEntity.setUpdateTime(DateUtils.getCurrentDateTime());
     }
     /**
      * <p>@Description 查询我的年销售额列表 </p>
@@ -143,7 +140,7 @@ public class YearServiceImpl implements IYearService {
     @Override
     public Response<List<YearDTO>> findYearList(YearDTO yearDTO, int pageNum, long pageSize) {
         Page<YearDTO> page = new Page<>(pageNum,pageSize);
-        page = yearSalesMapper.findYearList(page,yearDTO);
+        page = yearSalesService.findYearList(page,yearDTO);
         List<YearDTO> shopList =  page.getRecords();
         Response<List<YearDTO>> response = new Response<>(ResponseEnum.SUCCESS,shopList);
         response.setPageNum(pageNum);

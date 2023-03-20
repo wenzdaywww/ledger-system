@@ -23,12 +23,12 @@
           <el-button type="success" icon="el-icon-upload2" @click="handleImport" round plain>导入</el-button>
         </div>
         <!-- 店铺信息列表-->
-        <el-table :data="tableData" border class="table" ref="multipleTable" :row-class-name="tableAddClass"
+        <el-table :data="tableData" border class="table" ref="multipleTable" :row-class-name="addRowClass"
                   :row-style="{height:'55px'}" :cell-style="{padding:'0px'}"  header-cell-class-name="table-header">
           <el-table-column prop="oiId" label="ID" v-if="false" align="center"></el-table-column>
-          <el-table-column prop="ordId" label="订单ID" align="center"></el-table-column>
+          <el-table-column prop="ordId" label="订单ID" align="center" sortable></el-table-column>
           <el-table-column prop="shopId" label="店铺Id" v-if="false" align="center"></el-table-column>
-          <el-table-column prop="shopNm" label="店铺名称" align="center"></el-table-column>
+          <el-table-column prop="shopNm" label="店铺名称" align="center" sortable></el-table-column>
           <el-table-column prop="ordDat" label="订单日期" align="center"></el-table-column>
           <el-table-column prop="supId" label="1688订单" align="center"></el-table-column>
           <el-table-column prop="gdsId" label="商品ID" align="center"></el-table-column>
@@ -47,7 +47,7 @@
           <el-table-column prop="payAmt" label="实付金额" align="center"></el-table-column>
           <el-table-column prop="cosAmt" label="商品成本" align="center"></el-table-column>
           <el-table-column prop="othAmt" label="其他支出" align="center"></el-table-column>
-          <el-table-column prop="talCos" label="总成本" align="center" width="90px">
+          <el-table-column prop="talCos" label="总成本费" align="center" width="90px">
             <template v-slot:header='scope'>
               <span>总成本
                 <el-tooltip :aa="scope" class="item" effect="light" content="总成本=商品成本 + 其他支出" placement="top">
@@ -139,7 +139,7 @@ export default {
     // 订单状态
     const orderState = ref([]);
     // 查询
-    const tableAddClass = ({row,rowIndex}) => {
+    const addRowClass = ({row,rowIndex}) => {
       //【交易成功】、【已发货，待签收】设置红色
       if (['4','3'].indexOf(row.ordSta) != -1) {
         return 'tr-red';
@@ -234,7 +234,7 @@ export default {
     };
     getCodeDataArr();
     return { query,orderDialog,tableData,pageTotal,userShop,orderState,
-      handleSearch,handleReset,handlePageChange,handleEdit,handleAdd,handleDelete,findOrderList,tableAddClass,handleImport};
+      handleSearch,handleReset,handlePageChange,handleEdit,handleAdd,handleDelete,findOrderList,addRowClass,handleImport};
   }
 };
 </script>
@@ -274,7 +274,7 @@ export default {
   color: red ;
 }
 .el-table .tr-green {
-  color: green ;
+  color: #07bd07;
 }
 .el-table .tr-blue {
   color: blue ;

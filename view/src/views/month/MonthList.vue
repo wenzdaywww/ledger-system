@@ -19,16 +19,16 @@
           </el-tooltip>
         </div>
         <!-- 店铺信息列表-->
-        <el-table :data="tableData" border class="table" ref="multipleTable"
-                  :row-style="{height:'55px'}" :cell-style="{padding:'0px'}" header-cell-class-name="table-header">
+        <el-table :data="tableData" border class="table" ref="multipleTable" :cell-class-name="addCellClass"
+                  :row-style="{height:'55px'}" :cell-style="{padding: '0px'}" header-cell-class-name="table-header">
           <el-table-column prop="msId" label="ID" v-if="false" align="center"></el-table-column>
-          <el-table-column prop="month" label="月份" align="center"></el-table-column>
+          <el-table-column prop="month" label="月份" align="center" sortable></el-table-column>
           <el-table-column prop="shopId" label="店铺ID" v-if="false" align="center"></el-table-column>
-          <el-table-column prop="shopNm" label="店铺名称" align="center"></el-table-column>
+          <el-table-column prop="shopNm" label="店铺名称" align="center" sortable></el-table-column>
           <el-table-column prop="retPro" label="月净利润" align="center">
             <template v-slot:header='scope'>
               <span>月净利润
-                <el-tooltip :aa="scope" class="item" effect="light" content="月净利润=月毛利润-月推广费-月服务费-月刷单费" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="月净利润=月销售额 - 月支出费" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -37,7 +37,7 @@
           <el-table-column prop="retProRat" label="月净利率" align="center">
             <template v-slot:header='scope'>
               <span>月净利率
-                <el-tooltip :aa="scope" class="item" effect="light" content="月净利率=月净利润 / (月成本+月推广费+月服务费+月刷单费) * 100%" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="月净利率=月净利润 / 月支出费 * 100%" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -46,7 +46,7 @@
           <el-table-column prop="groPro" label="月毛利润" align="center">
             <template v-slot:header='scope'>
               <span>月毛利润
-                <el-tooltip :aa="scope" class="item" effect="light" content="月毛利润=月销售额-月成本费" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="月毛利润=月销售额 - 月成本费" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -89,6 +89,15 @@
             </template>
           </el-table-column>
           <el-table-column prop="virAmt" label="月刷单费" align="center"></el-table-column>
+          <el-table-column prop="talCos" label="月支出费" align="center">
+            <template v-slot:header='scope'>
+              <span>月支出费
+                <el-tooltip :aa="scope" class="item" effect="light" content="月支出费=月成本费 + 月推广费 + 月服务费 + 月刷单费" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column label="操作" align="center" width="70px">
             <template #default="scope">
               <el-tooltip class="item" effect="light" content="新增" placement="top">
@@ -169,6 +178,17 @@ export default {
     const handleReduce = (row) => {
       monthAmtDialog.value.openMonthAmtDialog(row,false);//调用子组件方法
     };
+    //列添加颜色
+    const addCellClass = ({row, column, rowIndex, columnIndex}) => {
+      //列的label的名称
+      if (row.retPro > 0) {
+        return 'col-red';
+      }else if(row.retPro < 0){
+        return 'col-green';
+      }else {
+        return 'col-gray';
+      }
+    }
     // 统计月销售额数
     const handleCount = () => {
       axios.$http.post(request.monthCount,null).then(function (res) {
@@ -227,7 +247,7 @@ export default {
     getUserShopArr();
     return { query,tableData,pageTotal,userShop,monthDialog,monthAmtDialog,
       handleSearch,handleReset,handlePageChange,handleCount,handleAdd,handleDelete,
-      handleEdit,findMonthList,handleIncrease,handleReduce};
+      handleEdit,findMonthList,handleIncrease,handleReduce,addCellClass};
   }
 };
 </script>
@@ -252,5 +272,14 @@ export default {
 }
 .red {
   color: #ff0000;
+}
+/deep/.col-red {
+  color: red;
+}
+/deep/.col-green {
+  color: #07bd07;
+}
+/deep/.col-gray {
+  color: black ;
 }
 </style>

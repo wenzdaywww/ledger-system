@@ -44,4 +44,6 @@ public class YearListResponse implements Serializable {
     private BigDecimal serAmt;
     /** 年刷单费 **/
     private BigDecimal virAmt;
+    /** 年支出费 **/
+    private BigDecimal talCos;
 }

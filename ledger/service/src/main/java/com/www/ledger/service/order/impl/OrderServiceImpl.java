@@ -1,6 +1,5 @@
 package com.www.ledger.service.order.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.www.common.config.code.CodeDict;
@@ -13,7 +12,6 @@ import com.www.ledger.data.dto.OrderDTO;
 import com.www.ledger.data.entity.OrderInfoEntity;
 import com.www.ledger.data.enums.CodeTypeEnum;
 import com.www.ledger.data.mapper.OrderInfoMapper;
-import com.www.ledger.data.mapper.UserShopMapper;
 import com.www.ledger.service.entity.IOrderInfoService;
 import com.www.ledger.service.order.IOrderCheckService;
 import com.www.ledger.service.order.IOrderService;
@@ -21,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -37,8 +34,6 @@ import java.util.List;
 @Slf4j
 @Service
 public class OrderServiceImpl implements IOrderService {
-    @Autowired
-    private UserShopMapper userShopMapper;
     @Autowired
     private OrderInfoMapper orderInfoMapper;
     @Autowired
@@ -108,10 +103,7 @@ public class OrderServiceImpl implements IOrderService {
      */
     @Override
     public Response<String> deleteOrderInfo(String userId, Long oiId) {
-        UpdateWrapper<OrderInfoEntity> wrapper = new UpdateWrapper<>();
-        wrapper.lambda().eq(OrderInfoEntity::getOiId,oiId)
-                .eq(OrderInfoEntity::getUserId,userId);
-        if(orderInfoService.remove(wrapper)){
+        if(orderInfoService.deleteOrderInfo(userId,oiId)){
             return new Response<>(ResponseEnum.SUCCESS,"删除成功");
         }
         return new Response<>(ResponseEnum.FAIL,"删除失败");

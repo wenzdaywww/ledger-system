@@ -48,4 +48,6 @@ public class MonthListResponse implements Serializable {
     private BigDecimal serAmt;
     /** 店刷单费 **/
     private BigDecimal virAmt;
+    /** 店支出费 **/
+    private BigDecimal talCos;
 }

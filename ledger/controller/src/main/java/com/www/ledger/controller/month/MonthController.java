@@ -73,7 +73,7 @@ public class MonthController {
     @PostMapping("new")
     public Response<String> saveMonthSales(@Validated MonthNewRequest monthRequest){
         MonthDTO monthDTO = new MonthDTO();
-        monthDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
+        monthDTO.setUserId(JwtAuthorizationTokenFilter.getUserId()).setMsId(monthRequest.getMsId())
                 .setMonthDateStr(monthRequest.getMonth()).setShopId(monthRequest.getShopId())
                 .setAdvertAmount(monthRequest.getAdvAmt()).setServiceAmount(monthRequest.getSerAmt());
         return monthService.saveMonthSales(monthDTO);
@@ -125,7 +125,8 @@ public class MonthController {
                                 .setTalOrd(dto.getTotalOrder()).setSucOrd(dto.getSucceedOrder())
                                 .setFaiOrd(dto.getFailedOrder()).setSalAmt(dto.getSaleAmount())
                                 .setCosAmt(dto.getCostAmount()).setAdvAmt(dto.getAdvertAmount())
-                                .setSerAmt(dto.getServiceAmount()).setVirAmt(dto.getVirtualAmount());
+                                .setSerAmt(dto.getServiceAmount()).setVirAmt(dto.getVirtualAmount())
+                                .setTalCos(dto.getTotalCost());
                         tempList.add(month);
                     });
                     return tempList;

@@ -70,6 +70,9 @@ public class MonthSalesEntity implements Serializable {
     /** 月刷单费 **/
     @TableField("VIRTUAL_AMOUNT")
     private BigDecimal virtualAmount;
+    /** 月支出费 **/
+    @TableField("TOTAL_COST")
+    private BigDecimal totalCost;
     /** 更新时间 **/
     @TableField("UPDATE_TIME")
     private Date updateTime;

@@ -23,6 +23,9 @@
             <el-button v-if="openEdit" type="primary" @click="onSubmit" class="el-icon-check" round plain> 保存</el-button>
             <el-link href="javascript:void(0);" type="primary" @click="openEdit ? openEdit = false : openEdit = true"
                      style="margin-left: 20px;" :underline=false class="el-icon-edit">{{openEdit ? '取消编辑' : '编辑'}}</el-link>
+            <el-tooltip class="item" effect="light" content="根据销售数据统计后导出" placement="top">
+              <el-button type="danger" class="el-icon-download" style="float: right;margin-left: 10px;" @click="handleCount" round plain> 导出报表</el-button>
+            </el-tooltip>
             <el-tooltip class="item" effect="light" content="根据销售数据统计" placement="top">
               <el-button type="success" class="el-icon-s-data" style="float: right;" @click="handleCount" round plain> 统计账簿</el-button>
             </el-tooltip>
@@ -35,7 +38,7 @@
             </div>
           </template>
           净利率
-          <el-tooltip class="item" effect="light" content="净利率=净利润 / (成本费+推广费+服务费+刷单费) * 100%" placement="top">
+          <el-tooltip class="item" effect="light" content="净利率=净利润 / 总支出费 * 100%" placement="top">
             <el-progress :percentage="bookData.retProRat" color="red"></el-progress>
           </el-tooltip>
           毛利率
@@ -52,7 +55,7 @@
       <el-col :span="16">
         <el-row :gutter="20" class="mgb20">
           <el-col :span="8">
-            <el-tooltip class="item" effect="light" content="净利润=毛利润-推广费-服务费-刷单费" placement="top">
+            <el-tooltip class="item" effect="light" content="净利润=总销售额 - 总支出费" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-3">
                   <i class="el-icon-data-line grid-con-icon"></i>
@@ -65,7 +68,7 @@
             </el-tooltip>
           </el-col>
           <el-col :span="8">
-            <el-tooltip class="item" effect="light" content="毛利润=销售额-成本费" placement="top">
+            <el-tooltip class="item" effect="light" content="毛利润=销售额 - 成本费" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-3">
                   <i class="el-icon-data-analysis grid-con-icon"></i>
@@ -83,7 +86,7 @@
                 <i class="el-icon-sell grid-con-icon"></i>
                 <div class="grid-cont-right">
                   <div class="grid-num">{{ bookData.salAmt }}</div>
-                  <div>销售额</div>
+                  <div>总销售额</div>
                 </div>
               </div>
             </el-card>
@@ -96,7 +99,7 @@
                 <i class="el-icon-shopping-cart-full grid-con-icon"></i>
                 <div class="grid-cont-right">
                   <div class="grid-num">{{ bookData.talOrd }}</div>
-                  <div>订单量</div>
+                  <div>总订单量</div>
                 </div>
               </div>
             </el-card>
@@ -107,7 +110,7 @@
                 <i class="el-icon-shopping-cart-1 grid-con-icon"></i>
                 <div class="grid-cont-right">
                   <div class="grid-num">{{ bookData.sucOrd }}</div>
-                  <div>订单成交量</div>
+                  <div>总订单成交量</div>
                 </div>
               </div>
             </el-card>
@@ -118,7 +121,7 @@
                 <i class="el-icon-shopping-cart-2 grid-con-icon"></i>
                 <div class="grid-cont-right">
                   <div class="grid-num">{{ bookData.faiOrd }}</div>
-                  <div>订单流失量</div>
+                  <div>总订单流失量</div>
                 </div>
               </div>
             </el-card>
@@ -131,7 +134,7 @@
                 <i class="el-icon-sold-out grid-con-icon"></i>
                 <div class="grid-cont-right">
                   <div class="grid-num">{{ bookData.cosAmt }}</div>
-                  <div>成本费</div>
+                  <div>总成本费</div>
                 </div>
               </div>
             </el-card>
@@ -142,7 +145,7 @@
                 <i class="el-icon-monitor grid-con-icon"></i>
                 <div class="grid-cont-right">
                   <div class="grid-num">{{ bookData.advAmt }}</div>
-                  <div>推广费</div>
+                  <div>总推广费</div>
                 </div>
               </div>
             </el-card>
@@ -153,7 +156,7 @@
                 <i class="el-icon-shopping-bag-1 grid-con-icon"></i>
                 <div class="grid-cont-right">
                   <div class="grid-num">{{ bookData.serAmt }}</div>
-                  <div>服务费</div>
+                  <div>总服务费</div>
                 </div>
               </div>
             </el-card>
@@ -166,10 +169,23 @@
                 <i class="el-icon-shopping-bag-2 grid-con-icon"></i>
                 <div class="grid-cont-right">
                   <div class="grid-num">{{ bookData.virAmt }}</div>
-                  <div>刷单费</div>
+                  <div>总刷单费</div>
                 </div>
               </div>
             </el-card>
+          </el-col>
+          <el-col :span="8">
+            <el-tooltip class="item" effect="light" content="总支出费=总成本费 + 总推广费 + 总服务费 + 总刷单费" placement="top">
+              <el-card shadow="hover" :body-style="{ padding: '0px' }">
+                <div class="grid-content grid-con-4">
+                  <i class="el-icon-data-analysis grid-con-icon"></i>
+                  <div class="grid-cont-right">
+                    <div class="grid-num">{{ bookData.talCos }}</div>
+                    <div>总支出费</div>
+                  </div>
+                </div>
+              </el-card>
+            </el-tooltip>
           </el-col>
           <el-col :span="8">
             <el-card shadow="hover" :body-style="{ padding: '0px' }">
@@ -178,17 +194,6 @@
                 <div class="grid-cont-right">
                   <div class="grid-num">{{ bookData.shopNum }}</div>
                   <div>店铺数</div>
-                </div>
-              </div>
-            </el-card>
-          </el-col>
-          <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-4">
-                <i class="el-icon-goods grid-con-icon"></i>
-                <div class="grid-cont-right">
-                  <div class="grid-num">{{ bookData.gdsNum }}</div>
-                  <div>商品数</div>
                 </div>
               </div>
             </el-card>
@@ -260,12 +265,27 @@ export default {
     };
     // 表单对象
     const editForm = ref(null);
+    // 导出报表
+    const handleExport = () => {
+      axios.$http.post(request.bookCount,null).then(function (res) {
+        if(res.code === 200){
+          ElMessage.success(res.data);
+          getBookInfoData();
+          getLastYeatData();
+          getLast10DayData();
+        }else{
+          ElMessage.error(res.data);
+        }
+      })
+    };
     // 统计年销售
     const handleCount = () => {
       axios.$http.post(request.bookCount,null).then(function (res) {
         if(res.code === 200){
           ElMessage.success(res.data);
           getBookInfoData();
+          getLastYeatData();
+          getLast10DayData();
         }else{
           ElMessage.error(res.data);
         }
@@ -296,6 +316,8 @@ export default {
     // 查询最近一年销售趋势图
     const getLastYeatData = () => {
       axios.$http.get(request.bookYear,null).then(function (res) {
+        shopSales.value.labels = [];
+        shopSales.value.datasets[0].data = [];
         if(res.code === 200){
           res.data.forEach(function (item) {
             shopSales.value.labels.push(item.month);
@@ -310,6 +332,8 @@ export default {
     // 查询销售额最高店铺近10天销售额趋势图
     const getLast10DayData = () => {
       axios.$http.get(request.bookDay,null).then(function (res) {
+        monthSales.value.datasets = [];
+        monthSales.value.labels = [];
         if(res.code === 200){
           let dateData = [];//日期坐标
           //res.data = [{shopNm:"test",day:[{day:2021/01/01,sales:100}]}]
@@ -349,7 +373,7 @@ export default {
       });
     };
     return {user,openEdit,editRules,editForm,bookData,shopSales,monthSales,
-      onSubmit,handleCount};
+      onSubmit,handleCount,handleExport};
   },
 };
 </script>

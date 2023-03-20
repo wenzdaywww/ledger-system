@@ -111,7 +111,8 @@ public class ShopController {
                               .setTalOrd(shop.getTotalOrder()).setSucOrd(shop.getSucceedOrder())
                               .setFaiOrd(shop.getFailedOrder()).setSalAmt(shop.getSaleAmount())
                               .setCosAmt(shop.getCostAmount()).setAdvAmt(shop.getAdvertAmount())
-                              .setSerAmt(shop.getServiceAmount()).setVirAmt(shop.getVirtualAmount());
+                              .setSerAmt(shop.getServiceAmount()).setVirAmt(shop.getVirtualAmount())
+                              .setTalCos(shop.getTotalCost());
                         tempList.add(ruslut);
                     });
                     return tempList;

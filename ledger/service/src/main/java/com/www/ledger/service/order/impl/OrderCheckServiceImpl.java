@@ -1,6 +1,5 @@
 package com.www.ledger.service.order.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.www.common.config.code.CodeDict;
 import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.enums.ResponseEnum;
@@ -10,8 +9,8 @@ import com.www.ledger.data.dto.OrderDTO;
 import com.www.ledger.data.entity.OrderInfoEntity;
 import com.www.ledger.data.entity.UserShopEntity;
 import com.www.ledger.data.enums.CodeTypeEnum;
-import com.www.ledger.data.mapper.OrderInfoMapper;
-import com.www.ledger.data.mapper.UserShopMapper;
+import com.www.ledger.service.entity.IOrderInfoService;
+import com.www.ledger.service.entity.IUserShopService;
 import com.www.ledger.service.order.IOrderCheckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,9 +26,9 @@ import java.util.Date;
 @Service
 public class OrderCheckServiceImpl implements IOrderCheckService {
     @Autowired
-    private UserShopMapper userShopMapper;
+    private IOrderInfoService orderInfoService;
     @Autowired
-    private OrderInfoMapper orderInfoMapper;
+    private IUserShopService userShopService;
 
     /**
      * <p>@Description 保存订单信息前处理校验 </p>
@@ -53,21 +52,14 @@ public class OrderCheckServiceImpl implements IOrderCheckService {
         }
         orderDTO.setOrderDate(orderDate);
         //判断用户店铺是否存在且有效
-        QueryWrapper<UserShopEntity> shopWrapper = new QueryWrapper<>();
-        shopWrapper.lambda().eq(UserShopEntity::getShopId,orderDTO.getShopId())
-                .eq(UserShopEntity::getUserId,orderDTO.getUserId())
-                .eq(UserShopEntity::getShopState, CodeDict.getValue(CodeTypeEnum.ShopState_Valid.getType(), CodeTypeEnum.ShopState_Valid.getKey()));
-        UserShopEntity shopEntity = userShopMapper.selectOne(shopWrapper);
+        UserShopEntity shopEntity = userShopService.findUserShop(orderDTO.getUserId(),orderDTO.getShopId());
         if(shopEntity == null){
             response.setResponse(ResponseEnum.FAIL,"查询不到用户的店铺信息");
             return null;
         }
         //订单ID不为空，判断该订单是否属于该用户
         if(orderDTO.getOiId() != null){
-            QueryWrapper<OrderInfoEntity> wrapper = new QueryWrapper<>();
-            wrapper.lambda().eq(OrderInfoEntity::getUserId,orderDTO.getUserId())
-                    .eq(OrderInfoEntity::getOiId,orderDTO.getOrderId());
-            OrderInfoEntity orderEntity = orderInfoMapper.selectById(orderDTO.getOiId());
+            OrderInfoEntity orderEntity = orderInfoService.findOrderInfo(orderDTO.getUserId(),orderDTO.getOiId());
             if(orderEntity == null){
                 response.setResponse(ResponseEnum.FAIL,"订单信息不存在");
                 return null;

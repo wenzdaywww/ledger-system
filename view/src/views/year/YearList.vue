@@ -18,13 +18,13 @@
           </el-tooltip>
         </div>
         <!-- 店铺信息列表-->
-        <el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-          <el-table-column prop="year" label="年份" align="center"></el-table-column>
-          <el-table-column prop="shopNm" label="店铺名称" align="center"></el-table-column>
+        <el-table :data="tableData" border class="table" ref="multipleTable" :cell-class-name="addCellClass" header-cell-class-name="table-header">
+          <el-table-column prop="year" label="年份" align="center" sortable></el-table-column>
+          <el-table-column prop="shopNm" label="店铺名称" align="center" sortable></el-table-column>
           <el-table-column prop="retPro" label="年净利润" align="center">
             <template v-slot:header='scope'>
               <span>年净利润
-                <el-tooltip :aa="scope" class="item" effect="light" content="年净利润=年毛利润-年推广费-年服务费-年刷单费" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="年净利润=年销售额 - 年支出费" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -33,7 +33,7 @@
           <el-table-column prop="retProRat" label="年净利率" align="center">
             <template v-slot:header='scope'>
               <span>年净利率
-                <el-tooltip :aa="scope" class="item" effect="light" content="年净利率=年净利润 / (年成本+年推广费+年服务费+年刷单费) * 100%" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="年净利率=年净利润 / 年支出费 * 100%" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -42,7 +42,7 @@
           <el-table-column prop="groPro" label="年毛利润" align="center">
             <template v-slot:header='scope'>
               <span>年毛利润
-                <el-tooltip :aa="scope" class="item" effect="light" content="年毛利润=年销售额-年成本费" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="年毛利润=年销售额 - 年成本费" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -65,6 +65,15 @@
           <el-table-column prop="advAmt" label="年推广费" align="center"></el-table-column>
           <el-table-column prop="serAmt" label="年服务费" align="center"></el-table-column>
           <el-table-column prop="virAmt" label="年刷单费" align="center"></el-table-column>
+          <el-table-column prop="talCos" label="年支出费" align="center">
+            <template v-slot:header='scope'>
+              <span>年支出费
+                <el-tooltip :aa="scope" class="item" effect="light" content="年支出费=年成本费 + 年推广费 + 年服务费 + 年刷单费" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
         </el-table>
         <div class="pagination">
           <el-pagination background layout="total, prev, pager, next" :current-page="query.pageNum"
@@ -104,6 +113,17 @@ export default {
       query.pageNum = 1;
       findYearList();
     };
+    //列添加颜色
+    const addCellClass = ({row, column, rowIndex, columnIndex}) => {
+      //列的label的名称
+      if (row.retPro > 0) {
+        return 'col-red';
+      }else if(row.retPro < 0){
+        return 'col-green';
+      }else {
+        return 'col-gray';
+      }
+    }
     // 重置
     const handleReset = () => {
       query.shopId = "";
@@ -150,7 +170,7 @@ export default {
     };
     getUserShopArr();
     return { query,tableData,pageTotal,userShop,
-      handleSearch,handleReset,handlePageChange,handleCount};
+      handleSearch,handleReset,handlePageChange,handleCount,addCellClass};
   }
 };
 </script>
@@ -175,5 +195,14 @@ export default {
 }
 .red {
   color: #ff0000;
+}
+/deep/.col-red {
+  color: red;
+}
+/deep/.col-green {
+  color: #07bd07;
+}
+/deep/.col-gray {
+  color: black ;
 }
 </style>

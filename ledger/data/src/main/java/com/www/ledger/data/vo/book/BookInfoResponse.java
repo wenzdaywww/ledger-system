@@ -42,6 +42,8 @@ public class BookInfoResponse implements Serializable {
     private BigDecimal serAmt;
     /** 总刷单费 **/
     private BigDecimal virAmt;
+    /** 总支出费 **/
+    private BigDecimal talCos;
     /** 店铺数 **/
     private int shopNum;
     /** 商品数 **/

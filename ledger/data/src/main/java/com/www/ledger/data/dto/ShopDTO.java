@@ -50,4 +50,6 @@ public class ShopDTO implements Serializable {
     private BigDecimal serviceAmount;
     /** 店刷单费 **/
     private BigDecimal virtualAmount;
+    /** 店支出费 **/
+    private BigDecimal totalCost;
 }

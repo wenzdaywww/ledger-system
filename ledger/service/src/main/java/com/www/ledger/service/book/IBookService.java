@@ -16,13 +16,13 @@ import java.util.Map;
  */
 public interface IBookService {
     /**
-     * <p>@Description 查询近10天销售额前3名店铺销售额趋势图 </p>
+     * <p>@Description 查询近些天销售额排名靠前店铺销售额趋势图 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/19 18:00 </p>
      * @param userId 用户ID
      * @return
      */
-    Response<List<List<OrderDTO>>> findLast10DaySales(String userId);
+    Response<List<List<OrderDTO>>> findLastDaySales(String userId);
     /**
      * <p>@Description 查询用户近一年的销售额 </p>
      * <p>@Author www </p>

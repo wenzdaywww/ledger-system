@@ -81,7 +81,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="总成本" prop="talCos">
+            <el-form-item label="总成本费" prop="talCos">
               <el-input v-model="orderInfo.talCos" :disabled="true" style="width: 250px" maxlength="20"></el-input>
             </el-form-item>
           </el-col>

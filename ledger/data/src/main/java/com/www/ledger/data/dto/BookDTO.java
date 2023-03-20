@@ -46,6 +46,8 @@ public class BookDTO implements Serializable {
     private BigDecimal serviceAmount;
     /** 总刷单费 **/
     private BigDecimal virtualAmount;
+    /** 总支出费 **/
+    private BigDecimal totalCost;
     /** 店铺数 **/
     private int shopNum;
     /** 商品数 **/

@@ -65,7 +65,8 @@ public class YearController {
                                 .setTalOrd(dto.getTotalOrder()).setSucOrd(dto.getSucceedOrder())
                                 .setFaiOrd(dto.getFailedOrder()).setSalAmt(dto.getSaleAmount())
                                 .setCosAmt(dto.getCostAmount()).setAdvAmt(dto.getAdvertAmount())
-                                .setSerAmt(dto.getServiceAmount()).setVirAmt(dto.getVirtualAmount());
+                                .setSerAmt(dto.getServiceAmount()).setVirAmt(dto.getVirtualAmount())
+                                .setTalCos(dto.getTotalCost());
                         tempList.add(year);
                     });
                     return tempList;

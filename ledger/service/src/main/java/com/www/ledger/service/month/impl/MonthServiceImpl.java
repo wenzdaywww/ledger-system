@@ -1,7 +1,5 @@
 package com.www.ledger.service.month.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.enums.ResponseEnum;
@@ -11,10 +9,9 @@ import com.www.common.utils.MoneyUtils;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.entity.MonthSalesEntity;
 import com.www.ledger.data.entity.UserShopEntity;
-import com.www.ledger.data.mapper.MonthSalesMapper;
 import com.www.ledger.data.mapper.OrderInfoMapper;
-import com.www.ledger.data.mapper.UserShopMapper;
 import com.www.ledger.service.entity.IMonthSalesService;
+import com.www.ledger.service.entity.IUserShopService;
 import com.www.ledger.service.month.IMonthService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -40,11 +37,9 @@ import java.util.stream.Collectors;
 @Service
 public class MonthServiceImpl implements IMonthService {
     @Autowired
-    private UserShopMapper userShopMapper;
-    @Autowired
     private OrderInfoMapper orderInfoMapper;
     @Autowired
-    private MonthSalesMapper monthSalesMapper;
+    private IUserShopService userShopService;
     @Autowired
     private IMonthSalesService monthSalesService;
 
@@ -63,10 +58,7 @@ public class MonthServiceImpl implements IMonthService {
         if(monthDTO.getAdvertAmount().compareTo(BigDecimal.ZERO) == 0 && monthDTO.getServiceAmount().compareTo(BigDecimal.ZERO) == 0){
             return new Response<>(ResponseEnum.FAIL,"推广费和服务费不能都为0");
         }
-        QueryWrapper<MonthSalesEntity> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(MonthSalesEntity::getUserId,monthDTO.getUserId())
-                .eq(MonthSalesEntity::getMsId,monthDTO.getMsId());
-        MonthSalesEntity monthEntity = monthSalesMapper.selectOne(wrapper);
+        MonthSalesEntity monthEntity = monthSalesService.findMonthSales(monthDTO.getUserId(),monthDTO.getMsId());
         if(monthEntity == null){
             return new Response<>(ResponseEnum.FAIL,"月销售数据不存在");
         }
@@ -81,7 +73,7 @@ public class MonthServiceImpl implements IMonthService {
         }
         //计算月销售额数据
         this.computeMonthData(monthEntity);
-        if(monthSalesMapper.updateById(monthEntity) != 0){
+        if(monthSalesService.save(monthEntity)){
             return new Response<>(ResponseEnum.SUCCESS,"修改成功");
         }
         return new Response<>(ResponseEnum.FAIL,"修改失败");
@@ -99,15 +91,25 @@ public class MonthServiceImpl implements IMonthService {
         if(monthDate == null){
             return new Response<>(ResponseEnum.FAIL,"月份格式错误");
         }
-        UserShopEntity shopEntity = userShopMapper.selectById(monthDTO.getShopId());
+        //判断当前店铺是否属于用户的
+        UserShopEntity shopEntity = userShopService.findUserShop(monthDTO.getUserId(),monthDTO.getShopId());
         if(shopEntity == null){
-            return new Response<>(ResponseEnum.FAIL,"店铺ID错误");
+            return new Response<>(ResponseEnum.FAIL,"店铺不存在");
         }
-        QueryWrapper<MonthSalesEntity> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(MonthSalesEntity::getUserId,monthDTO.getUserId())
-                .eq(MonthSalesEntity::getShopId,monthDTO.getShopId())
-                .eq(MonthSalesEntity::getMonthDate,monthDate);
-        MonthSalesEntity monthEntity = monthSalesMapper.selectOne(wrapper);
+        MonthSalesEntity monthEntity = null;
+        //月销售数据修改
+        if(monthDTO.getMsId() != null){
+            monthEntity = monthSalesService.findMonthSales(monthDTO.getUserId(),monthDTO.getMsId());
+            if(monthEntity == null){
+                return new Response<>(ResponseEnum.FAIL,"店铺月销售数据不存在");
+            }
+        }else {//月销售数据新增
+            monthEntity = monthSalesService.findMonthSales(monthDTO.getUserId(),monthDTO.getShopId(),monthDate);
+            if(monthEntity != null){
+                return new Response<>(ResponseEnum.FAIL,"已存在店铺月销售数据");
+            }
+        }
+        //月销售数据新增
         if(monthEntity == null){
             monthEntity = new MonthSalesEntity();
             monthEntity.setShopId(monthDTO.getShopId()).setUserId(monthDTO.getUserId())
@@ -135,10 +137,7 @@ public class MonthServiceImpl implements IMonthService {
      */
     @Override
     public Response<String> deleteMonthData(String userId,Long msId) {
-        UpdateWrapper<MonthSalesEntity> wrapper = new UpdateWrapper<>();
-        wrapper.lambda().eq(MonthSalesEntity::getUserId,userId)
-                .eq(MonthSalesEntity::getMsId,msId);
-        if(monthSalesMapper.delete(wrapper) != 0){
+        if(monthSalesService.deleteMonthSales(userId,msId)){
             return new Response<>(ResponseEnum.SUCCESS,"删除成功");
         }
         return new Response<>(ResponseEnum.FAIL,"删除失败");
@@ -155,14 +154,12 @@ public class MonthServiceImpl implements IMonthService {
         //统计月销售额
         List<MonthDTO> countList = orderInfoMapper.countMonthSale(userId);
         //查询存在的月销售额数据
-        QueryWrapper<MonthSalesEntity> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(MonthSalesEntity::getUserId,userId);
-        List<MonthSalesEntity> monthList = monthSalesMapper.selectList(wrapper);
+        List<MonthSalesEntity> monthList = monthSalesService.findMonthSalesList(userId);
         List<MonthSalesEntity> insertList = new ArrayList<>();//待插入的数据
         List<MonthSalesEntity> updateList = new ArrayList<>();//待更新的数据
         //数据转换处理，key=店铺ID+月份日期（默认为月份01日），如：101320230201
         Map<String,MonthSalesEntity> entityMap = CollectionUtils.isEmpty(monthList) ? new HashMap<>()
-                : monthList.stream().collect(Collectors.toMap(k -> k.getShopId() + DateUtils.format(k.getMonthDate(), DateFormatEnum.YYYYMMDD5), month -> month));
+                : monthList.stream().collect(Collectors.toMap(k -> k.getShopId() + DateUtils.format(k.getMonthDate(), DateFormatEnum.YYYYMMDD1), month -> month));
         Map<String,MonthDTO> dtoMap = CollectionUtils.isEmpty(countList) ? new HashMap<>()
                 : countList.stream().collect(Collectors.toMap(k -> k.getShopId() + k.getMonthDateStr(), month -> month));
         //处理统计出的月销售额
@@ -221,19 +218,21 @@ public class MonthServiceImpl implements IMonthService {
      * @return
      */
     private void computeMonthData(MonthSalesEntity monthEntity){
+        //计算月支出费=月成本费+月推广费+月服务费+月刷单费
+        monthEntity.setTotalCost(monthEntity.getCostAmount().add(monthEntity.getAdvertAmount()).add(monthEntity.getServiceAmount()).add(monthEntity.getVirtualAmount()));
         //计算月失败单数=月订单数-月成交单数
         monthEntity.setFailedOrder(monthEntity.getTotalOrder()-monthEntity.getSucceedOrder());
         //计算月毛利润=月销售额-月成本费
-        monthEntity.setGrossProfit((monthEntity.getSaleAmount().subtract(monthEntity.getCostAmount())).setScale(2, RoundingMode.HALF_UP));
-        //计算月毛利率=月毛利润/月成本费
+        monthEntity.setGrossProfit(monthEntity.getSaleAmount().subtract(monthEntity.getCostAmount()));
+        //计算月毛利率=月毛利润/月成本费 * 100%
         monthEntity.setGrossProfitRate(monthEntity.getCostAmount().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
                 : (monthEntity.getGrossProfit().divide(monthEntity.getCostAmount(),5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2, RoundingMode.HALF_UP));
-        //月净利润=月毛利润-月推广费-月服务费-月刷单费
-        monthEntity.setRetainedProfits((monthEntity.getGrossProfit().subtract(monthEntity.getAdvertAmount())).subtract(monthEntity.getServiceAmount()).subtract(monthEntity.getVirtualAmount()));
-        //月净利率=月净利润/(月成本+月推广费+月服务费+月刷单费)
-        BigDecimal totalAmt = monthEntity.getCostAmount().add(monthEntity.getAdvertAmount()).add(monthEntity.getServiceAmount()).add(monthEntity.getVirtualAmount());
-        monthEntity.setRetainedProfitsRate(totalAmt.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
-                :(monthEntity.getRetainedProfits().divide(totalAmt,5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));
+        //月净利润=月销售额-月支出费
+        monthEntity.setRetainedProfits((monthEntity.getSaleAmount().subtract(monthEntity.getTotalCost())));
+        //月净利率=月净利润/月支出费 * 100%
+        monthEntity.setRetainedProfitsRate(monthEntity.getTotalCost().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
+                :(monthEntity.getRetainedProfits().divide(monthEntity.getTotalCost(),5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));
+        //更新时间
         monthEntity.setUpdateTime(DateUtils.getCurrentDateTime());
     }
     /**
@@ -248,7 +247,7 @@ public class MonthServiceImpl implements IMonthService {
     @Override
     public Response<List<MonthDTO>> findMonthList(MonthDTO monthDTO, int pageNum, long pageSize) {
         Page<MonthDTO> page = new Page<>(pageNum,pageSize);
-        page = monthSalesMapper.findMonthList(page,monthDTO);
+        page = monthSalesService.findMonthList(page,monthDTO);
         List<MonthDTO> shopList =  page.getRecords();
         Response<List<MonthDTO>> response = new Response<>(ResponseEnum.SUCCESS,shopList);
         response.setPageNum(pageNum);

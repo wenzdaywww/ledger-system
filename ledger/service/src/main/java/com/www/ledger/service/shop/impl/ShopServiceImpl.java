@@ -14,11 +14,10 @@ import com.www.ledger.data.dto.ShopDTO;
 import com.www.ledger.data.entity.ShopSalesEntity;
 import com.www.ledger.data.entity.UserShopEntity;
 import com.www.ledger.data.enums.CodeTypeEnum;
-import com.www.ledger.data.mapper.ShopSalesMapper;
-import com.www.ledger.data.mapper.YearSalesMapper;
 import com.www.ledger.data.properties.LedgerProperties;
 import com.www.ledger.service.entity.IShopSalesService;
 import com.www.ledger.service.entity.IUserShopService;
+import com.www.ledger.service.entity.IYearSalesService;
 import com.www.ledger.service.shop.IShopService;
 import com.www.ledger.service.user.IUserInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -46,15 +45,13 @@ import java.util.stream.Collectors;
 @Service
 public class ShopServiceImpl implements IShopService {
     @Autowired
-    private YearSalesMapper yearSalesMapper;
-    @Autowired
-    private ShopSalesMapper shopSalesMapper;
-    @Autowired
     private IUserShopService userShopService;
     @Autowired
     private IUserInfoService userInfoService;
     @Autowired
     private IShopSalesService shopSalesService;
+    @Autowired
+    private IYearSalesService yearSalesService;
     @Autowired
     private LedgerProperties ledgerProperties;
 
@@ -68,11 +65,9 @@ public class ShopServiceImpl implements IShopService {
     @Override
     public Response<String> saveAndCountShopData(String userId) {
         //统计的店销售额
-        List<ShopDTO> countList = yearSalesMapper.countShopData(userId);
+        List<ShopDTO> countList = yearSalesService.countShopData(userId);
         //查询的店销售额
-        QueryWrapper<ShopSalesEntity> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(ShopSalesEntity::getUserId,userId);
-        List<ShopSalesEntity> shopList = shopSalesMapper.selectList(wrapper);
+        List<ShopSalesEntity> shopList = shopSalesService.findShopSalesList(userId);
         //数据转换处理，key=店铺ID，如：1013
         Map<Long, ShopSalesEntity> entityMap = CollectionUtils.isEmpty(shopList) ? new HashMap<>()
                 : shopList.stream().collect(Collectors.toMap(k -> k.getShopId(), month -> month));
@@ -97,17 +92,18 @@ public class ShopServiceImpl implements IShopService {
                       .setServiceAmount(BigDecimal.ZERO).setVirtualAmount(BigDecimal.ZERO);
             }
             entity.setUpdateTime(DateUtils.getCurrentDateTime());
-            //计算月毛利润=月销售额-月成本费
-            entity.setGrossProfit((entity.getSaleAmount().subtract(entity.getCostAmount())).setScale(2, RoundingMode.HALF_UP));
-            //计算月毛利率=月毛利润/月成本费
+            //计算店支出费=店成本费+店推广费+店服务费+店刷单费
+            entity.setTotalCost(entity.getCostAmount().add(entity.getAdvertAmount()).add(entity.getServiceAmount()).add(entity.getVirtualAmount()));
+            //计算店毛利润=店销售额-店成本费
+            entity.setGrossProfit(entity.getSaleAmount().subtract(entity.getCostAmount()));
+            //计算店店毛利率=店毛利润/店成本费 * 100%
             entity.setGrossProfitRate( entity.getCostAmount().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
                     : (entity.getGrossProfit().divide(entity.getCostAmount(),5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2, RoundingMode.HALF_UP));
-            //月净利润=月毛利润-月推广费-月服务费-月刷单费
+            //店净利润=店销售额-店支出费
             entity.setRetainedProfits((entity.getGrossProfit().subtract(entity.getAdvertAmount())).subtract(entity.getServiceAmount()).subtract(entity.getVirtualAmount()));
-            //月净利率=月净利润/(月成本+月推广费+月服务费+月刷单费)
-            BigDecimal totalAmt = entity.getCostAmount().add(entity.getAdvertAmount()).add(entity.getServiceAmount()).add(entity.getVirtualAmount());
-            entity.setRetainedProfitsRate(totalAmt.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
-                    :(entity.getRetainedProfits().divide(totalAmt,5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));
+            //店净利率=店净利润/店支出费 * 100%
+            entity.setRetainedProfitsRate(entity.getTotalCost().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
+                    :(entity.getRetainedProfits().divide(entity.getTotalCost(),5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));
         });
         shopSalesService.updateBatchById(shopList,100);
         return new Response<>(ResponseEnum.SUCCESS,"统计完成");
@@ -137,9 +133,9 @@ public class ShopServiceImpl implements IShopService {
                 .setUserId(dto.getUserId())
                 .setShopType(dto.getShopType());
         userShopService.save(shopEntity);
-            ShopSalesEntity salesEntity = new ShopSalesEntity();
-            salesEntity.setShopId(shopEntity.getShopId())
-                    .setUserId(shopEntity.getUserId());
+        ShopSalesEntity salesEntity = new ShopSalesEntity();
+        salesEntity.setShopId(shopEntity.getShopId())
+                .setUserId(shopEntity.getUserId());
         shopSalesService.save(salesEntity);
         response.setResponse(ResponseEnum.SUCCESS,"新增成功");
         return response;
@@ -207,7 +203,7 @@ public class ShopServiceImpl implements IShopService {
     @Override
     public Response<List<ShopDTO>> findShopList(ShopDTO dto, int pageNum, long pageSize) {
         Page<ShopDTO> page = new Page<>(pageNum,pageSize);
-        page = shopSalesMapper.findShopList(page,dto);
+        page = shopSalesService.findShopList(page,dto);
         List<ShopDTO> shopList =  page.getRecords();
         if(CollectionUtils.isNotEmpty(shopList)){
             shopList.forEach(d -> {

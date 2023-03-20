@@ -64,6 +64,9 @@ public class UserBookEntity implements Serializable {
     /** 总刷单费 **/
     @TableField("VIRTUAL_AMOUNT")
     private BigDecimal virtualAmount;
+    /** 总支出费 **/
+    @TableField("TOTAL_COST")
+    private BigDecimal totalCost;
     /** 更新时间 **/
     @TableField("UPDATE_TIME")
     private Date updateTime;

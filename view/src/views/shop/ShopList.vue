@@ -18,16 +18,16 @@
           </el-tooltip>
         </div>
         <!-- 店铺信息列表-->
-        <el-table :data="tableData" border class="table" ref="multipleTable"
+        <el-table :data="tableData" border class="table" ref="multipleTable" :cell-class-name="addCellClass"
                   :row-style="{height:'55px'}" :cell-style="{padding:'0px'}" header-cell-class-name="table-header">
-          <el-table-column prop="shopId" label="店铺ID" align="center"></el-table-column>
-          <el-table-column prop="shopNm" label="店铺名称" align="center"></el-table-column>
+          <el-table-column prop="shopId" label="店铺ID" align="center" sortable></el-table-column>
+          <el-table-column prop="shopNm" label="店铺名称" align="center" sortable></el-table-column>
           <el-table-column prop="shopTp" label="店铺平台ID" v-if="false" align="center"></el-table-column>
           <el-table-column prop="shopTpNm" label="店铺平台" align="center"></el-table-column>
           <el-table-column prop="retPro" label="店净利润" align="center">
             <template v-slot:header='scope'>
               <span>店净利润
-                <el-tooltip :aa="scope" class="item" effect="light" content="店净利润=店毛利润-店推广费-店服务费-店刷单费" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="店净利润=店销售额 - 店支出费" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -36,7 +36,7 @@
           <el-table-column prop="retProRat" label="店净利率" align="center">
             <template v-slot:header='scope'>
               <span>店净利率
-                <el-tooltip :aa="scope" class="item" effect="light" content="店净利率=店净利润 / (店成本+店推广费+店服务费+店刷单费) * 100%" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="店净利率=店净利润 / 店支出费 * 100%" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -45,7 +45,7 @@
           <el-table-column prop="groPro" label="店毛利润" align="center">
             <template v-slot:header='scope'>
               <span>店毛利润
-                <el-tooltip :aa="scope" class="item" effect="light" content="店毛利润=店销售额-店成本费" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="店毛利润=店销售额 - 店成本费" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -68,6 +68,15 @@
           <el-table-column prop="advAmt" label="店推广费" align="center"></el-table-column>
           <el-table-column prop="serAmt" label="店服务费" align="center"></el-table-column>
           <el-table-column prop="virAmt" label="店刷单费" align="center"></el-table-column>
+          <el-table-column prop="talCos" label="店支出费" align="center">
+            <template v-slot:header='scope'>
+              <span>店支出费
+                <el-tooltip :aa="scope" class="item" effect="light" content="店支出费=店成本费 + 店推广费 + 店服务费 + 店刷单费" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column label="操作" align="center">
             <template #default="scope">
               <el-tooltip class="item" effect="light" content="新增" placement="top">
@@ -124,6 +133,17 @@ export default {
       query.pageNum = 1;
       findShopList();
     };
+    //列添加颜色
+    const addCellClass = ({row, column, rowIndex, columnIndex}) => {
+      //列的label的名称
+      if (row.retPro > 0) {
+        return 'col-red';
+      }else if(row.retPro < 0){
+        return 'col-green';
+      }else {
+        return 'col-gray';
+      }
+    }
     // 重置
     const handleReset = () => {
       query.shopId = "";
@@ -193,7 +213,7 @@ export default {
     };
     getCodeDataArr();
     return { query,tableData,pageTotal,shopTpCode,shopDialog,
-      handleSearch,handleReset,handlePageChange,handleEdit,handleAdd,handleDelete,handleCount,findShopList};
+      handleSearch,handleReset,handlePageChange,handleEdit,handleAdd,handleDelete,handleCount,findShopList,addCellClass};
   }
 };
 </script>
@@ -221,5 +241,14 @@ export default {
 }
 .red {
   color: #ff0000;
+}
+/deep/.col-red {
+  color: red;
+}
+/deep/.col-green {
+  color: #07bd07;
+}
+/deep/.col-gray {
+  color: black ;
 }
 </style>

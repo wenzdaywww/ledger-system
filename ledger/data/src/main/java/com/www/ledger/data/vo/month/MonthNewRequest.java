@@ -20,6 +20,8 @@ import java.math.BigDecimal;
 @Accessors(chain = true)//开启链式编程
 public class MonthNewRequest implements Serializable {
     private static final long serialVersionUID = 1L;
+    /** 月份Id **/
+    private Long msId;
     /** 月份 **/
     @NotBlank(message = "月份不能为空")
     private String month;
