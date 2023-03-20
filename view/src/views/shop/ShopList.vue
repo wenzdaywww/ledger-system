@@ -20,7 +20,7 @@
         <!-- 店铺信息列表-->
         <el-table :data="tableData" border class="table" ref="multipleTable" :cell-class-name="addCellClass"
                   :row-style="{height:'55px'}" :cell-style="{padding:'0px'}" header-cell-class-name="table-header">
-          <el-table-column prop="shopId" label="店铺ID" align="center" sortable></el-table-column>
+          <el-table-column prop="shopId" label="店铺ID" align="center" sortable width="90px"></el-table-column>
           <el-table-column prop="shopNm" label="店铺名称" align="center" sortable></el-table-column>
           <el-table-column prop="shopTp" label="店铺平台ID" v-if="false" align="center"></el-table-column>
           <el-table-column prop="shopTpNm" label="店铺平台" align="center"></el-table-column>
