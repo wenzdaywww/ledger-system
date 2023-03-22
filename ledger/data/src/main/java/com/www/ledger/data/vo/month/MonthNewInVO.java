@@ -18,7 +18,7 @@ import java.math.BigDecimal;
  */
 @Data
 @Accessors(chain = true)//开启链式编程
-public class MonthNewRequest implements Serializable {
+public class MonthNewInVO implements Serializable {
     private static final long serialVersionUID = 1L;
     /** 月份Id **/
     private Long msId;

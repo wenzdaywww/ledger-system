@@ -3,11 +3,11 @@ package com.www.ledger.controller.shop;
 import com.www.common.config.security.meta.JwtAuthorizationTokenFilter;
 import com.www.common.data.response.Response;
 import com.www.ledger.data.dto.ShopDTO;
-import com.www.ledger.data.vo.shop.ShopAllResponse;
-import com.www.ledger.data.vo.shop.ShopInfoRequest;
-import com.www.ledger.data.vo.shop.ShopListRequest;
-import com.www.ledger.data.vo.shop.ShopListResponse;
-import com.www.ledger.data.vo.shop.ShopNewRequest;
+import com.www.ledger.data.vo.shop.ShopAllOutVO;
+import com.www.ledger.data.vo.shop.ShopInfoInVO;
+import com.www.ledger.data.vo.shop.ShopListInVO;
+import com.www.ledger.data.vo.shop.ShopListOutVO;
+import com.www.ledger.data.vo.shop.ShopNewInVO;
 import com.www.ledger.service.shop.IShopService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,15 +38,15 @@ public class ShopController {
      * <p>@Description 新增店铺信息 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/13 22:18 </p>
-     * @param newRequest 新增店铺信息
+     * @param newInVO 新增店铺信息
      * @return Response<java.lang.String>
      */
     @PostMapping("new")
-    public Response<String> createShop(@Validated ShopNewRequest newRequest){
+    public Response<String> createShop(@Validated ShopNewInVO newInVO){
         ShopDTO shopDTO = new ShopDTO();
         shopDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
-                .setShopName(newRequest.getShopNm())
-                .setShopType(newRequest.getShopTp());
+                .setShopName(newInVO.getShopNm())
+                .setShopType(newInVO.getShopTp());
         return shopService.createShop(shopDTO);
     }
     /**
@@ -63,16 +63,16 @@ public class ShopController {
      * <p>@Description 修改店铺信息 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/13 22:18 </p>
-     * @param infoRequest 店铺信息
+     * @param infoInVO 店铺信息
      * @return Response<java.lang.String>
      */
     @PostMapping("info")
-    public Response<String> updateShop(@Validated ShopInfoRequest infoRequest){
+    public Response<String> updateShop(@Validated ShopInfoInVO infoInVO){
         ShopDTO shopDTO = new ShopDTO();
         shopDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
-                .setShopId(infoRequest.getShopId())
-                .setShopName(infoRequest.getShopNm())
-                .setShopType(infoRequest.getShopTp());
+                .setShopId(infoInVO.getShopId())
+                .setShopName(infoInVO.getShopNm())
+                .setShopType(infoInVO.getShopTp());
         return shopService.updateShop(shopDTO);
     }
     /**
@@ -90,20 +90,20 @@ public class ShopController {
      * <p>@Description 查询我的店铺信息列表 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/13 22:49 </p>
-     * @param shopRequest 店铺信息查询条件
+     * @param shopInVO 店铺信息查询条件
      * @return Response<java.util.List < com.www.ledger.data.dto.ShopDTO>>
      */
     @GetMapping("list")
-    public Response<List<ShopListResponse>> findShopList(@Validated ShopListRequest shopRequest){
+    public Response<List<ShopListOutVO>> findShopList(@Validated ShopListInVO shopInVO){
         ShopDTO shopDTO = new ShopDTO();
-        shopDTO.setShopId(shopRequest.getShopId()).setShopName(shopRequest.getShopNm())
-           .setUserId(JwtAuthorizationTokenFilter.getUserId()).setShopType(shopRequest.getShopTp());
-        Response<List<ShopDTO>> dtoResponse = shopService.findShopList(shopDTO,shopRequest.getPageNum(),shopRequest.getPageSize());
-        List<ShopListResponse> shopList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
+        shopDTO.setShopId(shopInVO.getShopId()).setShopName(shopInVO.getShopNm())
+           .setUserId(JwtAuthorizationTokenFilter.getUserId()).setShopType(shopInVO.getShopTp());
+        Response<List<ShopDTO>> dtoResponse = shopService.findShopList(shopDTO,shopInVO.getPageNum(),shopInVO.getPageSize());
+        List<ShopListOutVO> shopList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
                 .map(list -> {
-                    List<ShopListResponse> tempList = new ArrayList<>();
+                    List<ShopListOutVO> tempList = new ArrayList<>();
                     list.forEach(shop -> {
-                        ShopListResponse ruslut = new ShopListResponse();
+                        ShopListOutVO ruslut = new ShopListOutVO();
                         ruslut.setShopId(shop.getShopId()).setShopNm(shop.getShopName())
                               .setShopTp(shop.getShopType()).setShopTpNm(shop.getShopTypeName())
                               .setRetPro(shop.getRetainedProfits()).setRetProRat(shop.getRetainedProfitsRate())
@@ -126,13 +126,13 @@ public class ShopController {
      * @return
      */
     @GetMapping("all")
-    public Response<List<ShopAllResponse>> finUserShop(){
+    public Response<List<ShopAllOutVO>> finUserShop(){
         Response<List<ShopDTO>> dtoResponse = shopService.finUserShop(JwtAuthorizationTokenFilter.getUserId());
-        List<ShopAllResponse> shopList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
+        List<ShopAllOutVO> shopList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
                 .map(list -> {
-                    List<ShopAllResponse> tempList = new ArrayList<>();
+                    List<ShopAllOutVO> tempList = new ArrayList<>();
                     list.forEach(shop -> {
-                        ShopAllResponse ruslut = new ShopAllResponse();
+                        ShopAllOutVO ruslut = new ShopAllOutVO();
                         ruslut.setValue(shop.getShopId()).setName(shop.getShopName());
                         tempList.add(ruslut);
                     });

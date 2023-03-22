@@ -14,7 +14,7 @@ import java.math.BigDecimal;
  */
 @Data
 @Accessors(chain = true)//开启链式编程
-public class YearListResponse implements Serializable {
+public class YearListOutVO implements Serializable {
     private static final long serialVersionUID = 1L;
     /** 月份 **/
     private String year;

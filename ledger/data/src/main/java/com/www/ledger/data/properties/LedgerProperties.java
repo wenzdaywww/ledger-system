@@ -26,4 +26,7 @@ public class LedgerProperties {
     /** 角色拥有的路由数据的redis的key的过期时间（小时） **/
     @Value("${com.www.ledger.router-expire-hour}")
     private long routerExpireHour;
+    /** 文件导入上传的相对路径 **/
+    @Value("${com.www.ledger.import-path}")
+    private String importPath;
 }

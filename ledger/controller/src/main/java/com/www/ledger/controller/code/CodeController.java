@@ -3,7 +3,7 @@ package com.www.ledger.controller.code;
 import com.www.common.config.code.dto.CodeDTO;
 import com.www.common.config.code.write.CodeRedisWriteHandler;
 import com.www.common.data.response.Response;
-import com.www.ledger.data.vo.code.CodeResponse;
+import com.www.ledger.data.vo.code.CodeOutVO;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -41,7 +41,7 @@ public class CodeController {
      * @return Response<List<CodeDTO>>
      */
     @PostMapping("codes")
-    public Response<Map<String, List<CodeResponse>>> findCodeDataList(@NotEmpty(message = "codeType不能为空") @RequestParam List<String> list){
+    public Response<Map<String, List<CodeOutVO>>> findCodeDataList(@NotEmpty(message = "codeType不能为空") @RequestParam List<String> list){
         return this.findCodeDataList(list);
     }
     /**
@@ -52,7 +52,7 @@ public class CodeController {
      * @return Response<List <CodeDTO>>
      */
     @GetMapping("code/{type}")
-    public Response<Map<String,List<CodeResponse>>> findCodeData(@PathVariable("type") String type){
+    public Response<Map<String,List<CodeOutVO>>> findCodeData(@PathVariable("type") String type){
         List<String> list = new ArrayList<>();
         list.add(type);
         return this.findCode(list);
@@ -64,22 +64,22 @@ public class CodeController {
      * @param list
      * @return
      */
-    private Response<Map<String, List<CodeResponse>>> findCode(List<String> list){
-        Response<Map<String,List<CodeResponse>>> response = new Response<>();
+    private Response<Map<String, List<CodeOutVO>>> findCode(List<String> list){
+        Response<Map<String,List<CodeOutVO>>> response = new Response<>();
         Map<String, Map<String, CodeDTO>> codeMap = codeRedisWriteHandler.getCodeData();
-        Map<String,List<CodeResponse>> typeMap = new HashMap<>();
+        Map<String,List<CodeOutVO>> typeMap = new HashMap<>();
         for (String codeType : list){
             Map<String, CodeDTO> valueMap = codeMap.get(codeType);
             if(MapUtils.isNotEmpty(valueMap)){
                 List<CodeDTO> collect = valueMap.values().stream().collect(Collectors.toList());
-                List<CodeResponse> rspList = new ArrayList<>();
+                List<CodeOutVO> outVOList = new ArrayList<>();
                 collect.forEach(dto -> {
-                    CodeResponse code = new CodeResponse();
+                    CodeOutVO code = new CodeOutVO();
                     code.setValue(dto.getValue());
                     code.setName(dto.getName());
-                    rspList.add(code);
+                    outVOList.add(code);
                 });
-                typeMap.put(codeType,rspList);
+                typeMap.put(codeType,outVOList);
             }
         }
         response.setResponse(typeMap);

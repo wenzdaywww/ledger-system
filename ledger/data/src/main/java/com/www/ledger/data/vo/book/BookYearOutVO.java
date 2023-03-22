@@ -13,7 +13,7 @@ import java.math.BigDecimal;
  */
 @Data
 @Accessors(chain = true)
-public class BookYearResponse {
+public class BookYearOutVO {
     /** 月份 **/
     private String month;
     /** 销售额 **/

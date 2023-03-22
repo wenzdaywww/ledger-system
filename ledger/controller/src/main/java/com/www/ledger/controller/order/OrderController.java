@@ -3,9 +3,9 @@ package com.www.ledger.controller.order;
 import com.www.common.config.security.meta.JwtAuthorizationTokenFilter;
 import com.www.common.data.response.Response;
 import com.www.ledger.data.dto.OrderDTO;
-import com.www.ledger.data.vo.order.OrderListRequest;
-import com.www.ledger.data.vo.order.OrderListResponse;
-import com.www.ledger.data.vo.order.OrderNewRequest;
+import com.www.ledger.data.vo.order.OrderListInVO;
+import com.www.ledger.data.vo.order.OrderListOutVO;
+import com.www.ledger.data.vo.order.OrderNewInVO;
 import com.www.ledger.service.order.IOrderService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +28,7 @@ import java.util.Optional;
  * <p>@Author www </p>
  * <p>@Date 2023/3/11 19:20 </p>
  */
+@Validated
 @RestController
 @RequestMapping("order")
 public class OrderController {
@@ -33,22 +36,36 @@ public class OrderController {
     private IOrderService orderService;
 
     /**
+     * <p>@Description 导入订单文件 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/22 19:17 </p>
+     * @param file 订单文件信息
+     * @param shopId 店铺ID
+     * @return
+     */
+    @PostMapping("ipt")
+    public Response<String> importOrder(MultipartFile file,@NotNull(message = "店铺不能为空") Long shopId){
+        OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setUserId(JwtAuthorizationTokenFilter.getUserId());
+        return orderService.importOrder(file,orderDTO);
+    }
+    /**
      * <p>@Description 保存订单信息 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/16 22:41 </p>
-     * @param orderRequest 订单信息
+     * @param newInVO 订单信息
      * @return Response<java.lang.String>
      */
     @PostMapping("new")
-    public Response<String> saveOrderInfo(@Validated OrderNewRequest orderRequest){
+    public Response<String> saveOrderInfo(@Validated OrderNewInVO newInVO){
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setUserId(JwtAuthorizationTokenFilter.getUserId()).setOrderId(orderRequest.getOrdId())
-                .setShopId(orderRequest.getShopId()).setOrderDateStr(orderRequest.getOrdDat())
-                .setSupplyId(orderRequest.getSupId()).setGoodsId(orderRequest.getGdsId())
-                .setGoodsName(orderRequest.getGdsName()).setOrderState(orderRequest.getOrdSta())
-                .setSaleAmount(orderRequest.getSalAmt()).setPaymentAmount(orderRequest.getPayAmt())
-                .setCostAmount(orderRequest.getCosAmt()).setPayoutAmount(orderRequest.getOthAmt())
-                .setRemark(orderRequest.getRemark()).setOiId(orderRequest.getOiId());
+        orderDTO.setUserId(JwtAuthorizationTokenFilter.getUserId()).setOrderId(newInVO.getOrdId())
+                .setShopId(newInVO.getShopId()).setOrderDateStr(newInVO.getOrdDat())
+                .setSupplyId(newInVO.getSupId()).setGoodsId(newInVO.getGdsId())
+                .setGoodsName(newInVO.getGdsName()).setOrderState(newInVO.getOrdSta())
+                .setSaleAmount(newInVO.getSalAmt()).setPaymentAmount(newInVO.getPayAmt())
+                .setCostAmount(newInVO.getCosAmt()).setPayoutAmount(newInVO.getOthAmt())
+                .setRemark(newInVO.getRemark()).setOiId(newInVO.getOiId());
         return orderService.saveOrderInfo(orderDTO);
     }
     /**
@@ -66,21 +83,21 @@ public class OrderController {
      * <p>@Description 查询订单信息列表 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/16 22:43 </p>
-     * @param orderRequest 订单查询条件
+     * @param orderInVO 订单查询条件
      * @return Response<java.util.List < com.www.ledger.data.dto.OrderDTO>>
      */
     @GetMapping("list")
-    public Response<List<OrderListResponse>> findOrdeList(@Validated OrderListRequest orderRequest){
+    public Response<List<OrderListOutVO>> findOrdeList(@Validated OrderListInVO orderInVO){
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setUserId(JwtAuthorizationTokenFilter.getUserId()).setOrderDateStr(orderRequest.getOrdDat())
-                .setShopId(orderRequest.getShopId()).setSupplyId(orderRequest.getSupId()).setOrderId(orderRequest.getOrdId())
-                .setGoodsId(orderRequest.getGdsId()).setOrderState(orderRequest.getOrdSta());
-        Response<List<OrderDTO>> dtoResponse = orderService.findOrdeList(orderDTO,orderRequest.getPageNum(),orderRequest.getPageSize());
-        List<OrderListResponse> respList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
+        orderDTO.setUserId(JwtAuthorizationTokenFilter.getUserId()).setOrderDateStr(orderInVO.getOrdDat())
+                .setShopId(orderInVO.getShopId()).setSupplyId(orderInVO.getSupId()).setOrderId(orderInVO.getOrdId())
+                .setGoodsId(orderInVO.getGdsId()).setOrderState(orderInVO.getOrdSta());
+        Response<List<OrderDTO>> dtoResponse = orderService.findOrdeList(orderDTO,orderInVO.getPageNum(),orderInVO.getPageSize());
+        List<OrderListOutVO> respList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
                 .map(list -> {
-                    List<OrderListResponse> tempList = new ArrayList<>();
+                    List<OrderListOutVO> tempList = new ArrayList<>();
                     list.forEach(dto -> {
-                        OrderListResponse order = new OrderListResponse();
+                        OrderListOutVO order = new OrderListOutVO();
                         order.setOrdId(dto.getOrderId()).setShopId(dto.getShopId())
                              .setShopNm(dto.getShopName()).setOrdDat(dto.getOrderDateStr())
                              .setSupId(dto.getSupplyId()).setGdsId(dto.getGoodsId())

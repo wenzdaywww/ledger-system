@@ -14,7 +14,7 @@ import java.math.BigDecimal;
  */
 @Data
 @Accessors(chain = true)//开启链式编程
-public class ShopListResponse implements Serializable {
+public class ShopListOutVO implements Serializable {
     private static final long serialVersionUID = 1L;
     /** 店铺主键ID **/
     private Long shopId;

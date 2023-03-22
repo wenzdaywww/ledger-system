@@ -73,7 +73,7 @@ public class MonthServiceImpl implements IMonthService {
         }
         //计算月销售额数据
         this.computeMonthData(monthEntity);
-        if(monthSalesService.save(monthEntity)){
+        if(monthSalesService.updateById(monthEntity)){
             return new Response<>(ResponseEnum.SUCCESS,"修改成功");
         }
         return new Response<>(ResponseEnum.FAIL,"修改失败");

@@ -3,8 +3,8 @@ package com.www.ledger.controller.year;
 import com.www.common.config.security.meta.JwtAuthorizationTokenFilter;
 import com.www.common.data.response.Response;
 import com.www.ledger.data.dto.YearDTO;
-import com.www.ledger.data.vo.year.YearListRequest;
-import com.www.ledger.data.vo.year.YearListResponse;
+import com.www.ledger.data.vo.year.YearListInVO;
+import com.www.ledger.data.vo.year.YearListOutVO;
 import com.www.ledger.service.year.IYearService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -45,20 +45,20 @@ public class YearController {
      * <p>@Description 查询我的年销售额列表 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 20:07 </p>
-     * @param yearRequest 查询条件
+     * @param yearInVO 查询条件
      * @return
      */
     @GetMapping("list")
-    public Response<List<YearListResponse>> findYearList(@Validated YearListRequest yearRequest){
+    public Response<List<YearListOutVO>> findYearList(@Validated YearListInVO yearInVO){
         YearDTO yearDTO = new YearDTO();
-        yearDTO.setShopId(yearRequest.getShopId()).setUserId(JwtAuthorizationTokenFilter.getUserId())
-                .setYearStr(StringUtils.isNotBlank(yearRequest.getYear()) ? yearRequest.getYear() + "0101" : null);
-        Response<List<YearDTO>> dtoResponse = yearService.findYearList(yearDTO,yearRequest.getPageNum(),yearRequest.getPageSize());
-        List<YearListResponse> yearList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
+        yearDTO.setShopId(yearInVO.getShopId()).setUserId(JwtAuthorizationTokenFilter.getUserId())
+                .setYearStr(StringUtils.isNotBlank(yearInVO.getYear()) ? yearInVO.getYear() + "0101" : null);
+        Response<List<YearDTO>> dtoResponse = yearService.findYearList(yearDTO,yearInVO.getPageNum(),yearInVO.getPageSize());
+        List<YearListOutVO> yearList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
                 .map(list -> {
-                    List<YearListResponse> tempList = new ArrayList<>();
+                    List<YearListOutVO> tempList = new ArrayList<>();
                     list.forEach(dto -> {
-                        YearListResponse year = new YearListResponse();
+                        YearListOutVO year = new YearListOutVO();
                         year.setYear(dto.getYearStr()).setShopNm(dto.getShopName())
                                 .setRetPro(dto.getRetainedProfits()).setRetProRat(dto.getRetainedProfitsRate())
                                 .setGroPro(dto.getGrossProfit()).setGroProRat(dto.getGrossProfitRate())

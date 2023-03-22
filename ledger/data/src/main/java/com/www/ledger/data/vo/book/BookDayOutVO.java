@@ -14,11 +14,11 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-public class BookDayResponse {
+public class BookDayOutVO {
     /** 店铺名称 **/
     private String shopNm;
     /** 日销售额数据  **/
-    private List<DaySalesResponse> day;
+    private List<DaySales> day;
 
     /**
      * <p>@Description 日销售额数据 </p>
@@ -28,7 +28,7 @@ public class BookDayResponse {
      */
     @Data
     @Accessors(chain = true)
-    public static class DaySalesResponse{
+    public static class DaySales {
         /** 日期 **/
         private String day;
         /** 日销售额 **/

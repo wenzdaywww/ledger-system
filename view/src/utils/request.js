@@ -69,5 +69,7 @@ export default {
     //编辑/新增订单信息
     editOrder: "api/order/new",
     //删除订单信息
-    delOrder: "api/order/dlt/"
+    delOrder: "api/order/dlt/",
+    //导入订单信息
+    importOrder: "api/order/ipt"
 }

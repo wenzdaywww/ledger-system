@@ -2,6 +2,7 @@ package com.www.ledger.service.order;
 
 import com.www.common.data.response.Response;
 import com.www.ledger.data.dto.OrderDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -12,6 +13,15 @@ import java.util.List;
  * <p>@Date 2023/3/12 23:06 </p>
  */
 public interface IOrderService {
+    /**
+     * <p>@Description 导入订单信息 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/21 22:12 </p>
+     * @param file
+     * @param orderDTO
+     * @return
+     */
+    Response<String> importOrder(MultipartFile file,OrderDTO orderDTO);
     /**
      * <p>@Description 保存订单信息 </p>
      * <p>@Author www </p>

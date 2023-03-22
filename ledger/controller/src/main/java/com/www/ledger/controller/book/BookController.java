@@ -5,9 +5,9 @@ import com.www.common.data.response.Response;
 import com.www.ledger.data.dto.BookDTO;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.dto.OrderDTO;
-import com.www.ledger.data.vo.book.BookDayResponse;
-import com.www.ledger.data.vo.book.BookInfoResponse;
-import com.www.ledger.data.vo.book.BookYearResponse;
+import com.www.ledger.data.vo.book.BookDayOutVO;
+import com.www.ledger.data.vo.book.BookInfoOutVO;
+import com.www.ledger.data.vo.book.BookYearOutVO;
 import com.www.ledger.service.book.IBookService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,28 +39,28 @@ public class BookController {
      * @return
      */
     @GetMapping("day")
-    public Response<List<BookDayResponse>> findLastDaySales(){
+    public Response<List<BookDayOutVO>> findLastDaySales(){
         Response<List<List<OrderDTO>>> dtoResponse = bookService.findLastDaySales(JwtAuthorizationTokenFilter.getUserId());
-        List<BookDayResponse> lastList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
+        List<BookDayOutVO> lastList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
                 .map(list0 -> {
                     //第1层List,即前3店铺
-                    List<BookDayResponse> tempList = new ArrayList<>();
+                    List<BookDayOutVO> tempList = new ArrayList<>();
                     list0.forEach(list1 -> {
-                        BookDayResponse dayResponse = new BookDayResponse();
-                        dayResponse.setShopNm(list1.get(0).getShopName());
+                        BookDayOutVO dayOutVO = new BookDayOutVO();
+                        dayOutVO.setShopNm(list1.get(0).getShopName());
                         //第2层List,即店铺的订单
-                        List<BookDayResponse.DaySalesResponse> dayList = Optional.ofNullable(list1).filter(e1 -> CollectionUtils.isNotEmpty(list1))
+                        List<BookDayOutVO.DaySales> dayList = Optional.ofNullable(list1).filter(e1 -> CollectionUtils.isNotEmpty(list1))
                                 .map(list3 -> {
-                                    List<BookDayResponse.DaySalesResponse> dayTempList = new ArrayList<>();
+                                    List<BookDayOutVO.DaySales> dayTempList = new ArrayList<>();
                                     list3.forEach(dto -> {
-                                        BookDayResponse.DaySalesResponse day = new BookDayResponse.DaySalesResponse();
+                                        BookDayOutVO.DaySales day = new BookDayOutVO.DaySales();
                                         day.setDay(dto.getOrderDateStr()).setSales(dto.getSaleAmount());
                                         dayTempList.add(day);
                                     });
                                     return dayTempList;
                                 }).orElse(null);
-                        dayResponse.setDay(dayList);
-                        tempList.add(dayResponse);
+                        dayOutVO.setDay(dayList);
+                        tempList.add(dayOutVO);
                     });
                     return tempList;
                 }).orElse(null);
@@ -73,13 +73,13 @@ public class BookController {
      * @return
      */
     @GetMapping("year")
-    public Response<List<BookYearResponse>> findLastYearSales(){
+    public Response<List<BookYearOutVO>> findLastYearSales(){
         Response<List<MonthDTO>> dtoResponse = bookService.findLastYearSales(JwtAuthorizationTokenFilter.getUserId());
-        List<BookYearResponse> lastList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
+        List<BookYearOutVO> lastList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
                 .map(list -> {
-                    List<BookYearResponse> tempList = new ArrayList<>();
+                    List<BookYearOutVO> tempList = new ArrayList<>();
                     list.forEach(dto -> {
-                        BookYearResponse last = new BookYearResponse();
+                        BookYearOutVO last = new BookYearOutVO();
                         last.setMonth(dto.getMonthDateStr()).setSales(dto.getSaleAmount());
                         tempList.add(last);
                     });
@@ -104,12 +104,12 @@ public class BookController {
      * @return
      */
     @GetMapping("info")
-    public Response<BookInfoResponse> findBookData(){
+    public Response<BookInfoOutVO> findBookData(){
         Response<BookDTO> dtoResponse = bookService.findBookData(JwtAuthorizationTokenFilter.getUserId());
-        BookInfoResponse bookResponse = Optional.ofNullable(dtoResponse.getData())
+        BookInfoOutVO bookInfoOutVO = Optional.ofNullable(dtoResponse.getData())
                 .map(dto -> {
-                    BookInfoResponse tempResponse = new BookInfoResponse();
-                    tempResponse.setRetPro(dto.getRetainedProfits()).setRetProRat(dto.getRetainedProfitsRate())
+                    BookInfoOutVO tempOutVO = new BookInfoOutVO();
+                    tempOutVO.setRetPro(dto.getRetainedProfits()).setRetProRat(dto.getRetainedProfitsRate())
                         .setGroPro(dto.getGrossProfit()).setGroProRat(dto.getGrossProfitRate())
                         .setTalOrd(dto.getTotalOrder()).setSucOrd(dto.getSucceedOrder())
                         .setSucOrdRat(dto.getSucceedOrderRate()).setFaiOrd(dto.getFailedOrder())
@@ -117,8 +117,8 @@ public class BookController {
                         .setAdvAmt(dto.getAdvertAmount()).setSerAmt(dto.getServiceAmount())
                         .setVirAmt(dto.getVirtualAmount()).setShopNum(dto.getShopNum())
                         .setGdsNum(dto.getGoodsNum()).setTalCos(dto.getTotalCost());
-                    return tempResponse;
+                    return tempOutVO;
                 }).orElse(null);
-        return new Response<>(dtoResponse,bookResponse);
+        return new Response<>(dtoResponse,bookInfoOutVO);
     }
 }

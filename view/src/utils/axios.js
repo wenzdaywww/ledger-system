@@ -55,13 +55,13 @@ export default {
             });
         });
     },
-    upload(url, data,headers) {
+    upload(url, data) {
         return new Promise((resolve, reject) => {
             http({
                 method: 'post',
                 url,
                 data: data,
-                headers : headers
+                headers : {'Content-Type': 'multipart/form-data'}
             }).then(res => {
                 if(res && res.data){
                     resolve(res.data);

@@ -18,7 +18,7 @@ import java.math.BigDecimal;
  */
 @Data
 @Accessors(chain = true)//开启链式编程
-public class OrderNewRequest implements Serializable {
+public class OrderNewInVO implements Serializable {
     private static final long serialVersionUID = 1L;
     /** 订单主键ID **/
     private Long oiId;

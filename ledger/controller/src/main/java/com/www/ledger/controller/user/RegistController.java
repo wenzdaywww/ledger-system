@@ -2,7 +2,7 @@ package com.www.ledger.controller.user;
 
 import com.www.common.data.response.Response;
 import com.www.ledger.data.dto.UserDTO;
-import com.www.ledger.data.vo.user.NewUserRequest;
+import com.www.ledger.data.vo.user.NewUserInVO;
 import com.www.ledger.service.user.IUserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +27,15 @@ public class RegistController {
      * <p>@Description 创建用户信息 </p>
      * <p>@Author www </p>
      * <p>@Date 2021/12/7 21:20 </p>
-     * @param newRequest 新增用户信息
+     * @param userInVO 新增用户信息
      * @return Response<java.lang.String>
      */
     @PostMapping("user")
-    public Response<String> createUser(@Validated NewUserRequest newRequest){
+    public Response<String> createUser(@Validated NewUserInVO userInVO){
         UserDTO user = new UserDTO();
-        user.setUserId(newRequest.getUserId())
-                .setUserName(newRequest.getUserName())
-                .setPassword(newRequest.getPassword());
+        user.setUserId(userInVO.getUserId())
+                .setUserName(userInVO.getUserName())
+                .setPassword(userInVO.getPassword());
         return userInfoService.createUser(user);
     }
 }

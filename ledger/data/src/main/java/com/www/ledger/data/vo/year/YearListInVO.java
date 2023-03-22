@@ -14,7 +14,7 @@ import java.io.Serializable;
  */
 @Data
 @Accessors(chain = true)//开启链式编程
-public class YearListRequest implements Serializable {
+public class YearListInVO implements Serializable {
     private static final long serialVersionUID = 1L;
     /** 年份 **/
     private String year;

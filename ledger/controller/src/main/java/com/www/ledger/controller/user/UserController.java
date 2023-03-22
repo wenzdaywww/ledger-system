@@ -4,9 +4,9 @@ import com.www.common.config.code.write.CodeRedisWriteHandler;
 import com.www.common.config.security.meta.JwtAuthorizationTokenFilter;
 import com.www.common.data.response.Response;
 import com.www.ledger.data.dto.UserDTO;
-import com.www.ledger.data.vo.user.UserEditRequest;
-import com.www.ledger.data.vo.user.UserInfoRepsonse;
-import com.www.ledger.data.vo.user.UserPwdRequest;
+import com.www.ledger.data.vo.user.UserEditInVO;
+import com.www.ledger.data.vo.user.UserInfoOutVO;
+import com.www.ledger.data.vo.user.UserPwdInVO;
 import com.www.ledger.service.user.IUserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -38,44 +38,44 @@ public class UserController {
      * @return com.www.myblog.common.pojo.Response<com.www.myblog.base.data.dto.SysUserDTO>
      */
     @GetMapping("info")
-    public Response<UserInfoRepsonse> findUser(){
+    public Response<UserInfoOutVO> findUser(){
         Response<UserDTO> userDTO = userInfoService.findUser(JwtAuthorizationTokenFilter.getUserId());
-        UserInfoRepsonse userRepsonse = Optional.ofNullable(userDTO.getData()).map(e -> {
-            UserInfoRepsonse tempRepsonse = new UserInfoRepsonse();
-            tempRepsonse.setSuId(e.getSuId())
+        UserInfoOutVO userInfoOutVO = Optional.ofNullable(userDTO.getData()).map(e -> {
+            UserInfoOutVO tempOutVO = new UserInfoOutVO();
+            tempOutVO.setSuId(e.getSuId())
                         .setUserId(e.getUserId())
                         .setUserName(e.getUserName());
-            return tempRepsonse;
+            return tempOutVO;
         }).orElse(null);
-        return new Response<>(userDTO,userRepsonse);
+        return new Response<>(userDTO,userInfoOutVO);
     }
     /**
      * <p>@Description 更新当前登录的用户密码 </p>
      * <p>@Author www </p>
      * <p>@Date 2021/12/8 19:58 </p>
-     * @param pwdRequest 用户密码信息
+     * @param pwdInVO 用户密码信息
      * @return com.www.myblog.common.pojo.Response<java.lang.String>
      */
     @PostMapping("pwd")
-    public Response<String> updateUserPwd(@Validated UserPwdRequest pwdRequest){
+    public Response<String> updateUserPwd(@Validated UserPwdInVO pwdInVO){
         UserDTO userDTO = new UserDTO();
         userDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
-            .setPassword(pwdRequest.getPassword())
-            .setNewPassWord(pwdRequest.getNewPassWord());
+            .setPassword(pwdInVO.getPassword())
+            .setNewPassWord(pwdInVO.getNewPassWord());
         return userInfoService.updateUserPwd(userDTO);
     }
     /**
      * <p>@Description 更新当前登录的用户信息 </p>
      * <p>@Author www </p>
      * <p>@Date 2021/12/8 19:58 </p>
-     * @param editRequest 用户信息
+     * @param editInVO 用户信息
      * @return com.www.myblog.common.pojo.Response<java.lang.String>
      */
     @PostMapping("edit")
-    public Response<String> updateUserInfo(@Validated UserEditRequest editRequest){
+    public Response<String> updateUserInfo(@Validated UserEditInVO editInVO){
         UserDTO userDTO = new UserDTO();
         userDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
-                .setUserName(editRequest.getUserName());
+                .setUserName(editInVO.getUserName());
         return userInfoService.updateUserInfo(userDTO);
     }
     /**

@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class UserInfoRepsonse {
+public class UserInfoOutVO {
     private static final long serialVersionUID = 1L;
     /** 用户主键 */
     private Long suId;

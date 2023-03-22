@@ -7,10 +7,10 @@ import com.www.common.data.response.Response;
 import com.www.common.utils.MoneyUtils;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.enums.CodeTypeEnum;
-import com.www.ledger.data.vo.month.MonthAmtRequest;
-import com.www.ledger.data.vo.month.MonthListRequest;
-import com.www.ledger.data.vo.month.MonthListResponse;
-import com.www.ledger.data.vo.month.MonthNewRequest;
+import com.www.ledger.data.vo.month.MonthAmtInVO;
+import com.www.ledger.data.vo.month.MonthListInVO;
+import com.www.ledger.data.vo.month.MonthListOutVO;
+import com.www.ledger.data.vo.month.MonthNewInVO;
 import com.www.ledger.service.month.IMonthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,20 +44,20 @@ public class MonthController {
      * <p>@Description 增加/减少月销售推广及服务费用  </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/19 16:09 </p>
-     * @param amtRequest 费用信息
+     * @param amtInVO 费用信息
      * @return
      */
     @PostMapping("amt")
-    public Response<String> updateMonthAmt(@Validated MonthAmtRequest amtRequest){
-        if(CodeDict.isIllegalValue(CodeTypeEnum.YesOrNo_No.getType(), amtRequest.getType())){
+    public Response<String> updateMonthAmt(@Validated MonthAmtInVO amtInVO){
+        if(CodeDict.isIllegalValue(CodeTypeEnum.YesOrNo_No.getType(), amtInVO.getType())){
             return new Response<>(ResponseEnum.FAIL,"操作类型错误");
         }
         MonthDTO monthDTO = new MonthDTO();
-        monthDTO.setMsId(amtRequest.getMsId()).setUserId(JwtAuthorizationTokenFilter.getUserId());
-        monthDTO.setAdvertAmount(MoneyUtils.nullToZero(amtRequest.getAdvStep()))
-                .setServiceAmount(MoneyUtils.nullToZero(amtRequest.getSerStep()));
+        monthDTO.setMsId(amtInVO.getMsId()).setUserId(JwtAuthorizationTokenFilter.getUserId());
+        monthDTO.setAdvertAmount(MoneyUtils.nullToZero(amtInVO.getAdvStep()))
+                .setServiceAmount(MoneyUtils.nullToZero(amtInVO.getSerStep()));
         //操作类型是否，即为减少费用,则直接成负数-1
-        if(StringUtils.equals(amtRequest.getType(),CodeDict.getValue(CodeTypeEnum.YesOrNo_No.getType(),CodeTypeEnum.YesOrNo_No.getKey()))){
+        if(StringUtils.equals(amtInVO.getType(),CodeDict.getValue(CodeTypeEnum.YesOrNo_No.getType(),CodeTypeEnum.YesOrNo_No.getKey()))){
             monthDTO.setAdvertAmount(monthDTO.getAdvertAmount().multiply(new BigDecimal("-1")))
                     .setServiceAmount(monthDTO.getServiceAmount().multiply(new BigDecimal("-1")));
         }
@@ -67,15 +67,15 @@ public class MonthController {
      * <p>@Description 编辑月销售额数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 18:24 </p>
-     * @param monthRequest 月销售额数据
+     * @param newInVO 月销售额数据
      * @return
      */
     @PostMapping("new")
-    public Response<String> saveMonthSales(@Validated MonthNewRequest monthRequest){
+    public Response<String> saveMonthSales(@Validated MonthNewInVO newInVO){
         MonthDTO monthDTO = new MonthDTO();
-        monthDTO.setUserId(JwtAuthorizationTokenFilter.getUserId()).setMsId(monthRequest.getMsId())
-                .setMonthDateStr(monthRequest.getMonth()).setShopId(monthRequest.getShopId())
-                .setAdvertAmount(monthRequest.getAdvAmt()).setServiceAmount(monthRequest.getSerAmt());
+        monthDTO.setUserId(JwtAuthorizationTokenFilter.getUserId()).setMsId(newInVO.getMsId())
+                .setMonthDateStr(newInVO.getMonth()).setShopId(newInVO.getShopId())
+                .setAdvertAmount(newInVO.getAdvAmt()).setServiceAmount(newInVO.getSerAmt());
         return monthService.saveMonthSales(monthDTO);
     }
     /**
@@ -103,21 +103,21 @@ public class MonthController {
      * <p>@Description 查询月销售额列表信息 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 14:07 </p>
-     * @param monthRequest 查询条件
+     * @param monthInVO 查询条件
      * @return
      */
     @GetMapping("list")
-    public Response<List<MonthListResponse>> findMonthList(@Validated MonthListRequest monthRequest){
+    public Response<List<MonthListOutVO>> findMonthList(@Validated MonthListInVO monthInVO){
         MonthDTO monthDTO = new MonthDTO();
         monthDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
-                .setMonthDateStr(monthRequest.getMonth()).setShopId(monthRequest.getShopId());
+                .setMonthDateStr(monthInVO.getMonth()).setShopId(monthInVO.getShopId());
         monthDTO.setMonthDateStr(StringUtils.isNotBlank(monthDTO.getMonthDateStr()) ? monthDTO.getMonthDateStr() + "-01" : null);//月份设置每月第一天
-        Response<List<MonthDTO>> dtoResponse = monthService.findMonthList(monthDTO,monthRequest.getPageNum(),monthRequest.getPageSize());
-        List<MonthListResponse> monthList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
+        Response<List<MonthDTO>> dtoResponse = monthService.findMonthList(monthDTO,monthInVO.getPageNum(),monthInVO.getPageSize());
+        List<MonthListOutVO> monthList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
                 .map(list -> {
-                    List<MonthListResponse> tempList = new ArrayList<>();
+                    List<MonthListOutVO> tempList = new ArrayList<>();
                     list.forEach(dto -> {
-                        MonthListResponse month = new MonthListResponse();
+                        MonthListOutVO month = new MonthListOutVO();
                         month.setMonth(dto.getMonthDateStr()).setShopNm(dto.getShopName())
                                 .setMsId(dto.getMsId()).setShopId(dto.getShopId())
                                 .setRetPro(dto.getRetainedProfits()).setRetProRat(dto.getRetainedProfitsRate())

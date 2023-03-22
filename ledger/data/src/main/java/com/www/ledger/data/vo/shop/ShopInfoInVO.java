@@ -5,6 +5,7 @@ import lombok.experimental.Accessors;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * <p>@Description 新增店铺信息的请求对象 </p>
@@ -14,8 +15,11 @@ import javax.validation.constraints.NotBlank;
  */
 @Data
 @Accessors(chain = true)
-public class ShopNewRequest {
+public class ShopInfoInVO {
     private static final long serialVersionUID = 1L;
+    /** 店铺主键ID **/
+    @NotNull(message = "店铺ID不能为空")
+    private Long shopId;
     /** 店铺名称 **/
     @NotBlank(message = "店铺名称不能为空")
     @Length(min = 1, max = 20,message = "店铺名称字数为1~20")

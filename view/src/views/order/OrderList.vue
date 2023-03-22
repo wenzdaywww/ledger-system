@@ -20,7 +20,7 @@
           <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
           <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
           <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round plain>新增订单</el-button>
-          <el-button type="success" icon="el-icon-upload2" @click="handleImport" round plain>导入</el-button>
+          <el-button type="success" icon="el-icon-upload2" @click="handleImport" round plain>导入订单</el-button>
         </div>
         <!-- 店铺信息列表-->
         <el-table :data="tableData" border class="table" ref="multipleTable" :row-class-name="addRowClass"
@@ -29,7 +29,7 @@
           <el-table-column prop="ordId" label="订单ID" align="center" sortable></el-table-column>
           <el-table-column prop="shopId" label="店铺Id" v-if="false" align="center"></el-table-column>
           <el-table-column prop="shopNm" label="店铺名称" align="center" sortable></el-table-column>
-          <el-table-column prop="ordDat" label="订单日期" align="center"></el-table-column>
+          <el-table-column prop="ordDat" label="订单日期" align="center" sortable></el-table-column>
           <el-table-column prop="supId" label="1688订单" align="center"></el-table-column>
           <el-table-column prop="gdsId" label="商品ID" align="center"></el-table-column>
           <el-table-column prop="gdsName" label="商品名称" align="center" class="ellipsis-line1">
@@ -101,6 +101,9 @@
       <!-- 新增/编辑订单弹出框 -->
       <!-- @findOrderList="findOrderList" 设置子弹窗可以调用父页面的方法 -->
       <order-edit ref="orderDialog" @findOrderList="findOrderList"></order-edit>
+      <!-- 导入订单弹出框 -->
+      <!-- @findOrderList="findOrderList" 设置子弹窗可以调用父页面的方法 -->
+      <import-order ref="importDialog" @findOrderList="findOrderList"></import-order>
     </el-card>
   </div>
 </template>
@@ -110,10 +113,11 @@ import { ref, reactive, getCurrentInstance } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import request from '../../utils/request';
 import orderEdit from "./OrderEdit.vue";
+import importOrder from "./ImportOrder.vue";
 
 export default {
   name: "orderList",
-  components: { orderEdit },
+  components: { orderEdit,importOrder },
   setup() {
     // 接口请求
     const axios = getCurrentInstance().appContext.config.globalProperties;
@@ -130,6 +134,8 @@ export default {
     });
     //订单弹出窗对象
     const orderDialog = ref();
+    //导入订单弹出框
+    const importDialog = ref();
     // 表格数据
     const tableData = ref([]);
     // 页数
@@ -197,7 +203,7 @@ export default {
     };
     //导入订单
     const handleImport = () => {
-      //TODO 2023/3/18 19:55 导入功能，待开发
+      importDialog.value.openInportDialog(userShop);//调用子组件方法
     };
     // 获取表格数据
     const findOrderList = () => {
@@ -233,7 +239,7 @@ export default {
       });
     };
     getCodeDataArr();
-    return { query,orderDialog,tableData,pageTotal,userShop,orderState,
+    return { query,orderDialog,tableData,pageTotal,userShop,orderState,importDialog,
       handleSearch,handleReset,handlePageChange,handleEdit,handleAdd,handleDelete,findOrderList,addRowClass,handleImport};
   }
 };

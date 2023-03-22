@@ -3,6 +3,9 @@ package com.www.ledger.service.order.impl;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.www.common.config.code.CodeDict;
+import com.www.common.config.mvc.upload.IFileUpload;
+import com.www.common.data.constant.CharConstant;
+import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.enums.ResponseEnum;
 import com.www.common.data.response.Response;
 import com.www.common.utils.DateUtils;
@@ -12,6 +15,7 @@ import com.www.ledger.data.dto.OrderDTO;
 import com.www.ledger.data.entity.OrderInfoEntity;
 import com.www.ledger.data.enums.CodeTypeEnum;
 import com.www.ledger.data.mapper.OrderInfoMapper;
+import com.www.ledger.data.properties.LedgerProperties;
 import com.www.ledger.service.entity.IOrderInfoService;
 import com.www.ledger.service.order.IOrderCheckService;
 import com.www.ledger.service.order.IOrderService;
@@ -20,6 +24,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -35,12 +40,30 @@ import java.util.List;
 @Service
 public class OrderServiceImpl implements IOrderService {
     @Autowired
+    private IFileUpload fileUpload;
+    @Autowired
     private OrderInfoMapper orderInfoMapper;
     @Autowired
     private IOrderInfoService orderInfoService;
     @Autowired
     private IOrderCheckService orderCheckService;
+    @Autowired
+    private LedgerProperties ledgerProperties;
 
+    /**
+     * <p>@Description 导入订单信息 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/21 22:12 </p>
+     * @param file
+     * @param orderDTO
+     * @return
+     */
+    @Override
+    public Response<String> importOrder(MultipartFile file, OrderDTO orderDTO) {
+        String fileName = orderDTO.getUserId() + CharConstant.MINUS_SIGN + orderDTO.getShopId() + CharConstant.MINUS_SIGN + DateUtils.format(DateUtils.getCurrentDateTime(), DateFormatEnum.YYYYMMDDHHMMSSSSS);
+        String path = fileUpload.uploadFileBackPath(file,ledgerProperties.getImportPath(),fileName);
+        return null;
+    }
     /**
      * <p>@Description 保存订单信息 </p>
      * <p>@Author www </p>

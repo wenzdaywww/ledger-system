@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class CodeResponse {
+public class CodeOutVO {
     /** code的数值 **/
     private String value;
     /** code的数值名称 **/

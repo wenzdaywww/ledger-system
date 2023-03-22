@@ -178,7 +178,7 @@
             <el-tooltip class="item" effect="light" content="总支出费=总成本费 + 总推广费 + 总服务费 + 总刷单费" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-4">
-                  <i class="el-icon-data-analysis grid-con-icon"></i>
+                  <i class="el-icon-money grid-con-icon"></i>
                   <div class="grid-cont-right">
                     <div class="grid-num">{{ bookData.talCos }}</div>
                     <div>总支出费</div>
