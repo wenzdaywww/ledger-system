@@ -1,4 +1,4 @@
-package com.www.ledger.service.entity;
+package com.www.ledger.data.dao;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -15,7 +15,7 @@ import java.util.List;
  * <p>@Author www </p>
  * <p>@Date 2023/3/13 20:45 </p>
  */
-public interface IMonthSalesService extends IService<MonthSalesEntity> {
+public interface IMonthSalesDAO extends IService<MonthSalesEntity> {
     /**
      * <p>@Description 删除用户的月销售数据 </p>
      * <p>@Author www </p>

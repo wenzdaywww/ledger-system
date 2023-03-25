@@ -268,48 +268,32 @@ export default {
     // 导出报表
     const handleExport = () => {
       axios.$http.post(request.bookCount,null).then(function (res) {
-        if(res.code === 200){
-          ElMessage.success(res.data);
-          getBookInfoData();
-          getLastYeatData();
-          getLast10DayData();
-        }else{
-          ElMessage.error(res.data);
-        }
+        ElMessage.success(res.data);
+        getBookInfoData();
+        getLastYeatData();
+        getLast10DayData();
       })
     };
     // 统计年销售
     const handleCount = () => {
       axios.$http.post(request.bookCount,null).then(function (res) {
-        if(res.code === 200){
-          ElMessage.success(res.data);
-          getBookInfoData();
-          getLastYeatData();
-          getLast10DayData();
-        }else{
-          ElMessage.error(res.data);
-        }
+        ElMessage.success(res.data);
+        getBookInfoData();
+        getLastYeatData();
+        getLast10DayData();
       })
     };
     // 获取用户数据
     const getUserData = () => {
       axios.$http.get(request.userInfo,null).then(function (res) {
-        if(res.code === 200){
-          user.value = res.data;
-        }else {
-          ElMessage.success(res.data);
-        }
+        user.value = res.data;
       });
     };
     getUserData();
     // 用户账簿信息
     const getBookInfoData = () => {
       axios.$http.get(request.bookInfo,null).then(function (res) {
-        if(res.code === 200){
-          bookData.value = res.data;
-        }else {
-          ElMessage.error(res.data);
-        }
+        bookData.value = res.data;
       });
     };
     getBookInfoData();
@@ -318,14 +302,10 @@ export default {
       axios.$http.get(request.bookYear,null).then(function (res) {
         shopSales.value.labels = [];
         shopSales.value.datasets[0].data = [];
-        if(res.code === 200){
-          res.data.forEach(function (item) {
-            shopSales.value.labels.push(item.month);
-            shopSales.value.datasets[0].data.push(item.sales);
-          });
-        }else {
-          ElMessage.error(res.data);
-        }
+        res.data.forEach(function (item) {
+          shopSales.value.labels.push(item.month);
+          shopSales.value.datasets[0].data.push(item.sales);
+        });
       });
     };
     getLastYeatData();
@@ -334,23 +314,19 @@ export default {
       axios.$http.get(request.bookDay,null).then(function (res) {
         monthSales.value.datasets = [];
         monthSales.value.labels = [];
-        if(res.code === 200){
-          let dateData = [];//日期坐标
-          //res.data = [{shopNm:"test",day:[{day:2021/01/01,sales:100}]}]
-          res.data.forEach(function (item) {
-            let shopData = {label:item.shopNm,data:[]};
-            item.day.forEach(function (dayItem){
-              shopData.data.push(dayItem.sales);
-              if (dateData.length < item.day.length){
-                dateData.push(dayItem.day);
-              }
-            });
-            monthSales.value.datasets.push(shopData);
+        let dateData = [];//日期坐标
+        //res.data = [{shopNm:"test",day:[{day:2021/01/01,sales:100}]}]
+        res.data.forEach(function (item) {
+          let shopData = {label:item.shopNm,data:[]};
+          item.day.forEach(function (dayItem){
+            shopData.data.push(dayItem.sales);
+            if (dateData.length < item.day.length){
+              dateData.push(dayItem.day);
+            }
           });
-          monthSales.value.labels = dateData;
-        }else {
-          ElMessage.error(res.data);
-        }
+          monthSales.value.datasets.push(shopData);
+        });
+        monthSales.value.labels = dateData;
       });
     };
     getLast10DayData();
@@ -359,13 +335,9 @@ export default {
       editForm.value.validate((valid) => {
         if (valid) {
           axios.$http.post(request.editInfo,user).then(function (res) {
-            if(res.code === 200){
-              ElMessage.success(res.data);
-              openEdit.value = false;
-              getUserData();
-            }else {
-              ElMessage.error(res.data);
-            }
+            ElMessage.success(res.data);
+            openEdit.value = false;
+            getUserData();
           });
         } else {
           return false;

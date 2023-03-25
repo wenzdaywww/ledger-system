@@ -1,6 +1,6 @@
 package com.www.ledger.service.book;
 
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.ledger.data.dto.BookDTO;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.dto.OrderDTO;
@@ -22,7 +22,7 @@ public interface IBookService {
      * @param userId 用户ID
      * @return
      */
-    Response<List<List<OrderDTO>>> findLastDaySales(String userId);
+    Result<List<List<OrderDTO>>> findLastDaySales(String userId);
     /**
      * <p>@Description 查询用户近一年的销售额 </p>
      * <p>@Author www </p>
@@ -30,7 +30,7 @@ public interface IBookService {
      * @param userId 用户ID
      * @return
      */
-    Response<List<MonthDTO>> findLastYearSales(String userId);
+    Result<List<MonthDTO>> findLastYearSales(String userId);
     /**
      * <p>@Description 统计用户账簿信息 </p>
      * <p>@Author www </p>
@@ -38,7 +38,7 @@ public interface IBookService {
      * @param userId 用户ID
      * @return
      */
-    Response<String> saveAndCountBookData(String userId);
+    Result<String> saveAndCountBookData(String userId);
     /**
      * <p>@Description 查询用户账簿信息 </p>
      * <p>@Author www </p>
@@ -46,5 +46,5 @@ public interface IBookService {
      * @param userId 用户ID
      * @return
      */
-    Response<BookDTO> findBookData(String userId);
+    Result<BookDTO> findBookData(String userId);
 }

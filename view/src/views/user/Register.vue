@@ -89,12 +89,8 @@ export default {
       addForm.value.validate((valid) => {
         if (valid) {
           axios.$http.post(request.register, form).then(function (res) {
-            if(res.code === 200){
-              ElMessage.success('注册成功');
-              router.push("/login");
-            }else {
-              ElMessage.error(res.data);
-            }
+            ElMessage.success('注册成功');
+            router.push("/login");
           });
         } else {
           return false;

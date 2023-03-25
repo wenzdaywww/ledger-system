@@ -1,29 +1,29 @@
-package com.www.ledger.service.entity.impl;
+package com.www.ledger.data.dao.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.www.ledger.data.dao.IMonthSalesDAO;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.dto.YearDTO;
 import com.www.ledger.data.entity.MonthSalesEntity;
 import com.www.ledger.data.mapper.MonthSalesMapper;
-import com.www.ledger.service.entity.IMonthSalesService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
 
 /**
- * <p>@Description 月销售额信息Service实现类 </p>
+ * <p>@Description 月销售额信息DAO实现类 </p>
  * <p>@Version 1.0 </p>
  * <p>@Author www </p>
  * <p>@Date 2023/3/13 20:45 </p>
  */
-@Service
-public class MonthSalesServiceImpl extends ServiceImpl<MonthSalesMapper, MonthSalesEntity> implements IMonthSalesService {
+@Repository
+public class MonthSalesDAOImpl extends ServiceImpl<MonthSalesMapper, MonthSalesEntity> implements IMonthSalesDAO {
     @Autowired
     private MonthSalesMapper monthSalesMapper;
 

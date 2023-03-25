@@ -1,7 +1,7 @@
 # 自定义starter配置
 com:
   www:
-    #本地开发配置
+    #本应用开发配置
     ledger:
       router-redis-key: ledger:app:role_router
       router-expire-hour: 48

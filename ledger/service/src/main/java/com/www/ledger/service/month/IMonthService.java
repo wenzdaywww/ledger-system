@@ -1,6 +1,6 @@
 package com.www.ledger.service.month;
 
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.ledger.data.dto.MonthDTO;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public interface IMonthService {
      * @param monthDTO 费用信息
      * @return
      */
-    Response<String> updateMonthAmt(MonthDTO monthDTO);
+    Result<String> updateMonthAmt(MonthDTO monthDTO);
     /**
      * <p>@Description 编辑月销售额数据 </p>
      * <p>@Author www </p>
@@ -27,7 +27,7 @@ public interface IMonthService {
      * @param monthDTO 月销售额数据
      * @return
      */
-    Response<String> saveMonthSales(MonthDTO monthDTO);
+    Result<String> saveMonthSales(MonthDTO monthDTO);
     /**
      * <p>@Description 删除月销售额数据 </p>
      * <p>@Author www </p>
@@ -36,7 +36,7 @@ public interface IMonthService {
      * @param msId 月销售额ID
      * @return
      */
-    Response<String> deleteMonthData(String userId,Long msId);
+    Result<String> deleteMonthData(String userId,Long msId);
     /**
      * <p>@Description 统计月销售额 </p>
      * <p>@Author www </p>
@@ -44,7 +44,7 @@ public interface IMonthService {
      * @param userId 用户ID
      * @return
      */
-    Response<String> saveAndCountMonthData(String userId);
+    Result<String> saveAndCountMonthData(String userId);
     /**
      * <p>@Description 查询月销售额列表信息 </p>
      * <p>@Author www </p>
@@ -54,5 +54,5 @@ public interface IMonthService {
      * @param pageSize 页码
      * @return
      */
-    Response<List<MonthDTO>> findMonthList(MonthDTO monthDTO, int pageNum, long pageSize);
+    Result<List<MonthDTO>> findMonthList(MonthDTO monthDTO, int pageNum, long pageSize);
 }

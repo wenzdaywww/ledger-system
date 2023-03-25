@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * <p>@Date 2023/3/9 21:37 </p>
  */
 @SpringBootApplication
-@MapperScan(basePackages = {"com.www.common.config.code","com.www.common.config.security","com.www.ledger.data"})
+@MapperScan(basePackages = {"com.www.common.config.code","com.www.common.config.security","com.www.ledger.data.mapper"})
 public class LedgerApplication {
     /**
      * <p>@Description 启动方法 </p>

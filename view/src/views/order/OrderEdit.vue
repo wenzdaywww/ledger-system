@@ -201,13 +201,9 @@ export default {
       orderForm.value.validate((valid) => {
         if (valid) {
           axios.$http.post(request.editOrder,orderInfo.value).then(function (res) {
-            if(res.code === 200){
-              editVisible.value = false;
-              ElMessage.success(res.data);
-              emit('findOrderList',null);//调用父组件OrderList.vue的findOrderList方法
-            }else {
-              ElMessage.error(res.data);
-            }
+            editVisible.value = false;
+            ElMessage.success(res.data);
+            emit('findOrderList',null);//调用父组件OrderList.vue的findOrderList方法
           });
         } else {
           return false;

@@ -20,22 +20,25 @@ http.interceptors.request.use(
 http.interceptors.response.use(
     response => {
         //接口返回403
-        if ((response.data && (response.data.code == 401 || response.data.code == 403)) || response.status == 401 || response.status == 403) {
-            utils.clearCookie();
-            router.push("/");//首页页面
-        }else if(response.status == 200){
+        if(response.status == 200){
+            //Promise.resolve在then方法使用
             return Promise.resolve(response);
         }else {
-            return Promise.reject();
+            return Promise.reject(response);
         }
     },
     error => {
         if (error.response.status == 403){
             utils.clearCookie();
             router.push("/");//首页页面
+        }else if(error.response.status == 500){
+            //响应码500，则提示报错信息
+            ElMessage.error(error.response.data.data);
+            //Promise.reject在catch方法使用
+            return Promise.reject(error.response.data);
         }else {
-            ElMessage.error("请求失败");
-            return Promise.reject();
+            ElMessage.error("未知错误");
+            return Promise.reject(error.response.data);
         }
     }
 );
@@ -51,7 +54,9 @@ export default {
                     resolve(res.data);
                 }
             }).catch(err => {
-                reject(err);
+                if (err && err.data){
+                    reject(err);
+                }
             });
         });
     },
@@ -62,12 +67,14 @@ export default {
                 url,
                 data: data,
                 headers : {'Content-Type': 'multipart/form-data'}
-            }).then(res => {
+            }).then((res) => { //请求成功返回响应数据
                 if(res && res.data){
                     resolve(res.data);
                 }
-            }).catch(err => {
-                reject(err);
+            }).catch((err) => { //请求失败返回响应数据
+                if (err && err.data){
+                    reject(err);
+                }
             });
         });
     },
@@ -82,7 +89,9 @@ export default {
                     resolve(res.data);
                 }
             }).catch(err => {
-                reject(err);
+                if (err && err.data){
+                    reject(err);
+                }
             })
         });
     }

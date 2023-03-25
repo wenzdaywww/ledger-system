@@ -83,13 +83,9 @@ export default {
     // 新增/编辑店铺页面的保存按钮
     const saveEdit = () => {
       axios.$http.post(request.amtStep,monthInfo.value).then(function (res) {
-        if(res.code === 200){
-          editVisible.value = false;
-          ElMessage.success('修改成功');
-          emit('findMonthList',null);//调用父组件OrderList.vue的findOrderList方法
-        }else {
-          ElMessage.error(res.data);
-        }
+        editVisible.value = false;
+        ElMessage.success('修改成功');
+        emit('findMonthList',null);//调用父组件OrderList.vue的findOrderList方法
       });
     };
     return {editVisible,monthInfo,

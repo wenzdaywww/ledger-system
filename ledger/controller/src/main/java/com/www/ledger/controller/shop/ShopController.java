@@ -1,7 +1,7 @@
 package com.www.ledger.controller.shop;
 
 import com.www.common.config.security.meta.JwtAuthorizationTokenFilter;
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.ledger.data.dto.ShopDTO;
 import com.www.ledger.data.vo.shop.ShopAllOutVO;
 import com.www.ledger.data.vo.shop.ShopInfoInVO;
@@ -42,7 +42,7 @@ public class ShopController {
      * @return Response<java.lang.String>
      */
     @PostMapping("new")
-    public Response<String> createShop(@Validated ShopNewInVO newInVO){
+    public Result<String> createShop(@Validated ShopNewInVO newInVO){
         ShopDTO shopDTO = new ShopDTO();
         shopDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
                 .setShopName(newInVO.getShopNm())
@@ -56,7 +56,7 @@ public class ShopController {
      * @return Response<java.lang.String>
      */
     @PostMapping("tal")
-    public Response<String> updateShopData(){
+    public Result<String> updateShopData(){
         return shopService.saveAndCountShopData(JwtAuthorizationTokenFilter.getUserId());
     }
     /**
@@ -67,7 +67,7 @@ public class ShopController {
      * @return Response<java.lang.String>
      */
     @PostMapping("info")
-    public Response<String> updateShop(@Validated ShopInfoInVO infoInVO){
+    public Result<String> updateShop(@Validated ShopInfoInVO infoInVO){
         ShopDTO shopDTO = new ShopDTO();
         shopDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
                 .setShopId(infoInVO.getShopId())
@@ -83,7 +83,7 @@ public class ShopController {
      * @return Response<java.lang.String>
      */
     @PostMapping("dlt/{shopId}")
-    public Response<String> deleteShop(@PathVariable("shopId") String shopId){
+    public Result<String> deleteShop(@PathVariable("shopId") String shopId){
         return shopService.deleteShop(shopId);
     }
     /**
@@ -94,12 +94,12 @@ public class ShopController {
      * @return Response<java.util.List < com.www.ledger.data.dto.ShopDTO>>
      */
     @GetMapping("list")
-    public Response<List<ShopListOutVO>> findShopList(@Validated ShopListInVO shopInVO){
+    public Result<List<ShopListOutVO>> findShopList(@Validated ShopListInVO shopInVO){
         ShopDTO shopDTO = new ShopDTO();
         shopDTO.setShopId(shopInVO.getShopId()).setShopName(shopInVO.getShopNm())
            .setUserId(JwtAuthorizationTokenFilter.getUserId()).setShopType(shopInVO.getShopTp());
-        Response<List<ShopDTO>> dtoResponse = shopService.findShopList(shopDTO,shopInVO.getPageNum(),shopInVO.getPageSize());
-        List<ShopListOutVO> shopList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
+        Result<List<ShopDTO>> listResult = shopService.findShopList(shopDTO,shopInVO.getPageNum(),shopInVO.getPageSize());
+        List<ShopListOutVO> shopList = Optional.ofNullable(listResult.getData()).filter(e -> CollectionUtils.isNotEmpty(listResult.getData()))
                 .map(list -> {
                     List<ShopListOutVO> tempList = new ArrayList<>();
                     list.forEach(shop -> {
@@ -117,7 +117,7 @@ public class ShopController {
                     });
                     return tempList;
                 }).orElse(null);
-        return new Response<>(dtoResponse,shopList);
+        return new Result<>(listResult,shopList);
     }
     /**
      * <p>@Description 查询用户的所有店铺 </p>
@@ -126,9 +126,9 @@ public class ShopController {
      * @return
      */
     @GetMapping("all")
-    public Response<List<ShopAllOutVO>> finUserShop(){
-        Response<List<ShopDTO>> dtoResponse = shopService.finUserShop(JwtAuthorizationTokenFilter.getUserId());
-        List<ShopAllOutVO> shopList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
+    public Result<List<ShopAllOutVO>> finUserShop(){
+        Result<List<ShopDTO>> listResult = shopService.finUserShop(JwtAuthorizationTokenFilter.getUserId());
+        List<ShopAllOutVO> shopList = Optional.ofNullable(listResult.getData()).filter(e -> CollectionUtils.isNotEmpty(listResult.getData()))
                 .map(list -> {
                     List<ShopAllOutVO> tempList = new ArrayList<>();
                     list.forEach(shop -> {
@@ -138,7 +138,7 @@ public class ShopController {
                     });
                     return tempList;
                 }).orElse(null);
-        return new Response<>(dtoResponse,shopList);
+        return new Result<>(listResult,shopList);
     }
 
 }

@@ -37,7 +37,7 @@
             <foreach collection="shop" item="id" separator="," open="(" close=")">
                 #{id}
             </foreach>
-        AND R.ORDER_DATE <![CDATA[ <= ]]> STR_TO_DATE(#{maxDt},'%Y-%m-%d')
+            AND R.ORDER_DATE <![CDATA[ <= ]]> STR_TO_DATE(#{maxDt},'%Y-%m-%d')
             AND R.ORDER_DATE <![CDATA[ >= ]]> STR_TO_DATE(#{minDt},'%Y-%m-%d')
         GROUP BY R.SHOP_ID,R.ORDER_DATE
         ORDER BY R.SHOP_ID,R.ORDER_DATE ASC

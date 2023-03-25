@@ -70,12 +70,8 @@ export default {
       editForm.value.validate((valid) => {
         if (valid) {
           axios.$http.post(request.modifyPwd,form).then(function (res) {
-            if(res.code === 200){
-              ElMessage.success('修改成功');
-              editVisible.value = false;
-            }else {
-              ElMessage.error(res.data);
-            }
+            ElMessage.success('修改成功');
+            editVisible.value = false;
           });
         } else {
           return false;

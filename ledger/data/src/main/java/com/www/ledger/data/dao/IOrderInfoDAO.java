@@ -1,23 +1,39 @@
-package com.www.ledger.data.mapper;
+package com.www.ledger.data.dao;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.dto.OrderDTO;
 import com.www.ledger.data.entity.OrderInfoEntity;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 /**
- * <p>@Description 订单信息Mapper </p>
+ * <p>@Description 订单信息Service接口 </p>
  * <p>@Version 1.0 </p>
  * <p>@Author www </p>
- * <p>@Date 2023/3/13 19:43 </p>
+ * <p>@Date 2023/3/13 20:45 </p>
  */
-@Mapper
-public interface OrderInfoMapper extends BaseMapper<OrderInfoEntity> {
+public interface IOrderInfoDAO extends IService<OrderInfoEntity> {
+    /**
+     * <p>@Description 删除用户的订单信息 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/20 21:00 </p>
+     * @param userId 用户ID
+     * @param oiId 订单主键id
+     * @return 订单信息
+     */
+    boolean deleteOrderInfo(String userId,Long oiId);
+    /**
+     * <p>@Description 查询用户的订单信息 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/20 21:00 </p>
+     * @param userId 用户ID
+     * @param oiId 订单主键id
+     * @return 订单信息
+     */
+    OrderInfoEntity findOrderInfo(String userId,Long oiId);
     /**
      * <p>@Description 查询销量店铺近些日的销售额 </p>
      * <p>@Author www </p>
@@ -28,7 +44,7 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfoEntity> {
      * @param maxDate 订单统计截止日期
      * @return 店铺近些日的销售额
      */
-    List<OrderDTO> findMaxSalesOrder(@Param("userId") String userId, @Param("shop") List<Long> shopList, @Param("minDt") String minDate, @Param("maxDt") String maxDate);
+    List<OrderDTO> findMaxSalesOrder(String userId, List<Long> shopList, String minDate, String maxDate);
     /**
      * <p>@Description 获取订单中最大的日期 </p>
      * <p>@Author www </p>
@@ -36,22 +52,22 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfoEntity> {
      * @param userId 用户ID
      * @return 最大的日期
      */
-    String getMaxOrderDate(@Param("userId") String userId);
+    String getMaxOrderDate(String userId);
     /**
      * <p>@Description 统计月销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 15:19 </p>
      * @param userId 用户ID
-     * @return
+     * @return 月销售额
      */
-    List<MonthDTO> countMonthSale(@Param("userId") String userId);
+    List<MonthDTO> countMonthSale(String userId);
     /**
      * <p>@Description 查询订单信息 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/13 22:55 </p>
      * @param page 分页信息
      * @param dto 订单信息查询条件
-     * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.www.ledger.data.dto.ShopDTO>
+     * @return Page<ShopDTO>
      */
-    Page<OrderDTO> findOrdeList(Page<OrderDTO> page, @Param("obj") OrderDTO dto);
+    Page<OrderDTO> findOrdeList(Page<OrderDTO> page, OrderDTO dto);
 }

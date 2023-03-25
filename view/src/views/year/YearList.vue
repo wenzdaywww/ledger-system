@@ -138,34 +138,22 @@ export default {
     // 统计年销售
     const handleCount = () => {
       axios.$http.post(request.yearCount,null).then(function (res) {
-        if(res.code === 200){
-          ElMessage.success(res.data);
-          findYearList();
-        }else{
-          ElMessage.error(res.data);
-        }
+        ElMessage.success(res.data);
+        findYearList();
       })
     };
     // 获取表格数据
     const findYearList = () => {
       axios.$http.get(request.yearList,query).then(function (res) {
-        if(res.code === 200){
-          tableData.value = res.data;
-          pageTotal.value = res.totalNum;
-        }else{
-          ElMessage.error(res.data);
-        }
+        tableData.value = res.data;
+        pageTotal.value = res.totalNum;
       })
     };
     findYearList();
     // 查询用户的所有店铺信息
     const getUserShopArr = () => {
       axios.$http.get(request.userShop, null).then(function (res) {
-        if(res.code === 200){
-          userShop.value = res.data;
-        }else{
-          ElMessage.error(res.data);
-        }
+        userShop.value = res.data;
       });
     };
     getUserShopArr();

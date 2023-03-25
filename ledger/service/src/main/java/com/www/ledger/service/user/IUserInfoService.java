@@ -1,7 +1,7 @@
 package com.www.ledger.service.user;
 
 import com.www.common.config.security.entity.SysUserEntity;
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.ledger.data.dto.UserDTO;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public interface IUserInfoService {
      * @param userId 用户ID
      * @return com.www.myblog.common.pojo.Response<com.www.myblog.base.data.dto.SysUserDTO>
      */
-    Response<UserDTO> findUser(String userId);
+    Result<UserDTO> findUser(String userId);
     /**
      * <p>@Description 创建用户信息 </p>
      * <p>@Author www </p>
@@ -28,7 +28,7 @@ public interface IUserInfoService {
      * @param user
      * @return com.www.myblog.common.pojo.Response<java.lang.String>
      */
-    Response<String> createUser(UserDTO user);
+    Result<String> createUser(UserDTO user);
     /**
      * <p>@Description 更新用户密码 </p>
      * <p>@Author www </p>
@@ -36,7 +36,7 @@ public interface IUserInfoService {
      * @param user 用户信息
      * @return com.www.myblog.common.pojo.Response<java.lang.String>
      */
-    Response<String> updateUserPwd(UserDTO user);
+    Result<String> updateUserPwd(UserDTO user);
     /**
      * <p>@Description 更新用户信息 </p>
      * <p>@Author www </p>
@@ -44,7 +44,7 @@ public interface IUserInfoService {
      * @param user 用户信息
      * @return com.www.myblog.common.pojo.Response<java.lang.String>
      */
-    Response<String> updateUserInfo(UserDTO user);
+    Result<String> updateUserInfo(UserDTO user);
     /**
      * <p>@Description 根据用户id查询用户信息 </p>
      * <p>@Author www </p>
@@ -59,5 +59,5 @@ public interface IUserInfoService {
      * <p>@Date 2023/3/15 19:08 </p>
      * @return Response<java.util.List < java.lang.String>>
      */
-    Response<List<String>> findRouter(String userId);
+    Result<List<String>> findRouter(String userId);
 }

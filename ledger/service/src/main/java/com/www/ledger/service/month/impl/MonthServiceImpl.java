@@ -1,17 +1,17 @@
 package com.www.ledger.service.month.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.www.common.config.exception.BusinessException;
 import com.www.common.data.enums.DateFormatEnum;
-import com.www.common.data.enums.ResponseEnum;
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.common.utils.DateUtils;
 import com.www.common.utils.MoneyUtils;
+import com.www.ledger.data.dao.IMonthSalesDAO;
+import com.www.ledger.data.dao.IOrderInfoDAO;
+import com.www.ledger.data.dao.IUserShopDAO;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.entity.MonthSalesEntity;
 import com.www.ledger.data.entity.UserShopEntity;
-import com.www.ledger.data.mapper.OrderInfoMapper;
-import com.www.ledger.service.entity.IMonthSalesService;
-import com.www.ledger.service.entity.IUserShopService;
 import com.www.ledger.service.month.IMonthService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -37,11 +37,11 @@ import java.util.stream.Collectors;
 @Service
 public class MonthServiceImpl implements IMonthService {
     @Autowired
-    private OrderInfoMapper orderInfoMapper;
+    private IOrderInfoDAO orderInfoDAO;
     @Autowired
-    private IUserShopService userShopService;
+    private IUserShopDAO userShopDAO;
     @Autowired
-    private IMonthSalesService monthSalesService;
+    private IMonthSalesDAO monthSalesDAO;
 
 
     /**
@@ -52,31 +52,31 @@ public class MonthServiceImpl implements IMonthService {
      * @return
      */
     @Override
-    public Response<String> updateMonthAmt(MonthDTO monthDTO) {
+    public Result<String> updateMonthAmt(MonthDTO monthDTO) {
         monthDTO.setAdvertAmount(MoneyUtils.nullToZero(monthDTO.getAdvertAmount()));
         monthDTO.setServiceAmount(MoneyUtils.nullToZero(monthDTO.getServiceAmount()));
         if(monthDTO.getAdvertAmount().compareTo(BigDecimal.ZERO) == 0 && monthDTO.getServiceAmount().compareTo(BigDecimal.ZERO) == 0){
-            return new Response<>(ResponseEnum.FAIL,"推广费和服务费不能都为0");
+            throw new BusinessException("推广费和服务费不能都为0");
         }
-        MonthSalesEntity monthEntity = monthSalesService.findMonthSales(monthDTO.getUserId(),monthDTO.getMsId());
+        MonthSalesEntity monthEntity = monthSalesDAO.findMonthSales(monthDTO.getUserId(),monthDTO.getMsId());
         if(monthEntity == null){
-            return new Response<>(ResponseEnum.FAIL,"月销售数据不存在");
+            throw new BusinessException("月销售数据不存在");
         }
         //增加月销售推广及服务费用
         monthEntity.setAdvertAmount((monthEntity.getAdvertAmount().add(monthDTO.getAdvertAmount())).setScale(2,RoundingMode.HALF_UP))
                 .setServiceAmount((monthEntity.getServiceAmount().add(monthDTO.getServiceAmount())).setScale(2,RoundingMode.HALF_UP));
         if(monthEntity.getAdvertAmount().compareTo(BigDecimal.ZERO) == -1){
-            return new Response<>(ResponseEnum.FAIL,"推广费不能为负数");
+            throw new BusinessException("推广费不能为负数");
         }
         if(monthEntity.getServiceAmount().compareTo(BigDecimal.ZERO) == -1){
-            return new Response<>(ResponseEnum.FAIL,"服务费不能为负数");
+            throw new BusinessException("服务费不能为负数");
         }
         //计算月销售额数据
         this.computeMonthData(monthEntity);
-        if(monthSalesService.updateById(monthEntity)){
-            return new Response<>(ResponseEnum.SUCCESS,"修改成功");
+        if(monthSalesDAO.updateById(monthEntity)){
+            return new Result<>("修改成功");
         }
-        return new Response<>(ResponseEnum.FAIL,"修改失败");
+        return new Result<>("修改失败");
     }
     /**
      * <p>@Description 编辑月销售额数据 </p>
@@ -86,27 +86,24 @@ public class MonthServiceImpl implements IMonthService {
      * @return
      */
     @Override
-    public Response<String> saveMonthSales(MonthDTO monthDTO) {
+    public Result<String> saveMonthSales(MonthDTO monthDTO) {
         Date monthDate = DateUtils.parse(monthDTO.getMonthDateStr() + "-01",DateFormatEnum.YYYYMMDD1);
         if(monthDate == null){
-            return new Response<>(ResponseEnum.FAIL,"月份格式错误");
+            throw new BusinessException("月份格式错误");
         }
         //判断当前店铺是否属于用户的
-        UserShopEntity shopEntity = userShopService.findUserShop(monthDTO.getUserId(),monthDTO.getShopId());
-        if(shopEntity == null){
-            return new Response<>(ResponseEnum.FAIL,"店铺不存在");
-        }
+        UserShopEntity shopEntity = userShopDAO.findUserShop(monthDTO.getUserId(),monthDTO.getShopId());
         MonthSalesEntity monthEntity = null;
         //月销售数据修改
         if(monthDTO.getMsId() != null){
-            monthEntity = monthSalesService.findMonthSales(monthDTO.getUserId(),monthDTO.getMsId());
+            monthEntity = monthSalesDAO.findMonthSales(monthDTO.getUserId(),monthDTO.getMsId());
             if(monthEntity == null){
-                return new Response<>(ResponseEnum.FAIL,"店铺月销售数据不存在");
+                throw new BusinessException("店铺月销售数据不存在");
             }
         }else {//月销售数据新增
-            monthEntity = monthSalesService.findMonthSales(monthDTO.getUserId(),monthDTO.getShopId(),monthDate);
+            monthEntity = monthSalesDAO.findMonthSales(monthDTO.getUserId(),monthDTO.getShopId(),monthDate);
             if(monthEntity != null){
-                return new Response<>(ResponseEnum.FAIL,"已存在店铺月销售数据");
+                throw new BusinessException("已存在店铺月销售数据");
             }
         }
         //月销售数据新增
@@ -122,10 +119,10 @@ public class MonthServiceImpl implements IMonthService {
                 .setServiceAmount(MoneyUtils.nullToZero(monthDTO.getServiceAmount()));
         //计算月销售额数据
         this.computeMonthData(monthEntity);
-        if(monthSalesService.saveOrUpdate(monthEntity)){
-            return new Response<>(ResponseEnum.SUCCESS,"编辑成功");
+        if(monthSalesDAO.saveOrUpdate(monthEntity)){
+            return new Result<>("编辑成功");
         }
-        return new Response<>(ResponseEnum.FAIL,"编辑失败");
+        return new Result<>("编辑失败");
     }
     /**
      * <p>@Description 删除月销售额数据 </p>
@@ -136,11 +133,11 @@ public class MonthServiceImpl implements IMonthService {
      * @return
      */
     @Override
-    public Response<String> deleteMonthData(String userId,Long msId) {
-        if(monthSalesService.deleteMonthSales(userId,msId)){
-            return new Response<>(ResponseEnum.SUCCESS,"删除成功");
+    public Result<String> deleteMonthData(String userId,Long msId) {
+        if(monthSalesDAO.deleteMonthSales(userId,msId)){
+            return new Result<>("删除成功");
         }
-        return new Response<>(ResponseEnum.FAIL,"删除失败");
+        return new Result<>("删除失败");
     }
     /**
      * <p>@Description 统计月销售额 </p>
@@ -150,11 +147,11 @@ public class MonthServiceImpl implements IMonthService {
      * @return
      */
     @Override
-    public Response<String> saveAndCountMonthData(String userId) {
+    public Result<String> saveAndCountMonthData(String userId) {
         //统计月销售额
-        List<MonthDTO> countList = orderInfoMapper.countMonthSale(userId);
+        List<MonthDTO> countList = orderInfoDAO.countMonthSale(userId);
         //查询存在的月销售额数据
-        List<MonthSalesEntity> monthList = monthSalesService.findMonthSalesList(userId);
+        List<MonthSalesEntity> monthList = monthSalesDAO.findMonthSalesList(userId);
         List<MonthSalesEntity> insertList = new ArrayList<>();//待插入的数据
         List<MonthSalesEntity> updateList = new ArrayList<>();//待更新的数据
         //数据转换处理，key=店铺ID+月份日期（默认为月份01日），如：101320230201
@@ -206,9 +203,9 @@ public class MonthServiceImpl implements IMonthService {
                 updateList.add(v);
             }
         });
-        monthSalesService.updateBatchById(updateList,100);
-        monthSalesService.saveBatch(insertList,100);
-        return new Response<>(ResponseEnum.SUCCESS,"统计完成");
+        monthSalesDAO.updateBatchById(updateList,100);
+        monthSalesDAO.saveBatch(insertList,100);
+        return new Result<>("统计完成");
     }
     /**
      * <p>@Description 计算月销售额数据 </p>
@@ -245,14 +242,14 @@ public class MonthServiceImpl implements IMonthService {
      * @return
      */
     @Override
-    public Response<List<MonthDTO>> findMonthList(MonthDTO monthDTO, int pageNum, long pageSize) {
+    public Result<List<MonthDTO>> findMonthList(MonthDTO monthDTO, int pageNum, long pageSize) {
         Page<MonthDTO> page = new Page<>(pageNum,pageSize);
-        page = monthSalesService.findMonthList(page,monthDTO);
+        page = monthSalesDAO.findMonthList(page,monthDTO);
         List<MonthDTO> shopList =  page.getRecords();
-        Response<List<MonthDTO>> response = new Response<>(ResponseEnum.SUCCESS,shopList);
-        response.setPageNum(pageNum);
-        response.setPageSize(pageSize);
-        response.setTotalNum(page.getTotal());
-        return response;
+        Result<List<MonthDTO>> result = new Result<>(shopList);
+        result.setPageNum(pageNum);
+        result.setPageSize(pageSize);
+        result.setTotalNum(page.getTotal());
+        return result;
     }
 }

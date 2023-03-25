@@ -2,6 +2,7 @@ package com.www.ledger.service.user.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.www.common.config.exception.BusinessException;
 import com.www.common.config.redis.RedisOperation;
 import com.www.common.config.security.MySecurityProperties;
 import com.www.common.config.security.dto.AuthorityDTO;
@@ -12,13 +13,12 @@ import com.www.common.config.security.mapper.AuthorityRoleMapper;
 import com.www.common.config.security.mapper.SysUserMapper;
 import com.www.common.config.security.mapper.SysUserRoleMapper;
 import com.www.common.data.constant.CharConstant;
-import com.www.common.data.enums.ResponseEnum;
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.common.utils.DateUtils;
+import com.www.ledger.data.dao.IUserBookDAO;
 import com.www.ledger.data.dto.UserDTO;
 import com.www.ledger.data.entity.UserBookEntity;
 import com.www.ledger.data.properties.LedgerProperties;
-import com.www.ledger.service.entity.IUserBookService;
 import com.www.ledger.service.user.IUserInfoCheckService;
 import com.www.ledger.service.user.IUserInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +46,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
     @Autowired
     private SysUserMapper sysUserMapper;
     @Autowired
-    private IUserBookService userBookService;
+    private IUserBookDAO userBookDAO;
     @Autowired
     private LedgerProperties ledgerProperties;
     @Autowired
@@ -66,11 +66,10 @@ public class UserInfoServiceImpl implements IUserInfoService {
      * @return com.www.myblog.common.pojo.Response<com.www.myblog.base.data.dto.SysUserDTO>
      */
     @Override
-    public Response<UserDTO> findUser(String userId) {
-        Response<UserDTO> response = new Response<>();
+    public Result<UserDTO> findUser(String userId) {
+        Result<UserDTO> result = new Result<>();
         if(StringUtils.isBlank(userId)){
-            response.setResponse(ResponseEnum.FAIL,null);
-            return response;
+            return new Result<>(null);
         }
         SysUserEntity userEntity = this.findUserById(userId);
         UserDTO userDTO = Optional.ofNullable(userEntity).map(entity -> {
@@ -81,11 +80,9 @@ public class UserInfoServiceImpl implements IUserInfoService {
             return tempDTO;
         }).orElse(null);
         if(userDTO == null){
-            response.setResponse(ResponseEnum.FAIL,null);
-            return response;
+            return new Result<>(null);
         }
-        response.setResponse(ResponseEnum.SUCCESS,userDTO);
-        return response;
+        return new Result<>(userDTO);
     }
     /**
      * <p>@Description 创建用户信息 </p>
@@ -95,12 +92,11 @@ public class UserInfoServiceImpl implements IUserInfoService {
      * @return com.www.myblog.common.pojo.Response<java.lang.String>
      */
     @Override
-    public Response<String> createUser(UserDTO user) {
-        Response<String> response = new Response<>();
+    public Result<String> createUser(UserDTO user) {
         //创建用户信息前校验
-        SysRoleEntity roleEntity = userInfoCheckService.checkBeforeCreateUser(user,response);
+        SysRoleEntity roleEntity = userInfoCheckService.checkBeforeCreateUser(user);
         if(roleEntity == null){
-            return response;
+            throw new BusinessException("创建用户失败");
         }
         //创建用户信息
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
@@ -121,9 +117,8 @@ public class UserInfoServiceImpl implements IUserInfoService {
         //创建用户账簿信息
         UserBookEntity bookEntity = new UserBookEntity();
         bookEntity.setUserId(userEntity.getUserId());
-        userBookService.save(bookEntity);
-        response.setResponse(ResponseEnum.SUCCESS,"创建用户成功");
-        return response;
+        userBookDAO.save(bookEntity);
+        return new Result<>("创建用户成功");
     }
     /**
      * <p>@Description 更新用户密码 </p>
@@ -133,18 +128,16 @@ public class UserInfoServiceImpl implements IUserInfoService {
      * @return com.www.myblog.common.pojo.Response<java.lang.String>
      */
     @Override
-    public Response<String> updateUserPwd(UserDTO user) {
-        Response<String> response = new Response<>();
+    public Result<String> updateUserPwd(UserDTO user) {
+        Result<String> result = new Result<>();
         SysUserEntity userEntity = this.findUserById(user.getUserId());
         if(userEntity == null){
-            response.setResponse(ResponseEnum.FAIL,"查询不到该用户");
-            return response;
+            throw new BusinessException("查询不到该用户");
         }
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         //有输入密码则校验密码
         if(!encoder.matches(user.getPassword(),userEntity.getPassword())){
-            response.setResponse(ResponseEnum.FAIL,"原密码不正确");
-            return response;
+            throw new BusinessException("原密码不正确");
         }
         //更新用户信息
         UpdateWrapper<SysUserEntity> userWrapper = new UpdateWrapper<>();
@@ -153,10 +146,9 @@ public class UserInfoServiceImpl implements IUserInfoService {
         userWrapper.lambda().set(SysUserEntity::getUpdateTime,DateUtils.getCurrentDateTime());
         int count = sysUserMapper.update(null,userWrapper);
         if(count == 0){
-            response.setResponse(ResponseEnum.FAIL,"更新用户密码失败");
+            return new Result<>("更新密码失败");
         }
-        response.setResponse(ResponseEnum.SUCCESS,"更新用户密码成功");
-        return response;
+        return new Result<>("更新密码成功");
     }
     /**
      * <p>@Description 更新用户信息 </p>
@@ -166,13 +158,11 @@ public class UserInfoServiceImpl implements IUserInfoService {
      * @return com.www.myblog.common.pojo.Response<java.lang.String>
      */
     @Override
-    public Response<String> updateUserInfo(UserDTO user) {
-        Response<String> response = new Response<>();
+    public Result<String> updateUserInfo(UserDTO user) {
         //更新用户信息前校验
         SysUserEntity userEntity = this.findUserById(user.getUserId());
         if(userEntity == null){
-            response.setResponse(ResponseEnum.FAIL,"查询不到该用户");
-            return response;
+            throw new BusinessException("查询不到该用户");
         }
         //更新用户信息
         UpdateWrapper<SysUserEntity> userWrapper = new UpdateWrapper<>();
@@ -181,10 +171,9 @@ public class UserInfoServiceImpl implements IUserInfoService {
         userWrapper.lambda().set(SysUserEntity::getUpdateTime,DateUtils.getCurrentDateTime());
         int count = sysUserMapper.update(null,userWrapper);
         if(count == 0){
-            response.setResponse(ResponseEnum.FAIL,"更新用户信息失败");
+            return new Result<>("更新用户信息失败");
         }
-        response.setResponse(ResponseEnum.SUCCESS,"更新用户信息成功");
-        return response;
+        return new Result<>("更新信息成功");
     }
     /**
      * <p>@Description 获取当前角色拥有的路由 </p>
@@ -194,7 +183,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
      * @return Response<java.util.List < java.lang.String>>
      */
     @Override
-    public Response<List<String>> findRouter(String userId) {
+    public Result<List<String>> findRouter(String userId) {
         List<String> routerList = null;
         //redis中有角色路由信息则直接获取
         if(RedisOperation.hasKey(ledgerProperties.getRouterRedisKey())){
@@ -216,7 +205,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
                 RedisOperation.keyExpire(ledgerProperties.getRouterRedisKey(),ledgerProperties.getRouterExpireHour(), TimeUnit.HOURS);
             }
         }
-        return new Response<>(ResponseEnum.SUCCESS,routerList);
+        return new Result<>(routerList);
     }
     /**
      * <p>@Description 查询角色拥有的路由权限 </p>

@@ -1,4 +1,4 @@
-package com.www.ledger.service.entity;
+package com.www.ledger.data.dao;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.www.ledger.data.entity.UserShopEntity;
@@ -9,7 +9,7 @@ import com.www.ledger.data.entity.UserShopEntity;
  * <p>@Author www </p>
  * <p>@Date 2023/3/13 20:45 </p>
  */
-public interface IUserShopService extends IService<UserShopEntity> {
+public interface IUserShopDAO extends IService<UserShopEntity> {
     /**
      * <p>@Description 查询用户的有效店铺 </p>
      * <p>@Author www </p>

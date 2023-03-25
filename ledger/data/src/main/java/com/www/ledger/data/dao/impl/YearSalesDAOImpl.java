@@ -1,27 +1,27 @@
-package com.www.ledger.service.entity.impl;
+package com.www.ledger.data.dao.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.www.ledger.data.dao.IYearSalesDAO;
 import com.www.ledger.data.dto.ShopDTO;
 import com.www.ledger.data.dto.YearDTO;
 import com.www.ledger.data.entity.YearSalesEntity;
 import com.www.ledger.data.mapper.YearSalesMapper;
-import com.www.ledger.service.entity.IYearSalesService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
- * <p>@Description 年销售额信息Service实现类 </p>
+ * <p>@Description 年销售额信息DAO实现类 </p>
  * <p>@Version 1.0 </p>
  * <p>@Author www </p>
  * <p>@Date 2023/3/13 20:45 </p>
  */
-@Service
-public class YearSalesServiceImpl extends ServiceImpl<YearSalesMapper, YearSalesEntity> implements IYearSalesService {
+@Repository
+public class YearSalesDAOImpl extends ServiceImpl<YearSalesMapper, YearSalesEntity> implements IYearSalesDAO {
     @Autowired
     private YearSalesMapper yearSalesMapper;
 

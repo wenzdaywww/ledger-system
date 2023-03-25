@@ -67,12 +67,8 @@ export default {
       loginForm.value.validate((valid) => {
         if (valid) {
           axios.$http.post(request.login, form).then(function (res) {
-            if(res.code === 200){
-              //TODO 2023/3/15 21:15 登录成功跳转首页不显示用户是登录状态
-              router.push("/");
-            }else {
-              ElMessage.error(res.data);
-            }
+            //TODO 2023/3/15 21:15 登录成功跳转首页不显示用户是登录状态
+            router.push("/");
           });
         } else {
           return false;

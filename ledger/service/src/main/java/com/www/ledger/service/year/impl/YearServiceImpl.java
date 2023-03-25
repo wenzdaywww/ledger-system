@@ -2,14 +2,13 @@ package com.www.ledger.service.year.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.www.common.data.enums.DateFormatEnum;
-import com.www.common.data.enums.ResponseEnum;
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.common.utils.DateUtils;
 import com.www.common.utils.MoneyUtils;
 import com.www.ledger.data.dto.YearDTO;
 import com.www.ledger.data.entity.YearSalesEntity;
-import com.www.ledger.service.entity.IMonthSalesService;
-import com.www.ledger.service.entity.IYearSalesService;
+import com.www.ledger.data.dao.IMonthSalesDAO;
+import com.www.ledger.data.dao.IYearSalesDAO;
 import com.www.ledger.service.year.IYearService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,9 +33,9 @@ import java.util.stream.Collectors;
 @Service
 public class YearServiceImpl implements IYearService {
     @Autowired
-    private IMonthSalesService monthSalesService;
+    private IMonthSalesDAO monthSalesDAO;
     @Autowired
-    private IYearSalesService yearSalesService;
+    private IYearSalesDAO yearSalesDAO;
 
     /**
      * <p>@Description 统计年销售额 </p>
@@ -46,17 +45,17 @@ public class YearServiceImpl implements IYearService {
      * @return
      */
     @Override
-    public Response<String> saveAndCountYearData(String userId) {
+    public Result<String> saveAndCountYearData(String userId) {
         //统计的年销售额
-        List<YearDTO> countList = monthSalesService.countYearData(userId);
+        List<YearDTO> countList = monthSalesDAO.countYearData(userId);
         //查询存在的年销售额数据
-        List<YearSalesEntity> yearList = yearSalesService.findYearList(userId);
+        List<YearSalesEntity> yearList = yearSalesDAO.findYearList(userId);
         if(CollectionUtils.isEmpty(countList) && CollectionUtils.isNotEmpty(yearList)){
             //没有统计的年销售额但有年销售额数据，则需要删除年销售数据
-            if(yearSalesService.deleteYearList(userId)){
-                return new Response<>(ResponseEnum.SUCCESS,"统计完成");
+            if(yearSalesDAO.deleteYearList(userId)){
+                return new Result<>("统计完成");
             }
-            return new Response<>(ResponseEnum.FAIL,"统计失败");
+            return new Result<>("统计失败");
         }
         List<YearSalesEntity> insertList = new ArrayList<>();//待插入的数据
         List<YearSalesEntity> updateList = new ArrayList<>();//待更新的数据
@@ -100,10 +99,10 @@ public class YearServiceImpl implements IYearService {
                 deleteList.add(e.getYsId());
             }
         });
-        yearSalesService.updateBatchById(updateList,100);
-        yearSalesService.saveBatch(insertList,100);
-        yearSalesService.removeByIds(deleteList);
-        return new Response<>(ResponseEnum.SUCCESS,"统计完成");
+        yearSalesDAO.updateBatchById(updateList,100);
+        yearSalesDAO.saveBatch(insertList,100);
+        yearSalesDAO.removeByIds(deleteList);
+        return new Result<>("统计完成");
     }
     /**
      * <p>@Description 计算年销售额数据 </p>
@@ -138,14 +137,14 @@ public class YearServiceImpl implements IYearService {
      * @return
      */
     @Override
-    public Response<List<YearDTO>> findYearList(YearDTO yearDTO, int pageNum, long pageSize) {
+    public Result<List<YearDTO>> findYearList(YearDTO yearDTO, int pageNum, long pageSize) {
         Page<YearDTO> page = new Page<>(pageNum,pageSize);
-        page = yearSalesService.findYearList(page,yearDTO);
+        page = yearSalesDAO.findYearList(page,yearDTO);
         List<YearDTO> shopList =  page.getRecords();
-        Response<List<YearDTO>> response = new Response<>(ResponseEnum.SUCCESS,shopList);
-        response.setPageNum(pageNum);
-        response.setPageSize(pageSize);
-        response.setTotalNum(page.getTotal());
-        return response;
+        Result<List<YearDTO>> listResult = new Result<>(shopList);
+        listResult.setPageNum(pageNum);
+        listResult.setPageSize(pageSize);
+        listResult.setTotalNum(page.getTotal());
+        return listResult;
     }
 }

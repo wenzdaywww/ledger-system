@@ -1,9 +1,9 @@
 package com.www.ledger.controller.month;
 
 import com.www.common.config.code.CodeDict;
+import com.www.common.config.exception.BusinessException;
 import com.www.common.config.security.meta.JwtAuthorizationTokenFilter;
-import com.www.common.data.enums.ResponseEnum;
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.common.utils.MoneyUtils;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.enums.CodeTypeEnum;
@@ -48,9 +48,9 @@ public class MonthController {
      * @return
      */
     @PostMapping("amt")
-    public Response<String> updateMonthAmt(@Validated MonthAmtInVO amtInVO){
+    public Result<String> updateMonthAmt(@Validated MonthAmtInVO amtInVO){
         if(CodeDict.isIllegalValue(CodeTypeEnum.YesOrNo_No.getType(), amtInVO.getType())){
-            return new Response<>(ResponseEnum.FAIL,"操作类型错误");
+            throw new BusinessException("操作类型错误");
         }
         MonthDTO monthDTO = new MonthDTO();
         monthDTO.setMsId(amtInVO.getMsId()).setUserId(JwtAuthorizationTokenFilter.getUserId());
@@ -71,7 +71,7 @@ public class MonthController {
      * @return
      */
     @PostMapping("new")
-    public Response<String> saveMonthSales(@Validated MonthNewInVO newInVO){
+    public Result<String> saveMonthSales(@Validated MonthNewInVO newInVO){
         MonthDTO monthDTO = new MonthDTO();
         monthDTO.setUserId(JwtAuthorizationTokenFilter.getUserId()).setMsId(newInVO.getMsId())
                 .setMonthDateStr(newInVO.getMonth()).setShopId(newInVO.getShopId())
@@ -86,7 +86,7 @@ public class MonthController {
      * @return
      */
     @PostMapping("dlt/{msId}")
-    public Response<String> deleteMonthData(@PathVariable("msId") Long msId){
+    public Result<String> deleteMonthData(@PathVariable("msId") Long msId){
         return monthService.deleteMonthData(JwtAuthorizationTokenFilter.getUserId(),msId);
     }
     /**
@@ -96,7 +96,7 @@ public class MonthController {
      * @return
      */
     @PostMapping("tal")
-    public Response<String> saveMonthList(){
+    public Result<String> saveMonthList(){
         return monthService.saveAndCountMonthData(JwtAuthorizationTokenFilter.getUserId());
     }
     /**
@@ -107,13 +107,13 @@ public class MonthController {
      * @return
      */
     @GetMapping("list")
-    public Response<List<MonthListOutVO>> findMonthList(@Validated MonthListInVO monthInVO){
+    public Result<List<MonthListOutVO>> findMonthList(@Validated MonthListInVO monthInVO){
         MonthDTO monthDTO = new MonthDTO();
         monthDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
                 .setMonthDateStr(monthInVO.getMonth()).setShopId(monthInVO.getShopId());
         monthDTO.setMonthDateStr(StringUtils.isNotBlank(monthDTO.getMonthDateStr()) ? monthDTO.getMonthDateStr() + "-01" : null);//月份设置每月第一天
-        Response<List<MonthDTO>> dtoResponse = monthService.findMonthList(monthDTO,monthInVO.getPageNum(),monthInVO.getPageSize());
-        List<MonthListOutVO> monthList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
+        Result<List<MonthDTO>> listResult = monthService.findMonthList(monthDTO,monthInVO.getPageNum(),monthInVO.getPageSize());
+        List<MonthListOutVO> monthList = Optional.ofNullable(listResult.getData()).filter(e -> CollectionUtils.isNotEmpty(listResult.getData()))
                 .map(list -> {
                     List<MonthListOutVO> tempList = new ArrayList<>();
                     list.forEach(dto -> {
@@ -131,6 +131,6 @@ public class MonthController {
                     });
                     return tempList;
                 }).orElse(null);
-        return new Response<>(dtoResponse,monthList);
+        return new Result<>(listResult,monthList);
     }
 }

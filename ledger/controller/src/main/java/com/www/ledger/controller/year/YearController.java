@@ -1,7 +1,7 @@
 package com.www.ledger.controller.year;
 
 import com.www.common.config.security.meta.JwtAuthorizationTokenFilter;
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.ledger.data.dto.YearDTO;
 import com.www.ledger.data.vo.year.YearListInVO;
 import com.www.ledger.data.vo.year.YearListOutVO;
@@ -38,7 +38,7 @@ public class YearController {
      * @return
      */
     @PostMapping("tal")
-    public Response<String> saveYearData(){
+    public Result<String> saveYearData(){
         return yearService.saveAndCountYearData(JwtAuthorizationTokenFilter.getUserId());
     }
     /**
@@ -49,12 +49,12 @@ public class YearController {
      * @return
      */
     @GetMapping("list")
-    public Response<List<YearListOutVO>> findYearList(@Validated YearListInVO yearInVO){
+    public Result<List<YearListOutVO>> findYearList(@Validated YearListInVO yearInVO){
         YearDTO yearDTO = new YearDTO();
         yearDTO.setShopId(yearInVO.getShopId()).setUserId(JwtAuthorizationTokenFilter.getUserId())
                 .setYearStr(StringUtils.isNotBlank(yearInVO.getYear()) ? yearInVO.getYear() + "0101" : null);
-        Response<List<YearDTO>> dtoResponse = yearService.findYearList(yearDTO,yearInVO.getPageNum(),yearInVO.getPageSize());
-        List<YearListOutVO> yearList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
+        Result<List<YearDTO>> listResult = yearService.findYearList(yearDTO,yearInVO.getPageNum(),yearInVO.getPageSize());
+        List<YearListOutVO> yearList = Optional.ofNullable(listResult.getData()).filter(e -> CollectionUtils.isNotEmpty(listResult.getData()))
                 .map(list -> {
                     List<YearListOutVO> tempList = new ArrayList<>();
                     list.forEach(dto -> {
@@ -71,6 +71,6 @@ public class YearController {
                     });
                     return tempList;
                 }).orElse(null);
-        return new Response<>(dtoResponse,yearList);
+        return new Result<>(listResult,yearList);
     }
 }

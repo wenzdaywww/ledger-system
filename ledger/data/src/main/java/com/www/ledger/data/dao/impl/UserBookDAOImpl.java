@@ -1,22 +1,22 @@
-package com.www.ledger.service.entity.impl;
+package com.www.ledger.data.dao.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.www.ledger.data.dao.IUserBookDAO;
 import com.www.ledger.data.entity.UserBookEntity;
 import com.www.ledger.data.mapper.UserBookMapper;
-import com.www.ledger.service.entity.IUserBookService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 /**
- * <p>@Description 用户账簿信息Service实现类 </p>
+ * <p>@Description 用户账簿信息DAO实现类 </p>
  * <p>@Version 1.0 </p>
  * <p>@Author www </p>
  * <p>@Date 2023/3/13 20:45 </p>
  */
-@Service
-public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBookEntity> implements IUserBookService {
+@Repository
+public class UserBookDAOImpl extends ServiceImpl<UserBookMapper, UserBookEntity> implements IUserBookDAO {
     @Autowired
     private UserBookMapper userBookMapper;
 

@@ -2,7 +2,7 @@ package com.www.ledger.controller.user;
 
 import com.www.common.config.code.write.CodeRedisWriteHandler;
 import com.www.common.config.security.meta.JwtAuthorizationTokenFilter;
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.ledger.data.dto.UserDTO;
 import com.www.ledger.data.vo.user.UserEditInVO;
 import com.www.ledger.data.vo.user.UserInfoOutVO;
@@ -38,16 +38,16 @@ public class UserController {
      * @return com.www.myblog.common.pojo.Response<com.www.myblog.base.data.dto.SysUserDTO>
      */
     @GetMapping("info")
-    public Response<UserInfoOutVO> findUser(){
-        Response<UserDTO> userDTO = userInfoService.findUser(JwtAuthorizationTokenFilter.getUserId());
-        UserInfoOutVO userInfoOutVO = Optional.ofNullable(userDTO.getData()).map(e -> {
+    public Result<UserInfoOutVO> findUser(){
+        Result<UserDTO> result = userInfoService.findUser(JwtAuthorizationTokenFilter.getUserId());
+        UserInfoOutVO userInfoOutVO = Optional.ofNullable(result.getData()).map(e -> {
             UserInfoOutVO tempOutVO = new UserInfoOutVO();
             tempOutVO.setSuId(e.getSuId())
                         .setUserId(e.getUserId())
                         .setUserName(e.getUserName());
             return tempOutVO;
         }).orElse(null);
-        return new Response<>(userDTO,userInfoOutVO);
+        return new Result<>(result,userInfoOutVO);
     }
     /**
      * <p>@Description 更新当前登录的用户密码 </p>
@@ -57,7 +57,7 @@ public class UserController {
      * @return com.www.myblog.common.pojo.Response<java.lang.String>
      */
     @PostMapping("pwd")
-    public Response<String> updateUserPwd(@Validated UserPwdInVO pwdInVO){
+    public Result<String> updateUserPwd(@Validated UserPwdInVO pwdInVO){
         UserDTO userDTO = new UserDTO();
         userDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
             .setPassword(pwdInVO.getPassword())
@@ -72,7 +72,7 @@ public class UserController {
      * @return com.www.myblog.common.pojo.Response<java.lang.String>
      */
     @PostMapping("edit")
-    public Response<String> updateUserInfo(@Validated UserEditInVO editInVO){
+    public Result<String> updateUserInfo(@Validated UserEditInVO editInVO){
         UserDTO userDTO = new UserDTO();
         userDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
                 .setUserName(editInVO.getUserName());
@@ -85,7 +85,7 @@ public class UserController {
      * @return Response<java.util.List < java.lang.String>>
      */
     @GetMapping("router")
-    public Response<List<String>> findRouter(){
+    public Result<List<String>> findRouter(){
         return userInfoService.findRouter(JwtAuthorizationTokenFilter.getUserId());
     }
 }

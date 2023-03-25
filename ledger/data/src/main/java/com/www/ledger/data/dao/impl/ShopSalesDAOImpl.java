@@ -1,16 +1,16 @@
-package com.www.ledger.service.entity.impl;
+package com.www.ledger.data.dao.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.www.ledger.data.dao.IShopSalesDAO;
 import com.www.ledger.data.dto.BookDTO;
 import com.www.ledger.data.dto.ShopDTO;
 import com.www.ledger.data.entity.ShopSalesEntity;
 import com.www.ledger.data.mapper.ShopSalesMapper;
-import com.www.ledger.service.entity.IShopSalesService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -20,8 +20,8 @@ import java.util.List;
  * <p>@Author www </p>
  * <p>@Date 2023/3/13 20:45 </p>
  */
-@Service
-public class ShopSalesServiceImpl extends ServiceImpl<ShopSalesMapper, ShopSalesEntity> implements IShopSalesService {
+@Repository
+public class ShopSalesDAOImpl extends ServiceImpl<ShopSalesMapper, ShopSalesEntity> implements IShopSalesDAO {
     @Autowired
     private ShopSalesMapper shopSalesMapper;
 

@@ -1,6 +1,6 @@
 package com.www.ledger.service.order;
 
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.ledger.data.dto.OrderDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,11 +17,12 @@ public interface IOrderService {
      * <p>@Description 导入订单信息 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/21 22:12 </p>
-     * @param file
-     * @param orderDTO
-     * @return
+     * @param file 订单文件数据
+     * @param orderDTO 订单导入对象
+     * @param password 订单文件密码
+     * @return 导入失败的则下载订单数据信息
      */
-    Response<String> importOrder(MultipartFile file,OrderDTO orderDTO);
+    Result<String> importOrder(MultipartFile file, OrderDTO orderDTO, String password);
     /**
      * <p>@Description 保存订单信息 </p>
      * <p>@Author www </p>
@@ -29,7 +30,7 @@ public interface IOrderService {
      * @param orderDTO 订单信息
      * @return Response<java.lang.String>
      */
-    Response<String> saveOrderInfo(OrderDTO orderDTO);
+    Result<String> saveOrderInfo(OrderDTO orderDTO);
     /**
      * <p>@Description 删除订单 </p>
      * <p>@Author www </p>
@@ -38,7 +39,7 @@ public interface IOrderService {
      * @param oiId 订单ID
      * @return
      */
-    Response<String> deleteOrderInfo(String userId,Long oiId);
+    Result<String> deleteOrderInfo(String userId,Long oiId);
     /**
      * <p>@Description 查询订单信息 </p>
      * <p>@Author www </p>
@@ -48,5 +49,5 @@ public interface IOrderService {
      * @param pageSize 页面
      * @return Response<java.util.List < com.www.ledger.data.dto.OrderDTO>>
      */
-    Response<List<OrderDTO>> findOrdeList(OrderDTO orderDTO, int pageNum, long pageSize);
+    Result<List<OrderDTO>> findOrdeList(OrderDTO orderDTO, int pageNum, long pageSize);
 }

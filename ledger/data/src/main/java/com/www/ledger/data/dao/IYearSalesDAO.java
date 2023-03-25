@@ -1,4 +1,4 @@
-package com.www.ledger.service.entity;
+package com.www.ledger.data.dao;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -9,12 +9,12 @@ import com.www.ledger.data.entity.YearSalesEntity;
 import java.util.List;
 
 /**
- * <p>@Description 年销售额信息Service接口 </p>
+ * <p>@Description 年销售额信息DAO接口 </p>
  * <p>@Version 1.0 </p>
  * <p>@Author www </p>
  * <p>@Date 2023/3/13 20:45 </p>
  */
-public interface IYearSalesService extends IService<YearSalesEntity> {
+public interface IYearSalesDAO extends IService<YearSalesEntity> {
     /**
      * <p>@Description 删除用户的年销售数据 </p>
      * <p>@Author www </p>

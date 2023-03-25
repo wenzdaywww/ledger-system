@@ -4,20 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.www.common.config.code.CodeDict;
+import com.www.common.config.exception.BusinessException;
 import com.www.common.config.security.entity.SysUserEntity;
-import com.www.common.data.enums.ResponseEnum;
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.common.utils.DateUtils;
 import com.www.common.utils.MoneyUtils;
 import com.www.common.utils.UidGeneratorUtils;
+import com.www.ledger.data.dao.IShopSalesDAO;
+import com.www.ledger.data.dao.IUserShopDAO;
+import com.www.ledger.data.dao.IYearSalesDAO;
 import com.www.ledger.data.dto.ShopDTO;
 import com.www.ledger.data.entity.ShopSalesEntity;
 import com.www.ledger.data.entity.UserShopEntity;
 import com.www.ledger.data.enums.CodeTypeEnum;
 import com.www.ledger.data.properties.LedgerProperties;
-import com.www.ledger.service.entity.IShopSalesService;
-import com.www.ledger.service.entity.IUserShopService;
-import com.www.ledger.service.entity.IYearSalesService;
 import com.www.ledger.service.shop.IShopService;
 import com.www.ledger.service.user.IUserInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -45,13 +45,13 @@ import java.util.stream.Collectors;
 @Service
 public class ShopServiceImpl implements IShopService {
     @Autowired
-    private IUserShopService userShopService;
+    private IUserShopDAO userShopDAO;
     @Autowired
     private IUserInfoService userInfoService;
     @Autowired
-    private IShopSalesService shopSalesService;
+    private IShopSalesDAO shopSalesDAO;
     @Autowired
-    private IYearSalesService yearSalesService;
+    private IYearSalesDAO yearSalesDAO;
     @Autowired
     private LedgerProperties ledgerProperties;
 
@@ -63,11 +63,11 @@ public class ShopServiceImpl implements IShopService {
      * @return Response<java.lang.String>
      */
     @Override
-    public Response<String> saveAndCountShopData(String userId) {
+    public Result<String> saveAndCountShopData(String userId) {
         //统计的店销售额
-        List<ShopDTO> countList = yearSalesService.countShopData(userId);
+        List<ShopDTO> countList = yearSalesDAO.countShopData(userId);
         //查询的店销售额
-        List<ShopSalesEntity> shopList = shopSalesService.findShopSalesList(userId);
+        List<ShopSalesEntity> shopList = shopSalesDAO.findShopSalesList(userId);
         //数据转换处理，key=店铺ID，如：1013
         Map<Long, ShopSalesEntity> entityMap = CollectionUtils.isEmpty(shopList) ? new HashMap<>()
                 : shopList.stream().collect(Collectors.toMap(k -> k.getShopId(), month -> month));
@@ -105,8 +105,8 @@ public class ShopServiceImpl implements IShopService {
             entity.setRetainedProfitsRate(entity.getTotalCost().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
                     :(entity.getRetainedProfits().divide(entity.getTotalCost(),5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));
         });
-        shopSalesService.updateBatchById(shopList,100);
-        return new Response<>(ResponseEnum.SUCCESS,"统计完成");
+        shopSalesDAO.updateBatchById(shopList,100);
+        return new Result<>("统计完成");
     }
     /**
      * <p>@Description 新增店铺信息 </p>
@@ -116,29 +116,25 @@ public class ShopServiceImpl implements IShopService {
      * @return Response<java.lang.String>
      */
     @Override
-    public Response<String> createShop(ShopDTO dto) {
-        Response<String> response = new Response<>();
+    public Result<String> createShop(ShopDTO dto) {
         if(CodeDict.isIllegalValue(CodeTypeEnum.ShopPlatform_Pdd.getType(), dto.getShopType())){
-            response.setResponse(ResponseEnum.FAIL,"店铺平台信息有误，新增失败");
-            return response;
+            throw new BusinessException("店铺平台信息有误，新增失败");
         }
         SysUserEntity userEntity = userInfoService.findUserById(dto.getUserId());
         if(userEntity == null){
-            response.setResponse(ResponseEnum.FAIL,"查询不到该用户信息，新增失败");
-            return response;
+            throw new BusinessException("查询不到该用户信息，新增失败");
         }
         UserShopEntity shopEntity = new UserShopEntity();
         shopEntity.setShopId(UidGeneratorUtils.getRedisUid(ledgerProperties.getShopidRedisKey(),5))
                 .setShopName(dto.getShopName())
                 .setUserId(dto.getUserId())
                 .setShopType(dto.getShopType());
-        userShopService.save(shopEntity);
+        userShopDAO.save(shopEntity);
         ShopSalesEntity salesEntity = new ShopSalesEntity();
         salesEntity.setShopId(shopEntity.getShopId())
                 .setUserId(shopEntity.getUserId());
-        shopSalesService.save(salesEntity);
-        response.setResponse(ResponseEnum.SUCCESS,"新增成功");
-        return response;
+        shopSalesDAO.save(salesEntity);
+        return new Result<>("新增成功");
     }
 
     /**
@@ -149,24 +145,20 @@ public class ShopServiceImpl implements IShopService {
      * @return Response<java.lang.String>
      */
     @Override
-    public Response<String> updateShop(ShopDTO dto) {
-        Response<String> response = new Response<>();
+    public Result<String> updateShop(ShopDTO dto) {
         if(dto == null || dto.getShopId() == null || StringUtils.isAnyBlank(dto.getShopName(),dto.getShopType())
                 || CodeDict.isIllegalValue(CodeTypeEnum.ShopPlatform_Pdd.getType(), dto.getShopType())){
-            response.setResponse(ResponseEnum.FAIL,"店铺名称和店铺平台信息有误，修改失败");
-            return response;
+            throw new BusinessException("店铺名称和店铺平台信息有误，修改失败");
         }
         UpdateWrapper<UserShopEntity> wrapper = new UpdateWrapper<>();
         wrapper.lambda().eq(UserShopEntity::getShopId,dto.getShopId())
                 .set(UserShopEntity::getShopName,dto.getShopName())
                 .set(UserShopEntity::getShopType,dto.getShopType())
                 .set(UserShopEntity::getUpdateTime,DateUtils.getCurrentDateTime());
-        if(userShopService.update(wrapper)){
-            response.setResponse(ResponseEnum.SUCCESS,"修改成功");
-        }else {
-            response.setResponse(ResponseEnum.FAIL,"修改失败");
+        if(userShopDAO.update(wrapper)){
+             return new Result<>("修改成功");
         }
-        return response;
+        return new Result<>("修改失败");
     }
 
     /**
@@ -177,18 +169,15 @@ public class ShopServiceImpl implements IShopService {
      * @return Response<java.lang.String>
      */
     @Override
-    public Response<String> deleteShop(String shopId) {
-        Response<String> response = new Response<>();
+    public Result<String> deleteShop(String shopId) {
         UpdateWrapper<UserShopEntity> wrapper = new UpdateWrapper<>();
         wrapper.lambda().eq(UserShopEntity::getShopId,shopId)
                 .set(UserShopEntity::getShopState,CodeDict.getValue(CodeTypeEnum.ShopState_Logout.getType(), CodeTypeEnum.ShopState_Logout.getKey()))
                 .set(UserShopEntity::getUpdateTime,DateUtils.getCurrentDateTime());
-        if(userShopService.update(wrapper)){
-            response.setResponse(ResponseEnum.SUCCESS,"删除成功");
-        }else {
-            response.setResponse(ResponseEnum.FAIL,"删除失败");
+        if(userShopDAO.update(wrapper)){
+            return new Result<>("删除成功");
         }
-        return response;
+        return new Result<>("删除失败");
     }
 
     /**
@@ -201,20 +190,20 @@ public class ShopServiceImpl implements IShopService {
      * @return Response<java.util.List < com.www.ledger.data.dto.ShopDTO>>
      */
     @Override
-    public Response<List<ShopDTO>> findShopList(ShopDTO dto, int pageNum, long pageSize) {
+    public Result<List<ShopDTO>> findShopList(ShopDTO dto, int pageNum, long pageSize) {
         Page<ShopDTO> page = new Page<>(pageNum,pageSize);
-        page = shopSalesService.findShopList(page,dto);
+        page = shopSalesDAO.findShopList(page,dto);
         List<ShopDTO> shopList =  page.getRecords();
         if(CollectionUtils.isNotEmpty(shopList)){
             shopList.forEach(d -> {
                 d.setShopTypeName(CodeDict.getCodeValueName(CodeTypeEnum.ShopPlatform_Pdd.getType(), d.getShopType()));
             });
         }
-        Response<List<ShopDTO>> response = new Response<>(ResponseEnum.SUCCESS,shopList);
-        response.setPageNum(pageNum);
-        response.setPageSize(pageSize);
-        response.setTotalNum(page.getTotal());
-        return response;
+        Result<List<ShopDTO>> result = new Result<>(shopList);
+        result.setPageNum(pageNum);
+        result.setPageSize(pageSize);
+        result.setTotalNum(page.getTotal());
+        return result;
     }
 
     /**
@@ -225,11 +214,11 @@ public class ShopServiceImpl implements IShopService {
      * @return
      */
     @Override
-    public Response<List<ShopDTO>> finUserShop(String userId) {
+    public Result<List<ShopDTO>> finUserShop(String userId) {
         QueryWrapper<UserShopEntity> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(UserShopEntity::getUserId,userId)
                 .eq(UserShopEntity::getShopState,CodeDict.getValue(CodeTypeEnum.ShopState_Valid.getType(), CodeTypeEnum.ShopState_Valid.getKey()));
-        List<UserShopEntity> shopList = userShopService.list(wrapper);
+        List<UserShopEntity> shopList = userShopDAO.list(wrapper);
         List<ShopDTO> dtoList = Optional.ofNullable(shopList).filter(e -> CollectionUtils.isNotEmpty(shopList))
                 .map(list -> {
                     List<ShopDTO> temList = new ArrayList<>();
@@ -240,6 +229,6 @@ public class ShopServiceImpl implements IShopService {
                     });
                     return temList;
                 }).orElse(null);
-        return new Response<>(ResponseEnum.SUCCESS,dtoList);
+        return new Result<>(dtoList);
     }
 }

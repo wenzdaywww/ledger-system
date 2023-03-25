@@ -2,7 +2,7 @@ package com.www.ledger.controller.code;
 
 import com.www.common.config.code.dto.CodeDTO;
 import com.www.common.config.code.write.CodeRedisWriteHandler;
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.ledger.data.vo.code.CodeOutVO;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class CodeController {
      * @return Response<List<CodeDTO>>
      */
     @PostMapping("codes")
-    public Response<Map<String, List<CodeOutVO>>> findCodeDataList(@NotEmpty(message = "codeType不能为空") @RequestParam List<String> list){
+    public Result<Map<String, List<CodeOutVO>>> findCodeDataList(@NotEmpty(message = "codeType不能为空") @RequestParam List<String> list){
         return this.findCodeDataList(list);
     }
     /**
@@ -52,7 +52,7 @@ public class CodeController {
      * @return Response<List <CodeDTO>>
      */
     @GetMapping("code/{type}")
-    public Response<Map<String,List<CodeOutVO>>> findCodeData(@PathVariable("type") String type){
+    public Result<Map<String,List<CodeOutVO>>> findCodeData(@PathVariable("type") String type){
         List<String> list = new ArrayList<>();
         list.add(type);
         return this.findCode(list);
@@ -64,8 +64,8 @@ public class CodeController {
      * @param list
      * @return
      */
-    private Response<Map<String, List<CodeOutVO>>> findCode(List<String> list){
-        Response<Map<String,List<CodeOutVO>>> response = new Response<>();
+    private Result<Map<String, List<CodeOutVO>>> findCode(List<String> list){
+        Result<Map<String,List<CodeOutVO>>> result = new Result<>();
         Map<String, Map<String, CodeDTO>> codeMap = codeRedisWriteHandler.getCodeData();
         Map<String,List<CodeOutVO>> typeMap = new HashMap<>();
         for (String codeType : list){
@@ -82,7 +82,7 @@ public class CodeController {
                 typeMap.put(codeType,outVOList);
             }
         }
-        response.setResponse(typeMap);
-        return response;
+        result.setData(typeMap);
+        return result;
     }
 }

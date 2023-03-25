@@ -1,4 +1,4 @@
-package com.www.ledger.service.entity;
+package com.www.ledger.data.dao;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -10,12 +10,12 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * <p>@Description 店铺销售额信息Service接口 </p>
+ * <p>@Description 店铺销售额信息DAO接口 </p>
  * <p>@Version 1.0 </p>
  * <p>@Author www </p>
  * <p>@Date 2023/3/13 20:45 </p>
  */
-public interface IShopSalesService extends IService<ShopSalesEntity> {
+public interface IShopSalesDAO extends IService<ShopSalesEntity> {
     /**
      * <p>@Description 查询用户的店销售数据 </p>
      * <p>@Author www </p>

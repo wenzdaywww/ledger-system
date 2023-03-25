@@ -121,12 +121,8 @@ export default {
     // 获取表格数据
     const getData = () => {
       axios.$http.get(request.shopList,query).then(function (res) {
-        if(res.code === 200){
-          tableData.value = res.data;
-          pageTotal.value = res.totalNum;
-        }else if(res.code === 500){
-          ElMessage.error('查询失败');
-        }
+        tableData.value = res.data;
+        pageTotal.value = res.totalNum;
       })
     };
     getData();
@@ -157,12 +153,8 @@ export default {
       // 二次确认删除
       ElMessageBox.confirm("确定要删除吗？", "提示", {type: "warning"}).then(() => {
         axios.$http.post(request.delShop+row.shopId, null).then(function (res) {
-          if(res.code === 200){
-            ElMessage.success('删除成功');
-            getData();
-          }else {
-            ElMessage.error(res.data);
-          }
+          ElMessage.success('删除成功');
+          getData();
         });
       }).catch(() => {});
     };
@@ -175,9 +167,7 @@ export default {
     // 查询数据字典
     const getCodeDataArr = () => {
       axios.$http.get(request.code + "ShopPlatform", null).then(function (res) {
-        if(res.code === 200){
-          shopTpCode.value = res.data.ShopPlatform;
-        }
+        shopTpCode.value = res.data.ShopPlatform;
       });
     };
     getCodeDataArr();
@@ -186,13 +176,9 @@ export default {
       shopForm.value.validate((valid) => {
         if (valid) {
           axios.$http.post(shopInfo.shopId ? request.shopEdit : request.newShop,shopInfo).then(function (res) {
-            if(res.code === 200){
-              editVisible.value = false;
-              ElMessage.success(shopInfo.shopId ? '修改成功' : '新增成功');
-              getData();
-            }else {
-              ElMessage.error(res.data);
-            }
+            editVisible.value = false;
+            ElMessage.success(shopInfo.shopId ? '修改成功' : '新增成功');
+            getData();
           });
         } else {
           return false;

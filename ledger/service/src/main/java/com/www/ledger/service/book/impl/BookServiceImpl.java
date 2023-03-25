@@ -3,10 +3,15 @@ package com.www.ledger.service.book.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.www.common.config.code.CodeDict;
 import com.www.common.data.enums.DateFormatEnum;
-import com.www.common.data.enums.ResponseEnum;
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.common.utils.DateUtils;
 import com.www.common.utils.MoneyUtils;
+import com.www.ledger.data.dao.IMonthSalesDAO;
+import com.www.ledger.data.dao.IOrderInfoDAO;
+import com.www.ledger.data.dao.IShopGoodsDAO;
+import com.www.ledger.data.dao.IShopSalesDAO;
+import com.www.ledger.data.dao.IUserBookDAO;
+import com.www.ledger.data.dao.IUserShopDAO;
 import com.www.ledger.data.dto.BookDTO;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.dto.OrderDTO;
@@ -14,13 +19,7 @@ import com.www.ledger.data.entity.ShopGoodsEntity;
 import com.www.ledger.data.entity.UserBookEntity;
 import com.www.ledger.data.entity.UserShopEntity;
 import com.www.ledger.data.enums.CodeTypeEnum;
-import com.www.ledger.data.mapper.OrderInfoMapper;
-import com.www.ledger.data.mapper.ShopGoodsMapper;
 import com.www.ledger.service.book.IBookService;
-import com.www.ledger.service.entity.IMonthSalesService;
-import com.www.ledger.service.entity.IShopSalesService;
-import com.www.ledger.service.entity.IUserBookService;
-import com.www.ledger.service.entity.IUserShopService;
 import com.www.ledger.service.month.IMonthService;
 import com.www.ledger.service.shop.IShopService;
 import com.www.ledger.service.year.IYearService;
@@ -56,17 +55,17 @@ public class BookServiceImpl implements IBookService {
     @Autowired
     private IMonthService monthService;
     @Autowired
-    private OrderInfoMapper orderInfoMapper;
+    private IOrderInfoDAO orderInfoDAO;
     @Autowired
-    private ShopGoodsMapper shopGoodsMapper;
+    private IShopGoodsDAO shopGoodsDAO;
     @Autowired
-    private IShopSalesService shopSalesService;
+    private IShopSalesDAO shopSalesDAO;
     @Autowired
-    private IMonthSalesService monthSalesService;
+    private IMonthSalesDAO monthSalesDAO;
     @Autowired
-    private IUserBookService userBookService;
+    private IUserBookDAO userBookDAO;
     @Autowired
-    private IUserShopService userShopService;
+    private IUserShopDAO userShopDAO;
 
 
     /**
@@ -77,26 +76,26 @@ public class BookServiceImpl implements IBookService {
      * @return
      */
     @Override
-    public Response<List<List<OrderDTO>>> findLastDaySales(String userId) {
+    public Result<List<List<OrderDTO>>> findLastDaySales(String userId) {
         int lastDays = 10;
         //获取订单中最大的日期
-        String maxDateStr = orderInfoMapper.getMaxOrderDate(userId);
+        String maxDateStr = orderInfoDAO.getMaxOrderDate(userId);
         if(StringUtils.isBlank(maxDateStr)){
-            return new Response<>(ResponseEnum.SUCCESS,null);
+            return new Result<>(null);
         }
         //查询销量前3店铺近10日的订单信息
         Date maxDate = DateUtils.parse(maxDateStr,DateFormatEnum.YYYYMMDD1);
         // 查询订单中最大的日期的月份销量前1的店铺
-        List<Long> shopList = monthSalesService.findMaxSalesShop(userId,DateUtils.format(maxDate,DateFormatEnum.YYYYMM1)+"-01");
+        List<Long> shopList = monthSalesDAO.findMaxSalesShop(userId,DateUtils.format(maxDate,DateFormatEnum.YYYYMM1)+"-01");
         if(CollectionUtils.isEmpty(shopList)){
-            return new Response<>(ResponseEnum.SUCCESS,null);
+            return new Result<>(null);
         }
         //获取maxDateStr的10天前日期
         int dayStep = -1*lastDays;
         String minData = DateUtils.format(DateUtils.stepDay(maxDate,dayStep),DateFormatEnum.YYYYMMDD1);
-        List<OrderDTO> orderList = orderInfoMapper.findMaxSalesOrder(userId,shopList,minData,maxDateStr);
+        List<OrderDTO> orderList = orderInfoDAO.findMaxSalesOrder(userId,shopList,minData,maxDateStr);
         if(CollectionUtils.isEmpty(orderList)){
-            return new Response<>(ResponseEnum.SUCCESS,null);
+            return new Result<>(null);
         }
         //orderList转为map，用于判断近10日哪天没有销售额
         //Map<店铺ID, Map<日期，当日销售额>>
@@ -123,7 +122,7 @@ public class BookServiceImpl implements IBookService {
                 String dayStr = DateUtils.format(day,DateFormatEnum.YYYYMD4);
                 if(!v.containsKey(dayStr)){
                     OrderDTO tempDTO = new OrderDTO();
-                    UserShopEntity shopEntity = userShopService.getById(k);
+                    UserShopEntity shopEntity = userShopDAO.getById(k);
                     tempDTO.setShopId(k).setShopName(shopEntity.getShopName()).setOrderDate(day)
                             .setOrderDateStr(dayStr).setSaleAmount(BigDecimal.ZERO);
                     v.put(dayStr,tempDTO);
@@ -136,7 +135,7 @@ public class BookServiceImpl implements IBookService {
             dayList.sort((a,b) -> a.getOrderDate().compareTo(b.getOrderDate()));
             resultList.add(dayList);
         });
-        return new Response<>(ResponseEnum.SUCCESS,resultList);
+        return new Result<>(resultList);
     }
     /**
      * <p>@Description 查询用户近一年的销售额 </p>
@@ -146,11 +145,11 @@ public class BookServiceImpl implements IBookService {
      * @return
      */
     @Override
-    public Response<List<MonthDTO>> findLastYearSales(String userId) {
+    public Result<List<MonthDTO>> findLastYearSales(String userId) {
         //获取订单中最大的日期
-        String maxDateStr = orderInfoMapper.getMaxOrderDate(userId);
+        String maxDateStr = orderInfoDAO.getMaxOrderDate(userId);
         //查询用户近一年的销售额
-        List<MonthDTO> dtoList = monthSalesService.findLastYearSales(userId,maxDateStr);
+        List<MonthDTO> dtoList = monthSalesDAO.findLastYearSales(userId,maxDateStr);
         Map<String,MonthDTO> dtoMap = CollectionUtils.isEmpty(dtoList) ? new HashMap<>()
                 : dtoList.stream().collect(Collectors.toMap(k -> k.getMonthDateStr(),month -> month));
         //近一年的销售额数据
@@ -170,7 +169,7 @@ public class BookServiceImpl implements IBookService {
             }
             resultList.add(monthDTO);
         }
-        return new Response<>(ResponseEnum.SUCCESS,resultList);
+        return new Result<>(resultList);
     }
 
     /**
@@ -181,7 +180,7 @@ public class BookServiceImpl implements IBookService {
      * @return
      */
     @Override
-    public Response<String> saveAndCountBookData(String userId) {
+    public Result<String> saveAndCountBookData(String userId) {
         //统计月销售额
         monthService.saveAndCountMonthData(userId);
         //统计年销售额
@@ -190,7 +189,7 @@ public class BookServiceImpl implements IBookService {
         shopService.saveAndCountShopData(userId);
         //统计用户账簿信息
         this.countAllShopData(userId);
-        return new Response<>(ResponseEnum.SUCCESS,"统计完成");
+        return new Result<>("统计完成");
     }
     /**
      * <p>@Description 根据用户的店销售数据统计用户账簿信息 </p>
@@ -201,12 +200,12 @@ public class BookServiceImpl implements IBookService {
      */
     private void countAllShopData(String userId){
         //统计所有店铺销售额
-        BookDTO bookDTO = shopSalesService.countAllShopData(userId);
+        BookDTO bookDTO = shopSalesDAO.countAllShopData(userId);
         if(bookDTO == null){
             return;
         }
         //查询用户账簿销售额
-        UserBookEntity bookEntity = userBookService.findUserBook(userId);
+        UserBookEntity bookEntity = userBookDAO.findUserBook(userId);
         bookEntity.setTotalOrder(bookDTO.getTotalOrder() == null ? 0L : bookDTO.getTotalOrder())
                 .setSucceedOrder(bookDTO.getSucceedOrder() == null ? 0L : bookDTO.getSucceedOrder())
                 .setFailedOrder(bookDTO.getFailedOrder() == null ? 0L : bookDTO.getFailedOrder())
@@ -227,7 +226,7 @@ public class BookServiceImpl implements IBookService {
         //总净利率=总净利润/总支出费 * 100%
         bookEntity.setRetainedProfitsRate(bookEntity.getTotalCost().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
                 :(bookEntity.getRetainedProfits().divide(bookEntity.getTotalCost(),5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));
-        userBookService.updateById(bookEntity);
+        userBookDAO.updateById(bookEntity);
     }
     /**
      * <p>@Description 查询用户账簿信息 </p>
@@ -237,10 +236,10 @@ public class BookServiceImpl implements IBookService {
      * @return
      */
     @Override
-    public Response<BookDTO> findBookData(String userId) {
-        UserBookEntity bookEntity = userBookService.findUserBook(userId);
+    public Result<BookDTO> findBookData(String userId) {
+        UserBookEntity bookEntity = userBookDAO.findUserBook(userId);
         if(bookEntity == null){
-            return new Response<>(ResponseEnum.FAIL,null);
+            return new Result<>(null);
         }
         BookDTO bookDTO = new BookDTO();
         BeanUtils.copyProperties(bookEntity,bookDTO);
@@ -249,12 +248,12 @@ public class BookServiceImpl implements IBookService {
         bookDTO.setSucceedOrderRate(totalNum.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
                 : (succeedNum.divide(totalNum,4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"))).setScale(2, RoundingMode.HALF_UP));
         //查询店铺数量
-        bookDTO.setShopNum(userShopService.countUserShop(userId));
+        bookDTO.setShopNum(userShopDAO.countUserShop(userId));
         //查询商品数
         QueryWrapper<ShopGoodsEntity> goodsWrapper = new QueryWrapper<>();
         goodsWrapper.lambda().eq(ShopGoodsEntity::getUserId,userId)
                 .ne(ShopGoodsEntity::getGoodsState,CodeDict.getValue(CodeTypeEnum.GoodsState_Del.getType(),CodeTypeEnum.GoodsState_Del.getKey()));
-        bookDTO.setGoodsNum(shopGoodsMapper.selectCount(goodsWrapper));
-        return new Response<>(ResponseEnum.SUCCESS,bookDTO);
+        bookDTO.setGoodsNum(shopGoodsDAO.count(goodsWrapper));
+        return new Result<>(bookDTO);
     }
 }

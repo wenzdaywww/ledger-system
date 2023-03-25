@@ -192,12 +192,8 @@ export default {
     // 统计月销售额数
     const handleCount = () => {
       axios.$http.post(request.monthCount,null).then(function (res) {
-        if(res.code === 200){
-          ElMessage.success(res.data);
-          findMonthList();
-        }else{
-          ElMessage.error(res.data);
-        }
+        ElMessage.success(res.data);
+        findMonthList();
       })
     };
     //删除月销售额数据
@@ -205,12 +201,8 @@ export default {
       // 二次确认删除
       ElMessageBox.confirm("确定要删除店铺【" + row.shopNm + "】" + row.month + "月份的销售数据吗？", "提示", {type: "warning"}).then(() => {
         axios.$http.post(request.delMonth+row.msId, null).then(function (res) {
-          if(res.code === 200){
-            ElMessage.success(res.data);
-            findMonthList();
-          }else {
-            ElMessage.error(res.data);
-          }
+          ElMessage.success(res.data);
+          findMonthList();
         });
       }).catch(() => {});
     };
@@ -225,23 +217,15 @@ export default {
     // 获取表格数据
     const findMonthList = () => {
       axios.$http.get(request.monthList,query).then(function (res) {
-        if(res.code === 200){
-          tableData.value = res.data;
-          pageTotal.value = res.totalNum;
-        }else{
-          ElMessage.error(res.data);
-        }
+        tableData.value = res.data;
+        pageTotal.value = res.totalNum;
       })
     };
     findMonthList();
     // 查询用户的所有店铺信息
     const getUserShopArr = () => {
       axios.$http.get(request.userShop, null).then(function (res) {
-        if(res.code === 200){
-          userShop.value = res.data;
-        }else{
-          ElMessage.error(res.data);
-        }
+        userShop.value = res.data;
       });
     };
     getUserShopArr();

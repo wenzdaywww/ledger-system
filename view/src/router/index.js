@@ -20,11 +20,9 @@ const router = createRouter({
 export const initUserRouter = function (callBackFunc){
     //加载用户拥有的路由权限
     axios.get(request.userRouter, null).then(function (res) {
-        if(res.code === 200){
-            //加载用户拥有的路由权限
-            if(res.data){
-                store.dispatch("updateRouter",res.data);
-            }
+        //加载用户拥有的路由权限
+        if(res.data){
+            store.dispatch("updateRouter",res.data);
         }
         if (callBackFunc && callBackFunc instanceof  Function){
             callBackFunc();

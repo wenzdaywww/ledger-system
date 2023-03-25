@@ -1,6 +1,6 @@
 package com.www.ledger.service.year;
 
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.ledger.data.dto.YearDTO;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public interface IYearService {
      * @param userId 用户ID
      * @return
      */
-    Response<String> saveAndCountYearData(String userId);
+    Result<String> saveAndCountYearData(String userId);
     /**
      * <p>@Description 查询我的年销售额列表 </p>
      * <p>@Author www </p>
@@ -29,5 +29,5 @@ public interface IYearService {
      * @param pageSize 页码
      * @return
      */
-    Response<List<YearDTO>> findYearList(YearDTO yearDTO, int pageNum, long pageSize);
+    Result<List<YearDTO>> findYearList(YearDTO yearDTO, int pageNum, long pageSize);
 }

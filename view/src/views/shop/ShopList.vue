@@ -167,24 +167,16 @@ export default {
     // 获取表格数据
     const findShopList = () => {
       axios.$http.get(request.shopList,query).then(function (res) {
-        if(res.code === 200){
-          tableData.value = res.data;
-          pageTotal.value = res.totalNum;
-        }else{
-          ElMessage.error(res.data);
-        }
+        tableData.value = res.data;
+        pageTotal.value = res.totalNum;
       })
     };
     findShopList();
     //统计店铺销售额
     const handleCount = () => {
       axios.$http.post(request.shopCount, null).then(function (res) {
-        if(res.code === 200){
-          ElMessage.success(res.data);
-          findShopList();
-        }else {
-          ElMessage.error(res.data);
-        }
+        ElMessage.success(res.data);
+        findShopList();
       });
     };
     //删除店铺
@@ -192,23 +184,15 @@ export default {
       // 二次确认删除
       ElMessageBox.confirm("确定要删除店铺【" + row.shopNm + "】及其所有销售数据吗？", "提示", {type: "warning"}).then(() => {
         axios.$http.post(request.delShop+row.shopId, null).then(function (res) {
-          if(res.code === 200){
-            ElMessage.success('删除成功');
-            findShopList();
-          }else {
-            ElMessage.error(res.data);
-          }
+          ElMessage.success('删除成功');
+          findShopList();
         });
       }).catch(() => {});
     };
     // 查询数据字典
     const getCodeDataArr = () => {
       axios.$http.get(request.code+"ShopPlatform", null).then(function (res) {
-        if(res.code === 200){
-          shopTpCode.value = res.data.ShopPlatform;
-        }else {
-          ElMessage.error(res.data);
-        }
+        shopTpCode.value = res.data.ShopPlatform;
       });
     };
     getCodeDataArr();

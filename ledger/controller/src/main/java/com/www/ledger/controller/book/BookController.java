@@ -1,7 +1,7 @@
 package com.www.ledger.controller.book;
 
 import com.www.common.config.security.meta.JwtAuthorizationTokenFilter;
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.ledger.data.dto.BookDTO;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.dto.OrderDTO;
@@ -39,9 +39,9 @@ public class BookController {
      * @return
      */
     @GetMapping("day")
-    public Response<List<BookDayOutVO>> findLastDaySales(){
-        Response<List<List<OrderDTO>>> dtoResponse = bookService.findLastDaySales(JwtAuthorizationTokenFilter.getUserId());
-        List<BookDayOutVO> lastList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
+    public Result<List<BookDayOutVO>> findLastDaySales(){
+        Result<List<List<OrderDTO>>> listResult = bookService.findLastDaySales(JwtAuthorizationTokenFilter.getUserId());
+        List<BookDayOutVO> lastList = Optional.ofNullable(listResult.getData()).filter(e -> CollectionUtils.isNotEmpty(listResult.getData()))
                 .map(list0 -> {
                     //第1层List,即前3店铺
                     List<BookDayOutVO> tempList = new ArrayList<>();
@@ -64,7 +64,7 @@ public class BookController {
                     });
                     return tempList;
                 }).orElse(null);
-        return new Response<>(dtoResponse,lastList);
+        return new Result<>(listResult,lastList);
     }
     /**
      * <p>@Description 查询用户近一年的销售额 </p>
@@ -73,9 +73,9 @@ public class BookController {
      * @return
      */
     @GetMapping("year")
-    public Response<List<BookYearOutVO>> findLastYearSales(){
-        Response<List<MonthDTO>> dtoResponse = bookService.findLastYearSales(JwtAuthorizationTokenFilter.getUserId());
-        List<BookYearOutVO> lastList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
+    public Result<List<BookYearOutVO>> findLastYearSales(){
+        Result<List<MonthDTO>> listResult = bookService.findLastYearSales(JwtAuthorizationTokenFilter.getUserId());
+        List<BookYearOutVO> lastList = Optional.ofNullable(listResult.getData()).filter(e -> CollectionUtils.isNotEmpty(listResult.getData()))
                 .map(list -> {
                     List<BookYearOutVO> tempList = new ArrayList<>();
                     list.forEach(dto -> {
@@ -85,7 +85,7 @@ public class BookController {
                     });
                     return tempList;
                 }).orElse(null);
-        return new Response<>(dtoResponse,lastList);
+        return new Result<>(listResult,lastList);
     }
     /**
      * <p>@Description 统计用户账簿信息 </p>
@@ -94,7 +94,7 @@ public class BookController {
      * @return
      */
     @PostMapping("tal")
-    public Response<String> updateBookData(){
+    public Result<String> updateBookData(){
         return bookService.saveAndCountBookData(JwtAuthorizationTokenFilter.getUserId());
     }
     /**
@@ -104,9 +104,9 @@ public class BookController {
      * @return
      */
     @GetMapping("info")
-    public Response<BookInfoOutVO> findBookData(){
-        Response<BookDTO> dtoResponse = bookService.findBookData(JwtAuthorizationTokenFilter.getUserId());
-        BookInfoOutVO bookInfoOutVO = Optional.ofNullable(dtoResponse.getData())
+    public Result<BookInfoOutVO> findBookData(){
+        Result<BookDTO> dtoResult = bookService.findBookData(JwtAuthorizationTokenFilter.getUserId());
+        BookInfoOutVO bookInfoOutVO = Optional.ofNullable(dtoResult.getData())
                 .map(dto -> {
                     BookInfoOutVO tempOutVO = new BookInfoOutVO();
                     tempOutVO.setRetPro(dto.getRetainedProfits()).setRetProRat(dto.getRetainedProfitsRate())
@@ -119,6 +119,6 @@ public class BookController {
                         .setGdsNum(dto.getGoodsNum()).setTalCos(dto.getTotalCost());
                     return tempOutVO;
                 }).orElse(null);
-        return new Response<>(dtoResponse,bookInfoOutVO);
+        return new Result<>(dtoResult,bookInfoOutVO);
     }
 }

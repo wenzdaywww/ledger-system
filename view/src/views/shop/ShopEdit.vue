@@ -70,13 +70,9 @@ export default {
       shopForm.value.validate((valid) => {
         if (valid) {
           axios.$http.post(shopInfo.value.shopId ? request.shopEdit : request.newShop,shopInfo.value).then(function (res) {
-            if(res.code === 200){
-              editVisible.value = false;
-              ElMessage.success(shopInfo.value.shopId ? '修改成功' : '新增成功');
-              emit('findShopList',null);//调用父组件OrderList.vue的findOrderList方法
-            }else {
-              ElMessage.error(res.data);
-            }
+            editVisible.value = false;
+            ElMessage.success(shopInfo.value.shopId ? '修改成功' : '新增成功');
+            emit('findShopList',null);//调用父组件OrderList.vue的findOrderList方法
           });
         } else {
           return false;

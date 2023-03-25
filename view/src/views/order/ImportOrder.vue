@@ -5,10 +5,17 @@
       <el-form :model="orderInfo" :rules="orderRules" ref="orderForm">
         <el-row>
           <el-col>
-            <el-form-item label="店铺名称" prop="shopId">
+            <el-form-item label="店铺名称" label-width="80px" prop="shopId">
               <el-select v-model="orderInfo.shopId" placeholder="请选择店铺" style="width: 480px">
                 <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
               </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <el-form-item label="文件密码" label-width="80px">
+              <el-input v-model="orderInfo.pwd" style="width: 480px" maxlength="40" placeholder="文件有密码时必输"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -33,13 +40,6 @@
           </el-col>
         </el-row>
       </el-form>
-      <div>
-        <el-table v-if="tableData.length > 0" :data="tableData" border class="table" ref="multipleTable"
-                  :row-style="{height:'55px'}" :cell-style="{padding:'0px'}"  header-cell-class-name="table-header">
-          <el-table-column prop="ordId" label="订单ID" align="center" width="200px" sortable></el-table-column>
-          <el-table-column prop="msg" label="失败原因" align="center" sortable></el-table-column>
-        </el-table>
-      </div>
     </el-dialog>
   </div>
 </template>
@@ -57,16 +57,19 @@ export default {
     const axios = getCurrentInstance().appContext.config.globalProperties;
     // 订单导入弹窗控制
     const editVisible = ref(false);
-    // 编辑订单信息
-    let orderInfo = ref({});
+    // 订单导入信息
+    let orderInfo = ref({
+      shopId: "",
+      pwd: ""
+    });
     // 待导入的文件
-    let importFile = ref([]);
-    // 表格数据
-    const tableData = ref([]);
+    let importFile = ref({});
     // 订单信息的规则校验
     const orderRules = { shopId : [ { required: true, message: "店铺名称不能为空", trigger: "blur" } ] };
     // 编辑订单表单数据
     const orderForm = ref(null);
+    // 文件上传对象
+    const upload = ref(null);
     // 用户的所有店铺信息
     const userShop = ref([]);
     /**
@@ -77,7 +80,9 @@ export default {
      */
     const openInportDialog = (shopArr) => {
       editVisible.value = true;
+      orderInfo.shopId = null;
       userShop.value = shopArr.value;
+      clearFile();
     }
     // 文件状态改变时的钩子，添加文件、上传成功和上传失败时都会被调用
     const handleChange = (file, fileList) => {
@@ -93,6 +98,11 @@ export default {
         ElMessage.warning("请先删除已添加的文件！");
       }
     }
+    // 清除文件
+    const clearFile = () => {
+      importFile = null;
+      upload.value.clearFiles();
+    }
     // 新增/编辑店铺页面的保存按钮
     const saveEdit = () => {
       orderForm.value.validate((valid) => {
@@ -104,13 +114,13 @@ export default {
             }
             let fd = new FormData();//通过form数据格式来传
             fd.append("shopId",orderInfo.value.shopId);
+            fd.append("pwd",orderInfo.value.pwd);
             fd.append("file",importFile.raw);
-            axios.$http.upload(request.importOrder,fd).then(function (res){
-              if(res.code === 200){
-                ElMessage.success(res.data);
-              }else {
-                ElMessage.error(res.data);
-              }
+            axios.$http.upload(request.importOrder,fd).then(function(res){
+              clearFile();
+              ElMessage.success(res.data);
+            }).catch(function (err)  {
+              //TODO 2023/3/25 01:18 导入失败，则下载失败的数据文件，待开发
             });
           }else {
             ElMessage.error(" 请选择要导入的文件");
@@ -120,7 +130,7 @@ export default {
         }
       });
     };
-    return {editVisible,orderInfo,orderRules,orderForm,userShop,tableData,
+    return {editVisible,orderInfo,orderRules,orderForm,userShop,upload,
       openInportDialog,saveEdit,handleRemove,handleChange,handleExceed };
   }
 }

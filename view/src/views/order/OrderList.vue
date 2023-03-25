@@ -184,12 +184,8 @@ export default {
       // 二次确认删除
       ElMessageBox.confirm("确定要删除店铺【" + row.shopNm + "】订单ID：" + row.ordId + "的数据吗？", "提示", {type: "warning"}).then(() => {
         axios.$http.post(request.delOrder+row.oiId, null).then(function (res) {
-          if(res.code === 200){
-            ElMessage.success(res.data);
-            findOrderList();
-          }else {
-            ElMessage.error(res.data);
-          }
+          ElMessage.success(res.data);
+          findOrderList();
         });
       }).catch(() => {});
     };
@@ -208,34 +204,22 @@ export default {
     // 获取表格数据
     const findOrderList = () => {
       axios.$http.get(request.orderList,query).then(function (res) {
-        if(res.code === 200){
-          tableData.value = res.data;
-          pageTotal.value = res.totalNum;
-        }else{
-          ElMessage.error(res.data);
-        }
+        tableData.value = res.data;
+        pageTotal.value = res.totalNum;
       })
     };
     findOrderList();
     // 查询用户的所有店铺信息
     const getUserShopArr = () => {
       axios.$http.get(request.userShop, null).then(function (res) {
-        if(res.code === 200){
-          userShop.value = res.data;
-        }else {
-          ElMessage.error(res.data);
-        }
+        userShop.value = res.data;
       });
     };
     getUserShopArr();
     // 查询数据字典
     const getCodeDataArr = () => {
       axios.$http.get(request.code + "OrderState", null).then(function (res) {
-        if(res.code === 200){
-          orderState.value = res.data.OrderState;
-        }else {
-          ElMessage.error(res.data);
-        }
+        orderState.value = res.data.OrderState;
       });
     };
     getCodeDataArr();

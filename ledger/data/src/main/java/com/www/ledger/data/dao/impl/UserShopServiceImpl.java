@@ -1,14 +1,15 @@
-package com.www.ledger.service.entity.impl;
+package com.www.ledger.data.dao.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.www.common.config.code.CodeDict;
+import com.www.common.config.exception.BusinessException;
+import com.www.ledger.data.dao.IUserShopDAO;
 import com.www.ledger.data.entity.UserShopEntity;
 import com.www.ledger.data.enums.CodeTypeEnum;
 import com.www.ledger.data.mapper.UserShopMapper;
-import com.www.ledger.service.entity.IUserShopService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 /**
  * <p>@Description 用户账簿信息Service实现类 </p>
@@ -16,8 +17,8 @@ import org.springframework.stereotype.Service;
  * <p>@Author www </p>
  * <p>@Date 2023/3/13 20:45 </p>
  */
-@Service
-public class UserShopServiceImpl extends ServiceImpl<UserShopMapper, UserShopEntity> implements IUserShopService {
+@Repository
+public class UserShopServiceImpl extends ServiceImpl<UserShopMapper, UserShopEntity> implements IUserShopDAO {
     @Autowired
     private UserShopMapper userShopMapper;
 
@@ -49,6 +50,10 @@ public class UserShopServiceImpl extends ServiceImpl<UserShopMapper, UserShopEnt
         shopWrrapper.lambda().eq(UserShopEntity::getUserId,userId)
                 .eq(UserShopEntity::getShopId,shopId)
                 .eq(UserShopEntity::getShopState, CodeDict.getValue(CodeTypeEnum.ShopState_Valid.getType(), CodeTypeEnum.ShopState_Valid.getKey()));
-        return userShopMapper.selectOne(shopWrrapper);
+        UserShopEntity entity = userShopMapper.selectOne(shopWrrapper);
+        if(entity == null){
+            throw new BusinessException("店铺不存在");
+        }
+        return entity;
     }
 }

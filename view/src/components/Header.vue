@@ -102,12 +102,10 @@ export default {
       // 退出
       if (command == "loginout") {
         axios.$http.post(request.logout,null).then(function (res) {
-          if(res.code === 200){
-            ElMessage.success("退出成功");
-            clearUserRouter();
-            isLogin.value = false;
-            router.push("/index");
-          }
+          ElMessage.success("退出成功");
+          clearUserRouter();
+          isLogin.value = false;
+          router.push("/index");
         }).catch(function (res) {
           ElMessage.error("退出失败");
         });

@@ -1,7 +1,7 @@
 package com.www.ledger.controller.order;
 
 import com.www.common.config.security.meta.JwtAuthorizationTokenFilter;
-import com.www.common.data.response.Response;
+import com.www.common.data.response.Result;
 import com.www.ledger.data.dto.OrderDTO;
 import com.www.ledger.data.vo.order.OrderListInVO;
 import com.www.ledger.data.vo.order.OrderListOutVO;
@@ -41,13 +41,15 @@ public class OrderController {
      * <p>@Date 2023/3/22 19:17 </p>
      * @param file 订单文件信息
      * @param shopId 店铺ID
-     * @return
+     * @param pwd 文件密码
+     * @return 导入失败的则下载订单数据信息
      */
     @PostMapping("ipt")
-    public Response<String> importOrder(MultipartFile file,@NotNull(message = "店铺不能为空") Long shopId){
+    public Result<String> importOrder(MultipartFile file, @NotNull(message = "店铺不能为空") Long shopId, String pwd){
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setUserId(JwtAuthorizationTokenFilter.getUserId());
-        return orderService.importOrder(file,orderDTO);
+        orderDTO.setUserId(JwtAuthorizationTokenFilter.getUserId()).setShopId(shopId);
+        Result<String> result = orderService.importOrder(file,orderDTO,pwd);
+        return new Result<>(result.getData());
     }
     /**
      * <p>@Description 保存订单信息 </p>
@@ -57,7 +59,7 @@ public class OrderController {
      * @return Response<java.lang.String>
      */
     @PostMapping("new")
-    public Response<String> saveOrderInfo(@Validated OrderNewInVO newInVO){
+    public Result<String> saveOrderInfo(@Validated OrderNewInVO newInVO){
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setUserId(JwtAuthorizationTokenFilter.getUserId()).setOrderId(newInVO.getOrdId())
                 .setShopId(newInVO.getShopId()).setOrderDateStr(newInVO.getOrdDat())
@@ -76,7 +78,7 @@ public class OrderController {
      * @return
      */
     @PostMapping("dlt/{oiId}")
-    public Response<String> deleteOrder(@PathVariable("oiId") Long oiId){
+    public Result<String> deleteOrder(@PathVariable("oiId") Long oiId){
         return orderService.deleteOrderInfo(JwtAuthorizationTokenFilter.getUserId(),oiId);
     }
     /**
@@ -87,13 +89,13 @@ public class OrderController {
      * @return Response<java.util.List < com.www.ledger.data.dto.OrderDTO>>
      */
     @GetMapping("list")
-    public Response<List<OrderListOutVO>> findOrdeList(@Validated OrderListInVO orderInVO){
+    public Result<List<OrderListOutVO>> findOrdeList(@Validated OrderListInVO orderInVO){
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setUserId(JwtAuthorizationTokenFilter.getUserId()).setOrderDateStr(orderInVO.getOrdDat())
                 .setShopId(orderInVO.getShopId()).setSupplyId(orderInVO.getSupId()).setOrderId(orderInVO.getOrdId())
                 .setGoodsId(orderInVO.getGdsId()).setOrderState(orderInVO.getOrdSta());
-        Response<List<OrderDTO>> dtoResponse = orderService.findOrdeList(orderDTO,orderInVO.getPageNum(),orderInVO.getPageSize());
-        List<OrderListOutVO> respList = Optional.ofNullable(dtoResponse.getData()).filter(e -> CollectionUtils.isNotEmpty(dtoResponse.getData()))
+        Result<List<OrderDTO>> listResult = orderService.findOrdeList(orderDTO,orderInVO.getPageNum(),orderInVO.getPageSize());
+        List<OrderListOutVO> respList = Optional.ofNullable(listResult.getData()).filter(e -> CollectionUtils.isNotEmpty(listResult.getData()))
                 .map(list -> {
                     List<OrderListOutVO> tempList = new ArrayList<>();
                     list.forEach(dto -> {
@@ -112,6 +114,6 @@ public class OrderController {
                     });
                     return tempList;
                 }).orElse(null);
-        return new Response<>(dtoResponse,respList);
+        return new Result<>(listResult,respList);
     }
 }
