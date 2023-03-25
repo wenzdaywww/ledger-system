@@ -81,21 +81,21 @@ public class BookServiceImpl implements IBookService {
         //获取订单中最大的日期
         String maxDateStr = orderInfoDAO.getMaxOrderDate(userId);
         if(StringUtils.isBlank(maxDateStr)){
-            return new Result<>(null);
+            return new Result<>();
         }
         //查询销量前3店铺近10日的订单信息
         Date maxDate = DateUtils.parse(maxDateStr,DateFormatEnum.YYYYMMDD1);
         // 查询订单中最大的日期的月份销量前1的店铺
         List<Long> shopList = monthSalesDAO.findMaxSalesShop(userId,DateUtils.format(maxDate,DateFormatEnum.YYYYMM1)+"-01");
         if(CollectionUtils.isEmpty(shopList)){
-            return new Result<>(null);
+            return new Result<>();
         }
         //获取maxDateStr的10天前日期
         int dayStep = -1*lastDays;
         String minData = DateUtils.format(DateUtils.stepDay(maxDate,dayStep),DateFormatEnum.YYYYMMDD1);
         List<OrderDTO> orderList = orderInfoDAO.findMaxSalesOrder(userId,shopList,minData,maxDateStr);
         if(CollectionUtils.isEmpty(orderList)){
-            return new Result<>(null);
+            return new Result<>();
         }
         //orderList转为map，用于判断近10日哪天没有销售额
         //Map<店铺ID, Map<日期，当日销售额>>
@@ -239,7 +239,7 @@ public class BookServiceImpl implements IBookService {
     public Result<BookDTO> findBookData(String userId) {
         UserBookEntity bookEntity = userBookDAO.findUserBook(userId);
         if(bookEntity == null){
-            return new Result<>(null);
+            return new Result<>();
         }
         BookDTO bookDTO = new BookDTO();
         BeanUtils.copyProperties(bookEntity,bookDTO);

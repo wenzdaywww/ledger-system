@@ -51,5 +51,15 @@ export default {
     isUser(){
         let user = this.getUser();
         return (user && user.roles) ? user.roles.indexOf("user") !== -1 : false;
+    },
+    /**
+     * 文件下载
+     * @param url 文件路径
+     */
+    downloadFile(url){
+        var a = document.createElement("a");
+        a.href = url;
+        a.setAttribute("download", "");
+        a.click();
     }
 }

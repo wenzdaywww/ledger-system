@@ -69,7 +69,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
     public Result<UserDTO> findUser(String userId) {
         Result<UserDTO> result = new Result<>();
         if(StringUtils.isBlank(userId)){
-            return new Result<>(null);
+            return new Result<>();
         }
         SysUserEntity userEntity = this.findUserById(userId);
         UserDTO userDTO = Optional.ofNullable(userEntity).map(entity -> {
@@ -80,7 +80,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
             return tempDTO;
         }).orElse(null);
         if(userDTO == null){
-            return new Result<>(null);
+            return new Result<>();
         }
         return new Result<>(userDTO);
     }

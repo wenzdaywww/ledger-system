@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.www.common.config.code.CodeDict;
 import com.www.common.config.exception.BusinessException;
-import com.www.common.config.mvc.upload.IFileUpload;
+import com.www.common.config.mvc.upload.IFileService;
 import com.www.common.data.constant.CharConstant;
+import com.www.common.data.constant.FileTypeConstant;
+import com.www.common.data.dto.excel.CellDTO;
 import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.response.Result;
 import com.www.common.utils.DateUtils;
@@ -27,6 +29,7 @@ import com.www.ledger.service.order.OrderImportFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,9 +37,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -49,7 +52,7 @@ import java.util.stream.Collectors;
 @Service
 public class OrderServiceImpl implements IOrderService {
     @Autowired
-    private IFileUpload fileUpload;
+    private IFileService fileService;
     @Autowired
     private IOrderInfoDAO orderInfoDAO;
     @Autowired
@@ -66,40 +69,105 @@ public class OrderServiceImpl implements IOrderService {
      * @param file 订单文件数据
      * @param orderDTO 订单导入对象
      * @param password 订单文件密码
-     * @return 导入失败的则下载订单数据信息
+     * @return 0=导入失败的则返回下载订单数据信息文件路径,1=导入成功提示信息
      */
     @Override
-    public Result<String> importOrder(MultipartFile file, OrderDTO orderDTO, String password) {
+    public Result<String[]> importOrder(MultipartFile file, OrderDTO orderDTO, String password) {
         UserShopEntity shopEntity = userShopDAO.findUserShop(orderDTO.getUserId(),orderDTO.getShopId());
         String fileName = orderDTO.getUserId() + CharConstant.MINUS_SIGN + orderDTO.getShopId() + CharConstant.MINUS_SIGN + DateUtils.format(DateUtils.getCurrentDateTime(), DateFormatEnum.YYYYMMDDHHMMSSSSS);
         //上传文件并返回文件对象
-        String path = fileUpload.uploadFileBackPath(file,ledgerProperties.getImportPath(),fileName);
-        //获取文件格式
-        ArrayList<ArrayList<String>> importList = FileUtils.readCsvOrExcel(path,password);
+        String[] path = fileService.uploadFile(file,ledgerProperties.getImportPath(),fileName);
+        //获取文件数据
+        ArrayList<ArrayList<String>> importList = FileUtils.readCsvOrExcel(path[1],password);
+        if(CollectionUtils.isEmpty(importList)){
+            throw new BusinessException("订单文件数据为空");
+        }
         //根据店铺平台获取不同平台订单文件数据读取对象
         IOrderImportService orderImportService = OrderImportFactory.getOrderImport(shopEntity.getShopType());
         //获取待保存的订单数据
         List<OrderRowDTO> saveList = new ArrayList<>();
         List<OrderRowDTO> failList = orderImportService.handleOrderData(importList,saveList,shopEntity);
         //保存导入的订单数据
-//        this.saveimportOrderData(saveList);
+        String sucMsg = this.saveimportOrderData(saveList);
+        StringBuilder resultSb = new StringBuilder();
+        String[] msgArr = new String[2];
+        resultSb.append("导入的订单文件共有").append(CollectionUtils.size(importList)-1).append("笔订单。").append(sucMsg);
         if(CollectionUtils.isNotEmpty(failList)){
-            //TODO 2023/3/25 01:34 导入失败则下载失败文件数据，待开发
-            return new Result<>("导入失败");
+            //输出导入失败的数据和导入成功的数据到excel中，便于识别
+            String downloadUrl = this.buildDownloadExcel(path[1],password,saveList,failList);
+            msgArr[0] = downloadUrl;
+            resultSb.append("读取失败的订单共").append(failList.size()).append("笔，具体原因见下载文件的黄色列【导入结果信息】");
+            msgArr[1] = resultSb.toString();
+            return new Result<>(msgArr);
         }
-        return new Result<>("导入成功");
+        //全部导入成功则删除上传的文件
+        FileUtils.deleteFile(path[1]);
+        msgArr[1] = resultSb.toString();
+        return new Result<>(msgArr);
+    }
+    /**
+     * <p>@Description 根据导入失败的数据和导入成功的数据将错误信息输出到excel后返回下载路径 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/25 23:57 </p>
+     * @param filePath 导入的文件路径
+     * @param password 导入的文件的密码
+     * @param saveList 导入成功的数据
+     * @param failList 导入失败的数据
+     * @return 包含错误信息的excel文件下载路径
+     */
+    private String buildDownloadExcel(String filePath,String password,List<OrderRowDTO> saveList,List<OrderRowDTO> failList){
+        String fileType = FileUtils.getFileType(filePath);
+        //组装数据
+        Map<Integer,Map<Integer, CellDTO>> dataMap = new HashMap<>();
+        saveList.forEach(dto -> {
+            Map<Integer, CellDTO> cellMap = new HashMap<>();
+            CellDTO cellDTO = new CellDTO();
+            cellDTO.setCellIndex(dto.getMaxColumn()).setCellValue(dto.getMessage());
+            cellMap.put(dto.getMaxColumn(),cellDTO);
+            dataMap.put(dto.getRowNum(),cellMap);
+        });
+        failList.forEach(dto -> {
+            Map<Integer, CellDTO> cellMap = new HashMap<>();
+            CellDTO cellDTO = new CellDTO();
+            cellDTO.setCellIndex(dto.getMaxColumn()).setCellValue(dto.getMessage());
+            cellMap.put(dto.getMaxColumn(),cellDTO);
+            dataMap.put(dto.getRowNum(),cellMap);
+        });
+        //设置首行标题列
+        Map<Integer, CellDTO> headCellMap = new HashMap<>();
+        CellDTO headCellDTO = new CellDTO();
+        headCellDTO.setCellIndex(failList.get(0).getMaxColumn()).setCellValue("导入结果信息")
+                .setFillBackgroundColor(IndexedColors.YELLOW);
+        headCellMap.put(failList.get(0).getMaxColumn(),headCellDTO);
+        dataMap.put(0,headCellMap);
+        String excelPath = null;
+        //csv文件
+        if(StringUtils.equals(fileType, FileTypeConstant.CSV)){
+            excelPath = FileUtils.csvToExcel(filePath,dataMap);
+            FileUtils.deleteFile(filePath);
+        }else {//excel文件
+            Map<Integer,Map<Integer,Map<Integer,CellDTO>>> excelMap = new HashMap<>();
+            excelMap.put(0,dataMap);
+            FileUtils.writeUpdateExcel(filePath,password,excelMap);
+            excelPath = filePath;
+        }
+        //将文件的绝对路径转为url访问路径
+        excelPath = fileService.convertToURL(excelPath);
+        return StringUtils.substring(excelPath, 1);
     }
     /**
      * <p>@Description 保存导入的订单数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/23 23:06 </p>
      * @param saveList 待保存的订单数据
-     * @return 失败的订单数据
+     * @return 保存成功信息
      */
-    private void saveimportOrderData(List<OrderRowDTO> saveList){
+    private String saveimportOrderData(List<OrderRowDTO> saveList){
         if(CollectionUtils.isEmpty(saveList)){
-            return;
+            return CharConstant.EMPTY;
         }
+        int insertNum = 0;//新增数量
+        int updateNum = 0;//更新数量
         List<String> ordIdList = saveList.stream().map(dto -> dto.getOrderId()).collect(Collectors.toList());
         //查询订单是否存在
         QueryWrapper<OrderInfoEntity> wrapper = new QueryWrapper<>();
@@ -110,22 +178,30 @@ public class OrderServiceImpl implements IOrderService {
             entityList = new ArrayList<>();
         }
         Map<String,OrderInfoEntity> entityMap = entityList.stream().collect(Collectors.toMap(k -> k.getOrderId(),entity -> entity));
-        entityList = Optional.ofNullable(saveList).map(list -> {
-            List<OrderInfoEntity> tempList = new ArrayList<>();
-            list.forEach(dto -> {
-                OrderInfoEntity entity = entityMap.containsKey(dto.getOrderId()) ? entityMap.get(dto.getOrderId()) : new OrderInfoEntity();
-                entity.setOrderId(dto.getOrderId()).setShopId(dto.getShopId()).setUserId(dto.getUserId())
-                        .setOrderDate(dto.getOrderDate()).setSupplyId(dto.getSupplyId())
-                        .setGoodsId(dto.getGoodsId()).setGoodsName(dto.getGoodsName())
-                        .setOrderState(dto.getOrderState()).setSaleAmount(dto.getSaleAmount())
-                        .setPayoutAmount(dto.getPaymentAmount()).setCostAmount(dto.getCostAmount())
-                        .setRemark(dto.getRemark());
-                //订单数据计算
-                this.computeOrderData(entity);
-            });
-            return tempList;
-        }).orElse(null);
+        for (OrderRowDTO dto : saveList){
+            OrderInfoEntity entity = null ;
+            if(entityMap.containsKey(dto.getOrderId())){
+                entity = entityMap.get(dto.getOrderId());
+                updateNum++;
+            }else {
+                entity = new OrderInfoEntity();
+                insertNum++;
+            }
+            entity.setOrderId(dto.getOrderId()).setShopId(dto.getShopId()).setUserId(dto.getUserId())
+                    .setOrderDate(dto.getOrderDate()).setSupplyId(dto.getSupplyId())
+                    .setGoodsId(dto.getGoodsId()).setGoodsName(dto.getGoodsName())
+                    .setOrderState(dto.getOrderState()).setSaleAmount(dto.getSaleAmount())
+                    .setPaymentAmount(dto.getPaymentAmount()).setCostAmount(dto.getCostAmount())
+                    .setPayoutAmount(BigDecimal.ZERO).setRemark(dto.getRemark());
+            //订单数据计算
+            this.computeOrderData(entity);
+            entityList.add(entity);
+        }
         orderInfoDAO.saveOrUpdateBatch(entityList,200);
+        StringBuilder sb = new StringBuilder();
+        sb.append("成功读取").append(saveList.size()).append("笔订单，其中新增")
+                .append(insertNum).append("笔订单，更新").append(updateNum).append("笔订单。");
+        return sb.toString();
     }
     /**
      * <p>@Description 保存订单信息 </p>

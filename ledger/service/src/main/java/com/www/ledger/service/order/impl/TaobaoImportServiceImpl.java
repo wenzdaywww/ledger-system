@@ -67,7 +67,7 @@ public class TaobaoImportServiceImpl extends OrderImportService {
                     errSB.append("首行列标题不存在以下名称：").append(ledgerProperties.getTaobaoHeadMap().values().toString()).append(" 。导入失败");
                     throw new BusinessException(errSB.toString());
                 }
-                OrderRowDTO orderDTO = this.buildOrderDTO(headMap,rowNum,dataList.size(),dataList.get(rowNum),shopEntity);
+                OrderRowDTO orderDTO = this.buildOrderDTO(headMap,rowNum,dataList.get(0).size(),dataList.get(rowNum),shopEntity);
                 //订单数据校验
                 super.checkOrderDTO(headMap,saveList,failList,orderDTO);
             }
@@ -91,6 +91,7 @@ public class TaobaoImportServiceImpl extends OrderImportService {
             stateMap.put("已发货，待签收",CodeDict.getValue(CodeTypeEnum.OrderState_Sended.getType(), CodeTypeEnum.OrderState_Sended.getKey()));//已发货，待签收
             stateMap.put("交易关闭",CodeDict.getValue(CodeTypeEnum.OrderState_Unpaid.getType(), CodeTypeEnum.OrderState_Unpaid.getKey()));//未支付，交易关闭
             stateMap.put("已取消",CodeDict.getValue(CodeTypeEnum.OrderState_Unpaid.getType(), CodeTypeEnum.OrderState_Unpaid.getKey()));//未支付，交易关闭
+            stateMap.put("卖家已发货，等待买家确认",CodeDict.getValue(CodeTypeEnum.OrderState_Sended.getType(), CodeTypeEnum.OrderState_Sended.getKey()));//已发货，待签收
         }
         String code = stateMap.get(stateName.trim());
         //code为空，则赋值为【待确认】

@@ -182,7 +182,9 @@ export default {
     //删除店铺
     const handleDelete = (row) => {
       // 二次确认删除
-      ElMessageBox.confirm("确定要删除店铺【" + row.shopNm + "】订单ID：" + row.ordId + "的数据吗？", "提示", {type: "warning"}).then(() => {
+      ElMessageBox.confirm("确定要删除店铺【" + row.shopNm + "】订单ID：" + row.ordId + "的数据吗？", "提示",
+          {confirmButtonText: '确定',cancelButtonText: '关闭',type: 'warning',center: true,roundButton: true}
+      ).then(() => {
         axios.$http.post(request.delOrder+row.oiId, null).then(function (res) {
           ElMessage.success(res.data);
           findOrderList();

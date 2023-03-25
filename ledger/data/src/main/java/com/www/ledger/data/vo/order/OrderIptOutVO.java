@@ -15,8 +15,8 @@ import java.io.Serializable;
 @Accessors(chain = true)//开启链式编程
 public class OrderIptOutVO implements Serializable {
     private static final long serialVersionUID = 1L;
-    /** 订单ID **/
-    private String ordId;
-    /** 错误信息 **/
+    /** 提示信息 **/
     private String msg;
+    /** 导入失败的数据文件下载路径 **/
+    private String url;
 }

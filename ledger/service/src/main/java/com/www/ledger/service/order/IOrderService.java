@@ -2,6 +2,7 @@ package com.www.ledger.service.order;
 
 import com.www.common.data.response.Result;
 import com.www.ledger.data.dto.OrderDTO;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -20,9 +21,9 @@ public interface IOrderService {
      * @param file 订单文件数据
      * @param orderDTO 订单导入对象
      * @param password 订单文件密码
-     * @return 导入失败的则下载订单数据信息
+     * @return 0=导入失败的则返回下载订单数据信息文件路径,1=导入成功提示信息
      */
-    Result<String> importOrder(MultipartFile file, OrderDTO orderDTO, String password);
+    Result<String[]> importOrder(MultipartFile file, OrderDTO orderDTO, String password);
     /**
      * <p>@Description 保存订单信息 </p>
      * <p>@Author www </p>

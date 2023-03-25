@@ -19,7 +19,6 @@ http.interceptors.request.use(
 );
 http.interceptors.response.use(
     response => {
-        //接口返回403
         if(response.status == 200){
             //Promise.resolve在then方法使用
             return Promise.resolve(response);

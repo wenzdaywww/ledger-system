@@ -2,6 +2,9 @@ package com.www.ledger.service.order.impl;
 
 import com.www.common.config.code.CodeDict;
 import com.www.common.config.exception.BusinessException;
+import com.www.common.data.constant.CharConstant;
+import com.www.common.data.enums.DateFormatEnum;
+import com.www.common.utils.DateUtils;
 import com.www.ledger.data.dto.HeadDataDTO;
 import com.www.ledger.data.dto.OrderDTO;
 import com.www.ledger.data.dto.OrderRowDTO;
@@ -69,13 +72,36 @@ public class PddImportServiceImpl extends OrderImportService {
                     errSB.append("首行列标题不存在以下名称：").append(ledgerProperties.getPddHeadMap().values().toString()).append(" 。导入失败");
                     throw new BusinessException(errSB.toString());
                 }
-                OrderRowDTO orderDTO = super.buildOrderDTO(headMap,rowNum,dataList.size(),dataList.get(rowNum),shopEntity);
+                OrderRowDTO orderDTO = this.buildOrderDTO(headMap,rowNum,dataList.get(0).size(),dataList.get(rowNum),shopEntity);
                 //订单数据校验
                 super.checkOrderDTO(headMap,saveList,failList,orderDTO);
             }
         }
         return failList;
     }
+
+    /**
+     * <p>@Description 根据订单行数据组装订单数据对象 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/24 21:16 </p>
+     * @param headMap    待导入订单列坐标数据
+     * @param rowNum     当前订单数据在文件中行号
+     * @param maxColumn  订单数据文件最大列号
+     * @param rowList    订单行数据
+     * @param shopEntity 店铺信息
+     * @return 一行订单数据对象
+     */
+    @Override
+    protected OrderRowDTO buildOrderDTO(Map<String, HeadDataDTO> headMap, int rowNum, int maxColumn, ArrayList<String> rowList, UserShopEntity shopEntity) {
+        OrderRowDTO orderRowDTO = super.buildOrderDTO(headMap, rowNum, maxColumn, rowList, shopEntity);
+        //拼多多未订单状态=已取消的订单没有【订单成交时间】，所以订单日期会为空，则此时截取订单号-前的年月日（yyMMdd）
+        if(StringUtils.equals(orderRowDTO.getOrderState(),CodeDict.getValue(CodeTypeEnum.OrderState_Unpaid.getType(), CodeTypeEnum.OrderState_Unpaid.getKey()))){
+            String dateStr = "20" +StringUtils.substring(orderRowDTO.getOrderId(),0,orderRowDTO.getOrderId().lastIndexOf(CharConstant.MINUS_SIGN));
+            orderRowDTO.setOrderDate(DateUtils.parse(dateStr, DateFormatEnum.YYYYMMDD5));
+        }
+        return orderRowDTO;
+    }
+
     /**
      * <p>@Description 根据拼多多订单状态获取系统订单状态码值 </p>
      * <p>@Author www </p>

@@ -3,12 +3,18 @@ package com.www.ledger.controller.order;
 import com.www.common.config.security.meta.JwtAuthorizationTokenFilter;
 import com.www.common.data.response.Result;
 import com.www.ledger.data.dto.OrderDTO;
+import com.www.ledger.data.vo.order.OrderIptOutVO;
 import com.www.ledger.data.vo.order.OrderListInVO;
 import com.www.ledger.data.vo.order.OrderListOutVO;
 import com.www.ledger.data.vo.order.OrderNewInVO;
 import com.www.ledger.service.order.IOrderService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,11 +51,13 @@ public class OrderController {
      * @return 导入失败的则下载订单数据信息
      */
     @PostMapping("ipt")
-    public Result<String> importOrder(MultipartFile file, @NotNull(message = "店铺不能为空") Long shopId, String pwd){
+    public ResponseEntity<Result<OrderIptOutVO>> importOrder(MultipartFile file, @NotNull(message = "店铺不能为空") Long shopId, String pwd) throws Exception{
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setUserId(JwtAuthorizationTokenFilter.getUserId()).setShopId(shopId);
-        Result<String> result = orderService.importOrder(file,orderDTO,pwd);
-        return new Result<>(result.getData());
+        Result<String[]> result = orderService.importOrder(file,orderDTO,pwd);
+        OrderIptOutVO iptOutVO = new OrderIptOutVO();
+        iptOutVO.setUrl(result.getData()[0]).setMsg(result.getData()[1]);
+        return new ResponseEntity<>(new Result<>(iptOutVO),HttpStatus.OK);
     }
     /**
      * <p>@Description 保存订单信息 </p>

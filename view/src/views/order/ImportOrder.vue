@@ -47,7 +47,8 @@
 <script>
 import {getCurrentInstance,  reactive, ref} from "vue";
 import request from '../../utils/request';
-import {ElMessage} from "element-plus";
+import utils from "../../utils/utils";
+import {ElMessage, ElMessageBox} from "element-plus";
 
 export default {
   name: "importOrder",
@@ -55,6 +56,8 @@ export default {
   setup(props,{emit}) { //调用父组件方法，必须有props,{emit}。否则调用失败
     // 接口请求
     const axios = getCurrentInstance().appContext.config.globalProperties;
+    //环境配置
+    const ENV = import.meta.env;
     // 订单导入弹窗控制
     const editVisible = ref(false);
     // 订单导入信息
@@ -117,10 +120,22 @@ export default {
             fd.append("pwd",orderInfo.value.pwd);
             fd.append("file",importFile.raw);
             axios.$http.upload(request.importOrder,fd).then(function(res){
-              clearFile();
-              ElMessage.success(res.data);
-            }).catch(function (err)  {
-              //TODO 2023/3/25 01:18 导入失败，则下载失败的数据文件，待开发
+              ElMessageBox.confirm(res.data.msg, "导入提示",
+                  {confirmButtonText: res.data.url ? '下载错误订单信息' : '确定',cancelButtonText: '关闭',type: 'warning',center: true,roundButton: true}
+              ).then(() => {
+                if (res.data.url){
+                  //下载文件
+                  utils.downloadFile(ENV.VITE_API_URL + res.data.url);
+                }else {
+                  clearFile();
+                  editVisible.value = false;
+                  emit('findOrderList',null);//调用父组件OrderList.vue的findOrderList方法
+                }
+              }).catch(() => {
+                clearFile();
+                editVisible.value = false;
+                emit('findOrderList',null);//调用父组件OrderList.vue的findOrderList方法
+              });
             });
           }else {
             ElMessage.error(" 请选择要导入的文件");

@@ -70,10 +70,11 @@ public abstract class OrderImportService implements IOrderImportService {
         orderDTO.setOrderId(this.getCellData(rowList,headMap,ORDER_ID));
         orderDTO.setOrderDate(this.getOrderDate(this.getCellData(rowList,headMap,ORDER_DATE)));
         orderDTO.setGoodsId(this.getCellData(rowList,headMap,GOODS_ID));
-        orderDTO.setGoodsName(this.getCellData(rowList,headMap,GOODS_NAME));
+        orderDTO.setGoodsName(StringUtils.substring(this.getCellData(rowList,headMap,GOODS_NAME),0,60));
         orderDTO.setOrderState(this.getStateCode(this.getCellData(rowList,headMap,ORDER_STATE)));
         orderDTO.setSaleAmount(MoneyUtils.strToAmt(this.getCellData(rowList,headMap,SALE_AMOUNT)));
         orderDTO.setPaymentAmount(MoneyUtils.strToAmt(this.getCellData(rowList,headMap,PAYMENT_AMOUNT)));
+        orderDTO.setCostAmount(BigDecimal.ZERO);
         //商家备注存的是1688订单、和其他备注信息，格式如：3243663938570794151#10.8#这是备注内容
         String remark = this.getCellData(rowList,headMap,REMARK);
         String[] arr = StringUtils.split(remark, CharConstant.JING_HAO);
@@ -131,7 +132,8 @@ public abstract class OrderImportService implements IOrderImportService {
         }else {
             if(StringUtils.equals(orderDTO.getOrderState(),CodeDict.getValue(CodeTypeEnum.OrderState_Unconfirme.getType(),CodeTypeEnum.OrderState_Unconfirme.getKey()))){
                 orderDTO.setMessage("订单状态为【待确定】，请人工确认下实际状态");
-                failList.add(orderDTO);
+            }else {
+                orderDTO.setMessage("导入成功");
             }
             saveList.add(orderDTO);
         }
