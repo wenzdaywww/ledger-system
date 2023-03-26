@@ -18,7 +18,10 @@
                 <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
               </el-select>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="8">
+              <el-tooltip class="item" effect="light" content="按店铺查：即查询店铺的日销售额&nbsp;&nbsp;&nbsp;按日查：即查询所有店铺的日销售额" placement="top">
+                <el-switch v-model="query.all" inactive-text="按店铺查" active-text="按日期查" style="margin-right: 10px;"></el-switch>
+              </el-tooltip>
               <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
               <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
               <el-tooltip class="item" effect="light" content="根据订单信息统计日销售额" placement="top">
@@ -70,7 +73,7 @@
           <el-table-column prop="talOrd" label="日订单量" align="center">
             <template v-slot:header='scope'>
               <span>日订单量
-                <el-tooltip :aa="scope" class="item" effect="light" content="本日月订单数量合计" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="本日订单数量合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -79,16 +82,16 @@
           <el-table-column prop="sucOrd" label="日成交单" align="center">
             <template v-slot:header='scope'>
               <span>日成交单
-                <el-tooltip :aa="scope" class="item" effect="light" content="本日月成交单数量合计" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="本日订单状态为【交易成功】、【已发货，待签收】的数量合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="faiOrd" label="日失败单" align="center">
+          <el-table-column prop="faiOrd" label="日流失单" align="center">
             <template v-slot:header='scope'>
-              <span>日失败单
-                <el-tooltip :aa="scope" class="item" effect="light" content="本日月失败单数量合计" placement="top">
+              <span>日流失单
+                <el-tooltip :aa="scope" class="item" effect="light" content="日流失单 = 日订单量 - 日成交单" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -97,7 +100,7 @@
           <el-table-column prop="salAmt" label="日销售额" align="center">
             <template v-slot:header='scope'>
               <span>日销售额
-                <el-tooltip :aa="scope" class="item" effect="light" content="本日月销售额合计" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="本日订单状态为【交易成功】、【已发货，待签收】的销售额合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -106,7 +109,7 @@
           <el-table-column prop="cosAmt" label="日成本费" align="center">
             <template v-slot:header='scope'>
               <span>日成本费
-                <el-tooltip :aa="scope" class="item" effect="light" content="本日月成本费合计" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="本日订单状态为【交易成功】、【已发货，待签收】的总成本费合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -115,7 +118,7 @@
           <el-table-column prop="virAmt" label="日刷单费" align="center">
             <template v-slot:header='scope'>
               <span>日刷单费
-                <el-tooltip :aa="scope" class="item" effect="light" content="本日月刷单费合计" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="本日订单状态为【刷单】的总成本费合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -156,6 +159,7 @@ export default {
       shopId: "",
       strDat: "",
       endDat: "",
+      all: false,
       pageNum: 1,
       pageSize: 10
     });
@@ -190,6 +194,7 @@ export default {
       query.shopId = "";
       query.strDat = "";
       query.endDat = "";
+      query.all = false;
       datRange.value = [];
       findDayList();
     };

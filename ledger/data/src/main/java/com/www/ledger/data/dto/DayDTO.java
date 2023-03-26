@@ -21,6 +21,8 @@ public class DayDTO implements Serializable {
     private Long dsId;
     /** 店铺主键ID **/
     private Long shopId;
+    /** 是否查询所有店铺的日销售额 **/
+    private Boolean allShop;
     /** 店铺名称 **/
     private String shopName;
     /** 用户名 **/

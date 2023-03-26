@@ -66,12 +66,20 @@
                 D.COST_AMOUNT costAmount,
                 D.VIRTUAL_AMOUNT virtualAmount,
                 D.TOTAL_COST totalCost
-        FROM DAY_SALES D,USER_SHOP S
-        WHERE S.USER_ID = #{obj.userId}  AND D.USER_ID = #{obj.userId}
-        AND S.SHOP_STATE='1' AND S.SHOP_ID = D.SHOP_ID
-        <if test="obj.shopId != null">
-            AND D.SHOP_ID = #{obj.shopId}
-        </if>
+        FROM DAY_SALES D
+        LEFT JOIN USER_SHOP S ON S.USER_ID = #{obj.userId} AND S.SHOP_STATE='1' AND S.SHOP_ID = D.SHOP_ID
+        WHERE D.USER_ID = #{obj.userId}
+        <choose>
+            <when test="obj.allShop == true">
+                AND D.SHOP_ID IS NULL
+            </when>
+            <otherwise>
+                AND D.SHOP_ID IS NOT NULL
+                <if test="obj.shopId != null">
+                    AND D.SHOP_ID = #{obj.shopId}
+                </if>
+            </otherwise>
+        </choose>
         <if test="obj.startDateStr != null and obj.startDateStr != ''">
             AND D.DAY_DATE <![CDATA[ >= ]]> STR_TO_DATE(#{obj.startDateStr},'%Y-%m-%d')
         </if>

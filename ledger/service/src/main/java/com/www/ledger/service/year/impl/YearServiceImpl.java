@@ -49,7 +49,7 @@ public class YearServiceImpl implements IYearService {
         //统计的年销售额
         List<YearDTO> countList = monthSalesDAO.countYearData(userId);
         //查询存在的年销售额数据
-        List<YearSalesEntity> yearList = yearSalesDAO.findYearList(userId);
+        List<YearSalesEntity> yearList = yearSalesDAO.findYearSalesList(userId);
         if(CollectionUtils.isEmpty(countList) && CollectionUtils.isNotEmpty(yearList)){
             //没有统计的年销售额但有年销售额数据，则需要删除年销售数据
             if(yearSalesDAO.deleteYearList(userId)){
@@ -139,7 +139,7 @@ public class YearServiceImpl implements IYearService {
     @Override
     public Result<List<YearDTO>> findYearList(YearDTO yearDTO, int pageNum, long pageSize) {
         Page<YearDTO> page = new Page<>(pageNum,pageSize);
-        page = yearSalesDAO.findYearList(page,yearDTO);
+        page = yearSalesDAO.findYearSalesList(page,yearDTO);
         List<YearDTO> shopList =  page.getRecords();
         Result<List<YearDTO>> listResult = new Result<>(shopList);
         listResult.setPageNum(pageNum);

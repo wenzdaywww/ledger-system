@@ -51,7 +51,7 @@ public class YearController {
     @GetMapping("list")
     public Result<List<YearListOutVO>> findYearList(@Validated YearListInVO yearInVO){
         YearDTO yearDTO = new YearDTO();
-        yearDTO.setShopId(yearInVO.getShopId()).setUserId(JwtAuthorizationTokenFilter.getUserId())
+        yearDTO.setShopId(yearInVO.getShopId()).setUserId(JwtAuthorizationTokenFilter.getUserId()).setAllShop(yearInVO.getAll())
                 .setYearStr(StringUtils.isNotBlank(yearInVO.getYear()) ? yearInVO.getYear() + "0101" : null);
         Result<List<YearDTO>> listResult = yearService.findYearList(yearDTO,yearInVO.getPageNum(),yearInVO.getPageSize());
         List<YearListOutVO> yearList = Optional.ofNullable(listResult.getData()).filter(e -> CollectionUtils.isNotEmpty(listResult.getData()))

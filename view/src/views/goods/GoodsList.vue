@@ -29,7 +29,7 @@
           <el-table-column prop="groProRat" label="店毛利率" align="center"></el-table-column>
           <el-table-column prop="talOrd" label="店订单数" align="center"></el-table-column>
           <el-table-column prop="sucOrd" label="店成交单数" align="center"></el-table-column>
-          <el-table-column prop="faiOrd" label="店失败单数" align="center"></el-table-column>
+          <el-table-column prop="faiOrd" label="店流失单数" align="center"></el-table-column>
           <el-table-column prop="salAmt" label="店销售额" align="center"></el-table-column>
           <el-table-column prop="cosAmt" label="店成本费" align="center"></el-table-column>
           <el-table-column prop="advAmt" label="店推广费" align="center"></el-table-column>

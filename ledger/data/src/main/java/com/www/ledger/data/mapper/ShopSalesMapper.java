@@ -8,6 +8,8 @@ import com.www.ledger.data.entity.ShopSalesEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * <p>@Description 店铺销售额信息Mapper </p>
  * <p>@Version 1.0 </p>
@@ -16,6 +18,14 @@ import org.apache.ibatis.annotations.Param;
  */
 @Mapper
 public interface ShopSalesMapper extends BaseMapper<ShopSalesEntity> {
+    /**
+     * <p>@Description 查询用户的店销售数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/20 20:56 </p>
+     * @param userId 用户ID
+     * @return 店销售数据
+     */
+    List<ShopSalesEntity> findShopSalesList(@Param("userId") String userId);
     /**
      * <p>@Description 统计所有店铺销售额 </p>
      * <p>@Author www </p>

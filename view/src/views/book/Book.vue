@@ -336,7 +336,7 @@ export default {
         let dateData = [];//日期坐标
         //res.data = [{shopNm:"test",day:[{day:2021/01/01,sales:100}]}]
         res.data.forEach(function (item) {
-          let shopData = {label:item.shopNm,data:[]};
+          let shopData = {label:item.shopNm + "  (单位元)",data:[]};
           item.day.forEach(function (dayItem){
             shopData.data.push(dayItem.sales);
             if (dateData.length < item.day.length){

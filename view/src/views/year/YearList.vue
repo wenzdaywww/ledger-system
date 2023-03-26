@@ -5,12 +5,15 @@
       <div v-loading="pageLoading">
         <!-- 年销售额列表查询条件-->
         <div class="handle-box">
-          <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 250px">
-            <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
-          </el-select>
           <div class="block" style="float: left; margin-right: 10px;">
             <el-date-picker v-model="query.year" type="year" format="YYYY" value-format="YYYY" placeholder="选择年份"></el-date-picker>
           </div>
+          <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 250px">
+            <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
+          </el-select>
+          <el-tooltip class="item" effect="light" content="按店铺查：即查询店铺的年销售额&nbsp;&nbsp;&nbsp;按年份查：即查询所有店铺的年销售额" placement="top">
+            <el-switch v-model="query.all" inactive-text="按店铺查" active-text="按年份查" style="margin-right: 10px;"></el-switch>
+          </el-tooltip>
           <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
           <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
           <el-tooltip class="item" effect="light" content="根据月销售统计年销售额" placement="top">
@@ -19,8 +22,16 @@
         </div>
         <!-- 店铺信息列表-->
         <el-table :data="tableData" border class="table" ref="multipleTable" :cell-class-name="addCellClass" header-cell-class-name="table-header">
-          <el-table-column prop="year" label="年份" align="center" sortable></el-table-column>
-          <el-table-column prop="shopNm" label="店铺名称" align="center" sortable></el-table-column>
+          <el-table-column prop="year" label="年份" align="center" sortable width="90px;"></el-table-column>
+          <el-table-column prop="shopNm" label="店铺名称" align="center" sortable>
+            <template v-slot:header='scope'>
+              <span>店铺名称
+                <el-tooltip :aa="scope" class="item" effect="light" content="店铺名称为空，则该笔数据是所有店铺的年销售额数据" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column prop="retPro" label="年净利润" align="center">
             <template v-slot:header='scope'>
               <span>年净利润
@@ -75,10 +86,10 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="faiOrd" label="年失败单" align="center">
+          <el-table-column prop="faiOrd" label="年流失单" align="center">
             <template v-slot:header='scope'>
-              <span>年失败单
-                <el-tooltip :aa="scope" class="item" effect="light" content="本年月失败单数量合计" placement="top">
+              <span>年流失单
+                <el-tooltip :aa="scope" class="item" effect="light" content="本年月流失单数量合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -163,6 +174,7 @@ export default {
     const query = reactive({
       shopId: "",
       year: "",
+      all: false,
       pageNum: 1,
       pageSize: 10
     });
@@ -194,6 +206,7 @@ export default {
     const handleReset = () => {
       query.shopId = "";
       query.year = "";
+      query.all = false;
       findYearList();
     };
     // 分页导航

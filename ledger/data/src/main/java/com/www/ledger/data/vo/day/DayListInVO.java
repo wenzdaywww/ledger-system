@@ -22,6 +22,8 @@ public class DayListInVO implements Serializable {
     private String endDat;
     /** 店铺主键ID **/
     private Long shopId;
+    /** 是否查询所有店铺的日销售额 **/
+    private Boolean all;
     /** 当前页面 **/
     @Min(value = 1,message = "当前页码必须大于0")
     private int pageNum;

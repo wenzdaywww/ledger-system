@@ -19,6 +19,14 @@ import java.util.List;
 @Mapper
 public interface MonthSalesMapper extends BaseMapper<MonthSalesEntity> {
     /**
+     * <p>@Description 查询用户的月销售数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/20 20:40 </p>
+     * @param userId 用户ID
+     * @return 月销售数据
+     */
+    List<MonthSalesEntity> findMonthSalesList(@Param("userId") String userId);
+    /**
      * <p>@Description 查询用户monthStr月份销量前1的店铺 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/19 19:13 </p>

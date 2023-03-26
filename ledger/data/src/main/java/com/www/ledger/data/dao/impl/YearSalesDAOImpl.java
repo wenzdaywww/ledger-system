@@ -49,10 +49,8 @@ public class YearSalesDAOImpl extends ServiceImpl<YearSalesMapper, YearSalesEnti
      * @return 用户的年销售数据
      */
     @Override
-    public List<YearSalesEntity> findYearList(String userId) {
-        QueryWrapper<YearSalesEntity> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(YearSalesEntity::getUserId,userId);
-        return yearSalesMapper.selectList(wrapper);
+    public List<YearSalesEntity> findYearSalesList(String userId) {
+        return StringUtils.isBlank(userId) ? null : yearSalesMapper.findYearSalesList(userId);
     }
 
     /**
@@ -78,7 +76,7 @@ public class YearSalesDAOImpl extends ServiceImpl<YearSalesMapper, YearSalesEnti
      * @return
      */
     @Override
-    public Page<YearDTO> findYearList(Page<YearDTO> page, YearDTO dto) {
+    public Page<YearDTO> findYearSalesList(Page<YearDTO> page, YearDTO dto) {
         return yearSalesMapper.findYearList(page,dto);
     }
 }

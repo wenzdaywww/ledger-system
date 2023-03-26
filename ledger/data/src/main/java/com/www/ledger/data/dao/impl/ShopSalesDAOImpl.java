@@ -29,18 +29,12 @@ public class ShopSalesDAOImpl extends ServiceImpl<ShopSalesMapper, ShopSalesEnti
      * <p>@Description 查询用户的店销售数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/20 20:56 </p>
-     *
      * @param userId 用户ID
      * @return 店销售数据
      */
     @Override
     public List<ShopSalesEntity> findShopSalesList(String userId) {
-        if(StringUtils.isBlank(userId)){
-            return null;
-        }
-        QueryWrapper<ShopSalesEntity> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(ShopSalesEntity::getUserId,userId);
-        return shopSalesMapper.selectList(wrapper);
+        return StringUtils.isBlank(userId) ? null : shopSalesMapper.findShopSalesList(userId);
     }
     /**
      * <p>@Description 统计所有店铺销售额 </p>

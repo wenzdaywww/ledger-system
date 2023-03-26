@@ -19,6 +19,14 @@ import java.util.List;
 @Mapper
 public interface YearSalesMapper extends BaseMapper<YearSalesEntity> {
     /**
+     * <p>@Description 查询用户的年销售数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/20 20:23 </p>
+     * @param userId 用户ID
+     * @return 用户的年销售数据
+     */
+    List<YearSalesEntity> findYearSalesList(@Param("userId") String userId);
+    /**
      * <p>@Description 统计店铺销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 23:50 </p>

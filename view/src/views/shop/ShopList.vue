@@ -78,10 +78,10 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="faiOrd" label="店失败单" align="center">
+          <el-table-column prop="faiOrd" label="店流失单" align="center">
             <template v-slot:header='scope'>
-              <span>店失败单
-                <el-tooltip :aa="scope" class="item" effect="light" content="本店年失败单数量合计" placement="top">
+              <span>店流失单
+                <el-tooltip :aa="scope" class="item" effect="light" content="本店年流失单数量合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>

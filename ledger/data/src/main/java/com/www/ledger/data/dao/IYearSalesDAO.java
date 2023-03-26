@@ -30,7 +30,7 @@ public interface IYearSalesDAO extends IService<YearSalesEntity> {
      * @param userId 用户ID
      * @return 用户的年销售数据
      */
-    List<YearSalesEntity> findYearList(String userId);
+    List<YearSalesEntity> findYearSalesList(String userId);
     /**
      * <p>@Description 统计店铺销售额 </p>
      * <p>@Author www </p>
@@ -47,5 +47,5 @@ public interface IYearSalesDAO extends IService<YearSalesEntity> {
      * @param dto 查询条件
      * @return
      */
-    Page<YearDTO> findYearList(Page<YearDTO> page, YearDTO dto);
+    Page<YearDTO> findYearSalesList(Page<YearDTO> page, YearDTO dto);
 }

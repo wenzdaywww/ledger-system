@@ -8,6 +8,7 @@ import com.www.ledger.data.dto.DayDTO;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.entity.DaySalesEntity;
 import com.www.ledger.data.mapper.DaySalesMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -44,7 +45,7 @@ public class DaySalesDAOImpl extends ServiceImpl<DaySalesMapper, DaySalesEntity>
      */
     @Override
     public List<DaySalesEntity> findDaySalesList(String userId) {
-        return daySalesMapper.findDaySalesList(userId);
+        return StringUtils.isBlank(userId) ? null : daySalesMapper.findDaySalesList(userId);
     }
     /**
      * <p>@Description 删除用户的所有日销售额数据 </p>

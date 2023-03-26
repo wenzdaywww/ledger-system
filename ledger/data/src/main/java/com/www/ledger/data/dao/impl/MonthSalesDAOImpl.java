@@ -36,12 +36,7 @@ public class MonthSalesDAOImpl extends ServiceImpl<MonthSalesMapper, MonthSalesE
      */
     @Override
     public List<MonthSalesEntity> findMonthSalesList(String userId) {
-        if(StringUtils.isBlank(userId)){
-            return null;
-        }
-        QueryWrapper<MonthSalesEntity> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(MonthSalesEntity::getUserId,userId);
-        return monthSalesMapper.selectList(wrapper);
+        return StringUtils.isBlank(userId) ? null :monthSalesMapper.findMonthSalesList(userId);
     }
 
     /**

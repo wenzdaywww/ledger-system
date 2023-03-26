@@ -58,7 +58,7 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="月失败单数">
+            <el-form-item label="月流失单数">
               <el-input v-model="monthInfo.faiOrd" style="width: 250px" :disabled="true"></el-input>
             </el-form-item>
           </el-col>

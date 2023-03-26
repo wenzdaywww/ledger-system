@@ -20,6 +20,8 @@ public class YearListInVO implements Serializable {
     private String year;
     /** 店铺主键ID **/
     private Long shopId;
+    /** 是否查询所有店铺的年销售额 **/
+    private Boolean all;
     /** 当前页面 **/
     @Min(value = 1,message = "当前页码必须大于0")
     private int pageNum;

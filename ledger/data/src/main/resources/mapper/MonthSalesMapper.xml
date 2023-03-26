@@ -23,6 +23,11 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
+    <!-- 查询用户的月销售数据-->
+    <select id="findMonthSalesList" resultMap="BaseResultMap">
+        SELECT M.* FROM MONTH_SALES M,USER_SHOP S
+        WHERE S.USER_ID = #{userId}  AND M.USER_ID = #{userId} AND S.SHOP_STATE='1' AND S.SHOP_ID = M.SHOP_ID
+    </select>
     <!-- 查询用户monthStr月份销量前3的店铺-->
     <select id="findMaxSalesShop" resultType="java.lang.Long">
         SELECT M.SHOP_ID FROM MONTH_SALES M
@@ -89,12 +94,20 @@
                 M.SERVICE_AMOUNT serviceAmount,
                 M.VIRTUAL_AMOUNT virtualAmount,
                 M.TOTAL_COST totalCost
-        FROM MONTH_SALES M,USER_SHOP S
-        WHERE S.USER_ID = #{obj.userId}  AND M.USER_ID = #{obj.userId}
-        AND S.SHOP_STATE='1' AND S.SHOP_ID = M.SHOP_ID
-        <if test="obj.shopId != null">
-            AND M.SHOP_ID = #{obj.shopId}
-        </if>
+        FROM MONTH_SALES M
+        LEFT JOIN USER_SHOP S ON  S.USER_ID = #{obj.userId} AND S.SHOP_STATE='1' AND S.SHOP_ID = M.SHOP_ID
+        WHERE M.USER_ID = #{obj.userId}
+        <choose>
+            <when test="obj.allShop == true">
+                AND M.SHOP_ID IS NULL
+            </when>
+            <otherwise>
+                AND M.SHOP_ID IS NOT NULL
+                <if test="obj.shopId != null">
+                    AND M.SHOP_ID = #{obj.shopId}
+                </if>
+            </otherwise>
+        </choose>
         <if test="obj.monthDateStr != null and obj.monthDateStr != ''">
             AND M.MONTH_DATE = STR_TO_DATE(#{obj.monthDateStr},'%Y-%m-%d')
         </if>

@@ -5,12 +5,15 @@
       <div v-loading="pageLoading">
         <!-- 月销售额列表查询条件-->
         <div class="handle-box">
-          <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 250px">
-            <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
-          </el-select>
           <div class="block" style="float: left; margin-right: 10px;">
             <el-date-picker v-model="query.month" type="month" format="YYYY-MM" value-format="YYYY-MM" placeholder="选择月份"></el-date-picker>
           </div>
+          <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 250px">
+            <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
+          </el-select>
+          <el-tooltip class="item" effect="light" content="按店铺查：即查询店铺的月销售额&nbsp;&nbsp;&nbsp;按月份查：即查询所有店铺的月销售额" placement="top">
+            <el-switch v-model="query.all" inactive-text="按店铺查" active-text="按月份查" style="margin-right: 10px;"></el-switch>
+          </el-tooltip>
           <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
           <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
           <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round plain>新增月销售</el-button>
@@ -64,7 +67,7 @@
           <el-table-column prop="talOrd" label="月订单量" align="center">
             <template v-slot:header='scope'>
               <span>月订单量
-                <el-tooltip :aa="scope" class="item" effect="light" content="所有订单数量" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="本月日订单量合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -73,16 +76,16 @@
           <el-table-column prop="sucOrd" label="月成交单" align="center">
             <template v-slot:header='scope'>
               <span>月成交单
-                <el-tooltip :aa="scope" class="item" effect="light" content="订单状态为【交易成功】、【已发货，待签收】的数量" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="本月日成交单合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="faiOrd" label="月失败单" align="center">
+          <el-table-column prop="faiOrd" label="月流失单" align="center">
             <template v-slot:header='scope'>
-              <span>月失败单
-                <el-tooltip :aa="scope" class="item" effect="light" content="订单状态非【交易成功】、【已发货，待签收】的数量" placement="top">
+              <span>月流失单
+                <el-tooltip :aa="scope" class="item" effect="light" content="本月日流失单量合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -91,7 +94,7 @@
           <el-table-column prop="salAmt" label="月销售额" align="center">
             <template v-slot:header='scope'>
               <span>月销售额
-                <el-tooltip :aa="scope" class="item" effect="light" content="订单状态为【交易成功】、【已发货，待签收】的销售额" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="本月日销售额合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -100,7 +103,7 @@
           <el-table-column prop="cosAmt" label="月成本费" align="center">
             <template v-slot:header='scope'>
               <span>月成本费
-                <el-tooltip :aa="scope" class="item" effect="light" content="订单状态为【交易成功】、【已发货，待签收】的总成本费" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="本月日成本费合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -145,7 +148,7 @@
           <el-table-column prop="virAmt" label="月刷单费" align="center">
             <template v-slot:header='scope'>
               <span>月刷单费
-                <el-tooltip :aa="scope" class="item" effect="light" content="订单状态为【刷单】的总成本费" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="本月日刷单费合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -154,7 +157,7 @@
           <el-table-column prop="talCos" label="月支出费" align="center">
             <template v-slot:header='scope'>
               <span>月支出费
-                <el-tooltip :aa="scope" class="item" effect="light" content="月支出费=月成本费 + 月推广费 + 月服务费 + 月刷单费" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="月支出费 = 月成本费 + 月推广费 + 月服务费 + 月刷单费" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -203,6 +206,7 @@ export default {
     const query = reactive({
       shopId: "",
       month: "",
+      all: false,
       pageNum: 1,
       pageSize: 10
     });
@@ -227,6 +231,7 @@ export default {
     const handleReset = () => {
       query.shopId = "";
       query.month = "";
+      query.all = false;
       findMonthList();
     };
     // 分页导航
@@ -249,8 +254,9 @@ export default {
         return 'col-red';
       }else if(row.retPro < 0){
         return 'col-green';
-      }else {
-        return 'col-gray';
+      }
+      if(!row.shopNm && columnIndex == 15){
+        return 'col-display-none div';
       }
     }
     // 统计月销售额数
@@ -339,5 +345,8 @@ export default {
 }
 /deep/.col-gray {
   color: black ;
+}
+/deep/.col-display-none div{
+  display: none;
 }
 </style>

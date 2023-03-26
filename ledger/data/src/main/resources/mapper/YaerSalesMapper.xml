@@ -23,6 +23,11 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
+    <!-- 查询用户的年销售数据-->
+    <select id="findYearSalesList" resultMap="BaseResultMap">
+        SELECT C.*
+        FROM YEAR_SALES C,USER_SHOP S WHERE C.USER_ID = #{userId} AND S.SHOP_STATE='1' AND S.SHOP_ID = C.SHOP_ID
+    </select>
     <!--  统计店铺销售额-->
     <select id="countShopData" resultType="com.www.ledger.data.dto.ShopDTO">
         SELECT S.SHOP_ID shopId,
@@ -50,6 +55,7 @@
     <!--  查询年销售额列表信息-->
     <select id="findYearList" resultType="com.www.ledger.data.dto.YearDTO">
         SELECT DATE_FORMAT(Y.YEAR,'%Y') yearStr,
+                Y.SHOP_ID,
                 S.SHOP_NAME shopName,
                 Y.RETAINED_PROFITS retainedProfits,
                 Y.RETAINED_PROFITS_RATE retainedProfitsRate,
@@ -64,12 +70,20 @@
                 Y.SERVICE_AMOUNT serviceAmount,
                 Y.VIRTUAL_AMOUNT virtualAmount,
                 Y.TOTAL_COST totalCost
-        FROM YEAR_SALES Y,USER_SHOP S
-        WHERE S.USER_ID = #{obj.userId}  AND Y.USER_ID = #{obj.userId}
-        AND S.SHOP_STATE='1' AND S.SHOP_ID = Y.SHOP_ID
-        <if test="obj.shopId != null">
-            AND Y.SHOP_ID = #{obj.shopId}
-        </if>
+        FROM YEAR_SALES Y
+        LEFT JOIN USER_SHOP S ON S.SHOP_ID = Y.SHOP_ID AND  S.SHOP_STATE='1' AND S.USER_ID = #{obj.userId}
+        WHERE  Y.USER_ID = #{obj.userId}
+        <choose>
+            <when test="obj.allShop == true">
+                AND Y.SHOP_ID IS NULL
+            </when>
+            <otherwise>
+                AND Y.SHOP_ID IS NOT NULL
+                <if test="obj.shopId != null">
+                    AND Y.SHOP_ID = #{obj.shopId}
+                </if>
+            </otherwise>
+        </choose>
         <if test="obj.yearStr != null and obj.yearStr != ''">
             AND Y.YEAR = STR_TO_DATE(#{obj.yearStr},'%Y%m%d')
         </if>

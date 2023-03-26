@@ -116,7 +116,7 @@ public class DayServiceImpl implements IDayService {
         dayEntity.setGrossProfitRate( dayEntity.getCostAmount().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
                 : (dayEntity.getGrossProfit().divide(dayEntity.getCostAmount(),5, RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2, RoundingMode.HALF_UP));
         //日净利润=日销售额-日支出费
-        dayEntity.setRetainedProfits(dayEntity.getGrossProfit().subtract(dayEntity.getTotalCost()));
+        dayEntity.setRetainedProfits(dayEntity.getSaleAmount().subtract(dayEntity.getTotalCost()));
         //日净利率=日净利润/日支出费 * 100%
         dayEntity.setRetainedProfitsRate(dayEntity.getTotalCost().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
                 :(dayEntity.getRetainedProfits().divide(dayEntity.getTotalCost(),5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));

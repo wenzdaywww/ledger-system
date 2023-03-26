@@ -32,7 +32,7 @@
           <el-col>
             <div class="btn-save">
               <span>
-                <el-button type="primary" @click="saveEdit" class="el-icon-check" round plain>导入</el-button>
+                <el-button type="primary" @click="saveEdit" class="el-icon-upload2" round plain>导入</el-button>
                 <el-button @click="editVisible = false" class="el-icon-close" round plain>取消</el-button>
                 <el-button type="text" @click="showExplain">导入说明</el-button>
               </span>

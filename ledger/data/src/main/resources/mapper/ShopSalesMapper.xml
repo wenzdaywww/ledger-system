@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.www.ledger.data.mapper.ShopSalesMapper">
-  <resultMap id="BaseResultMap" type="com.www.ledger.data.entity.ShopSalesEntity">
-    <!--@Table SHOP_SALES-->
-    <id column="UB_ID" property="ssId" />
-    <result column="SHOP_ID" property="shopId" />
-    <result column="USER_ID" property="userId" />
-    <result column="RETAINED_PROFITS" property="retainedProfits" />
-    <result column="RETAINED_PROFITS_RATE" property="retainedProfitsRate" />
-    <result column="GROSS_PROFIT" property="grossProfit" />
-    <result column="GROSS_PROFIT_RATE" property="grossProfitRate" />
-    <result column="TOTAL_ORDER" property="totalOrder" />
-    <result column="SUCCEED_ORDER" property="succeedOrder" />
-    <result column="FAILED_ORDER" property="failedOrder" />
-    <result column="SALE_AMOUNT" property="saleAmount" />
-    <result column="COST_AMOUNT" property="costAmount" />
-    <result column="ADVERT_AMOUNT" property="advertAmount" />
-    <result column="SERVICE_AMOUNT" property="serviceAmount" />
-    <result column="VIRTUAL_AMOUNT" property="virtualAmount" />
-    <result column="TOTAL_COST" property="totalCost" />
-    <result column="UPDATE_TIME" property="updateTime" />
-    <result column="CREATE_TIME" property="createTime" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.www.ledger.data.entity.ShopSalesEntity">
+        <!--@Table SHOP_SALES-->
+        <id column="UB_ID" property="ssId" />
+        <result column="SHOP_ID" property="shopId" />
+        <result column="USER_ID" property="userId" />
+        <result column="RETAINED_PROFITS" property="retainedProfits" />
+        <result column="RETAINED_PROFITS_RATE" property="retainedProfitsRate" />
+        <result column="GROSS_PROFIT" property="grossProfit" />
+        <result column="GROSS_PROFIT_RATE" property="grossProfitRate" />
+        <result column="TOTAL_ORDER" property="totalOrder" />
+        <result column="SUCCEED_ORDER" property="succeedOrder" />
+        <result column="FAILED_ORDER" property="failedOrder" />
+        <result column="SALE_AMOUNT" property="saleAmount" />
+        <result column="COST_AMOUNT" property="costAmount" />
+        <result column="ADVERT_AMOUNT" property="advertAmount" />
+        <result column="SERVICE_AMOUNT" property="serviceAmount" />
+        <result column="VIRTUAL_AMOUNT" property="virtualAmount" />
+        <result column="TOTAL_COST" property="totalCost" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="CREATE_TIME" property="createTime" />
+    </resultMap>
+    <!--  查询用户的店销售数据-->
+    <select id="findShopSalesList" resultMap="BaseResultMap">
+        SELECT A.*
+        FROM SHOP_SALES A,USER_SHOP S WHERE A.USER_ID = #{userId} AND S.SHOP_STATE='1' AND A.SHOP_ID=S.SHOP_ID
+    </select>
     <!--  统计所有店铺销售额-->
     <select id="countAllShopData" resultType="com.www.ledger.data.dto.BookDTO">
         SELECT SUM(A.TOTAL_ORDER) totalOrder,
@@ -35,37 +40,37 @@
         FROM  SHOP_SALES A,USER_SHOP S WHERE A.USER_ID = #{userId} AND S.SHOP_STATE='1' AND A.SHOP_ID=S.SHOP_ID
         GROUP BY A.USER_ID
     </select>
-  <!--  查询我的店铺信息列表-->
-  <select id="findShopList" resultType="com.www.ledger.data.dto.ShopDTO">
-    SELECT  S.SHOP_ID shopId,
-            S.SHOP_NAME shopName,
-            S.SHOP_TYPE shopType,
-            A.RETAINED_PROFITS retainedProfits,
-            A.RETAINED_PROFITS_RATE retainedProfitsRate,
-            A.GROSS_PROFIT grossProfit,
-            A.GROSS_PROFIT_RATE grossProfitRate,
-            A.TOTAL_ORDER totalOrder,
-            A.SUCCEED_ORDER succeedOrder,
-            A.FAILED_ORDER failedOrder,
-            A.SALE_AMOUNT saleAmount,
-            A.COST_AMOUNT costAmount,
-            A.ADVERT_AMOUNT advertAmount,
-            A.SERVICE_AMOUNT serviceAmount,
-            A.VIRTUAL_AMOUNT virtualAmount,
-            A.TOTAL_COST totalCost
-    FROM USER_SHOP S
+    <!--  查询我的店铺信息列表-->
+    <select id="findShopList" resultType="com.www.ledger.data.dto.ShopDTO">
+        SELECT  S.SHOP_ID shopId,
+        S.SHOP_NAME shopName,
+        S.SHOP_TYPE shopType,
+        A.RETAINED_PROFITS retainedProfits,
+        A.RETAINED_PROFITS_RATE retainedProfitsRate,
+        A.GROSS_PROFIT grossProfit,
+        A.GROSS_PROFIT_RATE grossProfitRate,
+        A.TOTAL_ORDER totalOrder,
+        A.SUCCEED_ORDER succeedOrder,
+        A.FAILED_ORDER failedOrder,
+        A.SALE_AMOUNT saleAmount,
+        A.COST_AMOUNT costAmount,
+        A.ADVERT_AMOUNT advertAmount,
+        A.SERVICE_AMOUNT serviceAmount,
+        A.VIRTUAL_AMOUNT virtualAmount,
+        A.TOTAL_COST totalCost
+        FROM USER_SHOP S
         LEFT JOIN SHOP_SALES A ON A.SHOP_ID=S.SHOP_ID
-    WHERE S.USER_ID = #{obj.userId}
-      AND S.SHOP_STATE='1'
-      <if test="obj.shopId != null">
-        AND S.SHOP_ID = #{obj.shopId}
-      </if>
-      <if test="obj.shopName != null and obj.shopName != ''">
-        AND S.SHOP_NAME LIKE #{obj.shopName}"%"
-      </if>
-      <if test="obj.shopType != null and obj.shopType != ''">
-        AND S.SHOP_TYPE LIKE #{obj.shopType}"%"
-      </if>
-    ORDER BY S.SHOP_ID ASC
-  </select>
+        WHERE S.USER_ID = #{obj.userId}
+        AND S.SHOP_STATE='1'
+        <if test="obj.shopId != null">
+            AND S.SHOP_ID = #{obj.shopId}
+        </if>
+        <if test="obj.shopName != null and obj.shopName != ''">
+            AND S.SHOP_NAME LIKE #{obj.shopName}"%"
+        </if>
+        <if test="obj.shopType != null and obj.shopType != ''">
+            AND S.SHOP_TYPE LIKE #{obj.shopType}"%"
+        </if>
+        ORDER BY S.SHOP_ID ASC
+    </select>
 </mapper>
