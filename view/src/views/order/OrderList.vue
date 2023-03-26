@@ -2,25 +2,45 @@
 <template>
   <div>
     <el-card>
-      <div>
+      <div v-loading="pageLoading">
         <!-- 店铺信息列表查询条件-->
         <div class="handle-box">
-          <div class="block" style="float: left; margin-right: 10px;">
-            <el-date-picker v-model="query.ordDat" style="width:135px;" format="YYYY-MM-DD" value-format="YYYY-MM-DD" type="date" placeholder="选择日期"></el-date-picker>
-          </div>
-          <el-input v-model="query.ordId" placeholder="订单ID" class="handle-input mr10" style="width: 180px"></el-input>
-          <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 200px">
-            <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
-          </el-select>
-          <el-input v-model="query.supId" placeholder="1688订单ID" class="handle-input mr10" style="width: 180px"></el-input>
-          <el-input v-model="query.gdsId" placeholder="商品ID" class="handle-input mr10" style="width: 180px"></el-input>
-          <el-select v-model="query.ordSta" placeholder="请选择订单状态" class="handle-select mr10" style="width: 180px">
-            <el-option v-for="item in orderState" :key="item.value" :label="item.name" :value="item.value"></el-option>
-          </el-select>
-          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
-          <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
-          <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round plain>新增订单</el-button>
-          <el-button type="success" icon="el-icon-upload2" @click="handleImport" round plain>导入订单</el-button>
+          <el-row style="margin-bottom: 5px;">
+            <el-col :span="4">
+              <div class="block">
+                <el-date-picker v-model="datRange" type="daterange" style="width:270px;" format="YYYY-MM-DD" value-format="YYYY-MM-DD"
+                                nge-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
+                </el-date-picker>
+              </div>
+            </el-col>
+            <el-col :span="2.5">
+              <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 170px">
+                <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
+              </el-select>
+            </el-col>
+            <el-col :span="2.5">
+              <el-select v-model="query.ordSta" placeholder="请选择订单状态" class="handle-select mr10" style="width: 170px">
+                <el-option v-for="item in orderState" :key="item.value" :label="item.name" :value="item.value"></el-option>
+              </el-select>
+            </el-col>
+            <el-col :span="2.5">
+              <el-input v-model="query.ordId" placeholder="订单ID" class="handle-input mr10" style="width: 170px"></el-input>
+            </el-col>
+            <el-col :span="2.5">
+              <el-input v-model="query.supId" placeholder="1688订单ID" class="handle-input mr10" style="width: 170px"></el-input>
+            </el-col>
+            <el-col :span="2.5">
+              <el-input v-model="query.gdsId" placeholder="商品ID" class="handle-input mr10" style="width: 170px"></el-input>
+            </el-col>
+          </el-row>
+          <el-row style="margin-bottom: 5px;">
+            <el-col>
+              <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
+              <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
+              <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round plain>新增订单</el-button>
+              <el-button type="success" icon="el-icon-upload2" @click="handleImport" round plain>导入订单</el-button>
+            </el-col>
+          </el-row>
         </div>
         <!-- 店铺信息列表-->
         <el-table :data="tableData" border class="table" ref="multipleTable" :row-class-name="addRowClass"
@@ -123,7 +143,8 @@ export default {
     const axios = getCurrentInstance().appContext.config.globalProperties;
     // 查询条件
     const query = reactive({
-      ordDat: "",
+      strDat: "",
+      endDat: "",
       shopId: "",
       ordId: "",
       supId: "",
@@ -132,6 +153,10 @@ export default {
       pageNum: 1,
       pageSize: 10
     });
+    //日期范围选择器
+    const datRange = ref([]);
+    // 整个页面Loading 加载遮罩层控制
+    const pageLoading = ref(false);
     //订单弹出窗对象
     const orderDialog = ref();
     //导入订单弹出框
@@ -155,6 +180,9 @@ export default {
       }//【待确认】设置红色
       else if (['0'].indexOf(row.ordSta) != -1) {
         return 'tr-blue';
+      }//【待支付】设置黄色
+      else if (['10'].indexOf(row.ordSta) != -1) {
+        return 'tr-yellow';
       }//其他设置灰色
       else{
         return 'tr-gray';
@@ -167,11 +195,13 @@ export default {
     // 重置
     const handleReset = () => {
       query.shopId = "";
-      query.ordDat = "",
-      query.ordId = "",
-      query.supId = "",
-      query.gdsId = "",
-      query.ordSta = "",
+      query.strDat = "";
+      query.endDat = "";
+      query.ordId = "";
+      query.supId = "";
+      query.gdsId = "";
+      query.ordSta = "";
+      datRange.value = [];
       findOrderList();
     };
     // 分页导航
@@ -182,9 +212,10 @@ export default {
     //删除店铺
     const handleDelete = (row) => {
       // 二次确认删除
-      ElMessageBox.confirm("确定要删除店铺【" + row.shopNm + "】订单ID：" + row.ordId + "的数据吗？", "提示",
+      ElMessageBox.confirm("确定要删除店铺【" + row.shopNm + "】订单ID：" + row.ordId + "的订单数据吗？", "提示",
           {confirmButtonText: '确定',cancelButtonText: '关闭',type: 'warning',center: true,roundButton: true}
       ).then(() => {
+        pageLoading.value = true;
         axios.$http.post(request.delOrder+row.oiId, null).then(function (res) {
           ElMessage.success(res.data);
           findOrderList();
@@ -205,10 +236,18 @@ export default {
     };
     // 获取表格数据
     const findOrderList = () => {
+      pageLoading.value = true;
+      if (datRange.value){
+        query.strDat = datRange.value[0];
+        query.endDat = datRange.value[1];
+      }
       axios.$http.get(request.orderList,query).then(function (res) {
+        pageLoading.value = false;
         tableData.value = res.data;
         pageTotal.value = res.totalNum;
-      })
+      }).catch(err => {
+        pageLoading.value = false;
+      });
     };
     findOrderList();
     // 查询用户的所有店铺信息
@@ -225,13 +264,16 @@ export default {
       });
     };
     getCodeDataArr();
-    return { query,orderDialog,tableData,pageTotal,userShop,orderState,importDialog,
+    return { query,orderDialog,tableData,pageTotal,userShop,orderState,importDialog,pageLoading,datRange,
       handleSearch,handleReset,handlePageChange,handleEdit,handleAdd,handleDelete,findOrderList,addRowClass,handleImport};
   }
 };
 </script>
 
 <style >
+body {
+  margin: 0;
+}
 .date-div .el-input{
   width: 250px;
 }
@@ -264,6 +306,9 @@ export default {
 }
 .el-table .tr-red {
   color: red ;
+}
+.el-table .tr-yellow {
+  color: #f9db05 ;
 }
 .el-table .tr-green {
   color: #07bd07;

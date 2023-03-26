@@ -55,6 +55,8 @@ public enum CodeTypeEnum {
     OrderState_Sending("OrderState","订单状态","K8","待发货"),
     /** 订单状态：待申请退款 **/
     OrderState_Refunding("OrderState","订单状态","K9","待申请退款"),
+    /** 订单状态：待支付 **/
+    OrderState_Paidding("OrderState","订单状态","K10","待支付"),
     ;
 
 

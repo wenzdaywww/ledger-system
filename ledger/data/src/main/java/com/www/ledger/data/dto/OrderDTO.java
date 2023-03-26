@@ -31,6 +31,10 @@ public class OrderDTO implements Serializable {
     private Date orderDate;
     /** 订单日期(字符串) **/
     private String orderDateStr;
+    /** 订单日期起始日 **/
+    private String startDateStr;
+    /** 订单日期截止日 **/
+    private String endDateStr;
     /** 1688订单ID **/
     private String supplyId;
     /** 商品ID **/

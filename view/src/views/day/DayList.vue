@@ -1,138 +1,130 @@
-<!-- 年销售额 -->
+<!-- 日销售额 -->
 <template>
   <div>
     <el-card>
       <div v-loading="pageLoading">
-        <!-- 年销售额列表查询条件-->
+        <!-- 日销售额列表查询条件-->
         <div class="handle-box">
-          <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 250px">
-            <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
-          </el-select>
-          <div class="block" style="float: left; margin-right: 10px;">
-            <el-date-picker v-model="query.year" type="year" format="YYYY" value-format="YYYY" placeholder="选择年份"></el-date-picker>
-          </div>
-          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
-          <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
-          <el-tooltip class="item" effect="light" content="根据月销售统计年销售额" placement="top">
-            <el-button type="success" icon="el-icon-s-data" @click="handleCount" round plain>统计年销售</el-button>
-          </el-tooltip>
+          <el-row>
+            <el-col :span="4">
+              <div class="block">
+                <el-date-picker v-model="datRange" type="daterange" style="width:260px;" format="YYYY-MM-DD" value-format="YYYY-MM-DD"
+                                nge-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
+                </el-date-picker>
+              </div>
+            </el-col>
+            <el-col :span="2.5">
+              <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 170px">
+                <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
+              </el-select>
+            </el-col>
+            <el-col :span="6">
+              <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
+              <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
+              <el-tooltip class="item" effect="light" content="根据订单信息统计日销售额" placement="top">
+                <el-button type="success" icon="el-icon-s-data" @click="handleCount" round plain>统计日销售</el-button>
+              </el-tooltip>
+            </el-col>
+          </el-row>
         </div>
         <!-- 店铺信息列表-->
         <el-table :data="tableData" border class="table" ref="multipleTable" :cell-class-name="addCellClass" header-cell-class-name="table-header">
-          <el-table-column prop="year" label="年份" align="center" sortable></el-table-column>
+          <el-table-column prop="day" label="日期" align="center" sortable></el-table-column>
           <el-table-column prop="shopNm" label="店铺名称" align="center" sortable></el-table-column>
-          <el-table-column prop="retPro" label="年净利润" align="center">
+          <el-table-column prop="retPro" label="日净利润" align="center">
             <template v-slot:header='scope'>
-              <span>年净利润
-                <el-tooltip :aa="scope" class="item" effect="light" content="年净利润 = 年销售额 - 年支出费" placement="top">
+              <span>日净利润
+                <el-tooltip :aa="scope" class="item" effect="light" content="日净利润 = 日销售额 - 日支出费" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="retProRat" label="年净利率" align="center">
+          <el-table-column prop="retProRat" label="日净利率" align="center">
             <template v-slot:header='scope'>
-              <span>年净利率
-                <el-tooltip :aa="scope" class="item" effect="light" content="年净利率 = 年净利润 / 年支出费 * 100%" placement="top">
+              <span>日净利率
+                <el-tooltip :aa="scope" class="item" effect="light" content="日净利率 = 日净利润 / 日支出费 * 100%" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="groPro" label="年毛利润" align="center">
+          <el-table-column prop="groPro" label="日毛利润" align="center">
             <template v-slot:header='scope'>
-              <span>年毛利润
-                <el-tooltip :aa="scope" class="item" effect="light" content="年毛利润 = 年销售额 - 年成本费" placement="top">
+              <span>日毛利润
+                <el-tooltip :aa="scope" class="item" effect="light" content="日毛利润 = 日销售额 - 日成本费" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="groProRat" label="年毛利率" align="center">
+          <el-table-column prop="groProRat" label="日毛利率" align="center">
             <template v-slot:header='scope'>
-              <span>年毛利率
-                <el-tooltip :aa="scope" class="item" effect="light" content="年毛利率 = 年毛利润 / 年成本费 * 100%" placement="top">
+              <span>日毛利率
+                <el-tooltip :aa="scope" class="item" effect="light" content="日毛利率 = 日毛利润 / 日成本费 * 100%" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="talOrd" label="年订单量" align="center">
+          <el-table-column prop="talOrd" label="日订单量" align="center">
             <template v-slot:header='scope'>
-              <span>年订单量
-                <el-tooltip :aa="scope" class="item" effect="light" content="本年月订单数量合计" placement="top">
+              <span>日订单量
+                <el-tooltip :aa="scope" class="item" effect="light" content="本日月订单数量合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="sucOrd" label="年成交单" align="center">
+          <el-table-column prop="sucOrd" label="日成交单" align="center">
             <template v-slot:header='scope'>
-              <span>年成交单
-                <el-tooltip :aa="scope" class="item" effect="light" content="本年月成交单数量合计" placement="top">
+              <span>日成交单
+                <el-tooltip :aa="scope" class="item" effect="light" content="本日月成交单数量合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="faiOrd" label="年失败单" align="center">
+          <el-table-column prop="faiOrd" label="日失败单" align="center">
             <template v-slot:header='scope'>
-              <span>年失败单
-                <el-tooltip :aa="scope" class="item" effect="light" content="本年月失败单数量合计" placement="top">
+              <span>日失败单
+                <el-tooltip :aa="scope" class="item" effect="light" content="本日月失败单数量合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="salAmt" label="年销售额" align="center">
+          <el-table-column prop="salAmt" label="日销售额" align="center">
             <template v-slot:header='scope'>
-              <span>年销售额
-                <el-tooltip :aa="scope" class="item" effect="light" content="本年月销售额合计" placement="top">
+              <span>日销售额
+                <el-tooltip :aa="scope" class="item" effect="light" content="本日月销售额合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="cosAmt" label="年成本费" align="center">
+          <el-table-column prop="cosAmt" label="日成本费" align="center">
             <template v-slot:header='scope'>
-              <span>年成本费
-                <el-tooltip :aa="scope" class="item" effect="light" content="本年月成本费合计" placement="top">
+              <span>日成本费
+                <el-tooltip :aa="scope" class="item" effect="light" content="本日月成本费合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="advAmt" label="年推广费" align="center">
+          <el-table-column prop="virAmt" label="日刷单费" align="center">
             <template v-slot:header='scope'>
-              <span>年推广费
-                <el-tooltip :aa="scope" class="item" effect="light" content="本年月推广费合计" placement="top">
+              <span>日刷单费
+                <el-tooltip :aa="scope" class="item" effect="light" content="本日月刷单费合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="serAmt" label="年服务费" align="center">
+          <el-table-column prop="talCos" label="日支出费" align="center">
             <template v-slot:header='scope'>
-              <span>年服务费
-                <el-tooltip :aa="scope" class="item" effect="light" content="本年月服务费合计" placement="top">
-                 <i class="el-icon-question"></i>
-                </el-tooltip>
-              </span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="virAmt" label="年刷单费" align="center">
-            <template v-slot:header='scope'>
-              <span>年刷单费
-                <el-tooltip :aa="scope" class="item" effect="light" content="本年月刷单费合计" placement="top">
-                 <i class="el-icon-question"></i>
-                </el-tooltip>
-              </span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="talCos" label="年支出费" align="center">
-            <template v-slot:header='scope'>
-              <span>年支出费
-                <el-tooltip :aa="scope" class="item" effect="light" content="年支出费 = 年成本费 + 年推广费 + 年服务费 + 年刷单费" placement="top">
+              <span>日支出费
+                <el-tooltip :aa="scope" class="item" effect="light" content="日支出费 = 日成本费 + 日推广费 + 日服务费 + 日刷单费" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -162,10 +154,13 @@ export default {
     // 查询条件
     const query = reactive({
       shopId: "",
-      year: "",
+      strDat: "",
+      endDat: "",
       pageNum: 1,
       pageSize: 10
     });
+    //日期范围选择器
+    const datRange = ref([]);
     // 整个页面Loading 加载遮罩层控制
     const pageLoading = ref(false);
     // 表格数据
@@ -177,7 +172,7 @@ export default {
     // 查询
     const handleSearch = () => {
       query.pageNum = 1;
-      findYearList();
+      findDayList();
     };
     //列添加颜色
     const addCellClass = ({row, column, rowIndex, columnIndex}) => {
@@ -193,33 +188,39 @@ export default {
     // 重置
     const handleReset = () => {
       query.shopId = "";
-      query.year = "";
-      findYearList();
+      query.strDat = "";
+      query.endDat = "";
+      datRange.value = [];
+      findDayList();
     };
     // 分页导航
     const handlePageChange = (val) => {
       query.pageNum = val;
-      findYearList();
+      findDayList();
     };
-    // 统计年销售
+    // 统计日销售
     const handleCount = () => {
       pageLoading.value = true;
-      axios.$http.post(request.yearCount,null).then(function (res) {
+      axios.$http.post(request.dayCount,null).then(function (res) {
         pageLoading.value = false;
         ElMessage.success(res.data);
-        findYearList();
+        findDayList();
       }).catch(err => {pageLoading.value = false;});
     };
     // 获取表格数据
-    const findYearList = () => {
+    const findDayList = () => {
       pageLoading.value = true;
-      axios.$http.get(request.yearList,query).then(function (res) {
+      if (datRange.value){
+        query.strDat = datRange.value[0];
+        query.endDat = datRange.value[1];
+      }
+      axios.$http.get(request.dayList,query).then(function (res) {
         pageLoading.value = false;
         tableData.value = res.data;
         pageTotal.value = res.totalNum;
       }).catch(err => {pageLoading.value = false;});
     };
-    findYearList();
+    findDayList();
     // 查询用户的所有店铺信息
     const getUserShopArr = () => {
       axios.$http.get(request.userShop, null).then(function (res) {
@@ -227,7 +228,7 @@ export default {
       });
     };
     getUserShopArr();
-    return { query,tableData,pageTotal,userShop,pageLoading,
+    return { query,tableData,pageTotal,userShop,pageLoading,datRange,
       handleSearch,handleReset,handlePageChange,handleCount,addCellClass};
   }
 };

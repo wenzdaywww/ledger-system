@@ -6,6 +6,7 @@ import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.response.Result;
 import com.www.common.utils.DateUtils;
 import com.www.common.utils.MoneyUtils;
+import com.www.ledger.data.dao.IDaySalesDAO;
 import com.www.ledger.data.dao.IMonthSalesDAO;
 import com.www.ledger.data.dao.IOrderInfoDAO;
 import com.www.ledger.data.dao.IUserShopDAO;
@@ -42,6 +43,8 @@ public class MonthServiceImpl implements IMonthService {
     private IUserShopDAO userShopDAO;
     @Autowired
     private IMonthSalesDAO monthSalesDAO;
+    @Autowired
+    private IDaySalesDAO daySalesDAO;
 
 
     /**
@@ -149,7 +152,7 @@ public class MonthServiceImpl implements IMonthService {
     @Override
     public Result<String> saveAndCountMonthData(String userId) {
         //统计月销售额
-        List<MonthDTO> countList = orderInfoDAO.countMonthSale(userId);
+        List<MonthDTO> countList = daySalesDAO.countMonthSale(userId);
         //查询存在的月销售额数据
         List<MonthSalesEntity> monthList = monthSalesDAO.findMonthSalesList(userId);
         List<MonthSalesEntity> insertList = new ArrayList<>();//待插入的数据
@@ -166,6 +169,7 @@ public class MonthServiceImpl implements IMonthService {
                 MonthSalesEntity monthEntity = entityMap.get(k);
                 monthEntity.setTotalOrder(v.getTotalOrder() == null ? 0L : v.getTotalOrder())
                         .setSucceedOrder(v.getSucceedOrder() == null ? 0L : v.getSucceedOrder())
+                        .setFailedOrder(v.getFailedOrder() == null ? 0L : v.getFailedOrder())
                         .setUpdateTime(DateUtils.getCurrentDateTime())
                         .setSaleAmount(MoneyUtils.nullToZero(v.getSaleAmount()))
                         .setCostAmount(MoneyUtils.nullToZero(v.getCostAmount()))
@@ -179,6 +183,7 @@ public class MonthServiceImpl implements IMonthService {
                         .setMonthDate(DateUtils.parse(v.getMonthDateStr(),DateFormatEnum.YYYYMMDD1))
                         .setTotalOrder(v.getTotalOrder() == null ? 0L : v.getTotalOrder())
                         .setSucceedOrder(v.getSucceedOrder() == null ? 0L : v.getSucceedOrder())
+                        .setFailedOrder(v.getFailedOrder() == null ? 0L : v.getFailedOrder())
                         .setAdvertAmount(BigDecimal.ZERO).setServiceAmount(BigDecimal.ZERO)
                         .setSaleAmount(MoneyUtils.nullToZero(v.getSaleAmount()))
                         .setCostAmount(MoneyUtils.nullToZero(v.getCostAmount()))
@@ -217,8 +222,6 @@ public class MonthServiceImpl implements IMonthService {
     private void computeMonthData(MonthSalesEntity monthEntity){
         //计算月支出费=月成本费+月推广费+月服务费+月刷单费
         monthEntity.setTotalCost(monthEntity.getCostAmount().add(monthEntity.getAdvertAmount()).add(monthEntity.getServiceAmount()).add(monthEntity.getVirtualAmount()));
-        //计算月失败单数=月订单数-月成交单数
-        monthEntity.setFailedOrder(monthEntity.getTotalOrder()-monthEntity.getSucceedOrder());
         //计算月毛利润=月销售额-月成本费
         monthEntity.setGrossProfit(monthEntity.getSaleAmount().subtract(monthEntity.getCostAmount()));
         //计算月毛利率=月毛利润/月成本费 * 100%

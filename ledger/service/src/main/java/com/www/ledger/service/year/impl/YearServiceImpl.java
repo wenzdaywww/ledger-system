@@ -88,7 +88,7 @@ public class YearServiceImpl implements IYearService {
                         .setSaleAmount(MoneyUtils.nullToZero(v.getSaleAmount())).setCostAmount(MoneyUtils.nullToZero(v.getCostAmount()))
                         .setAdvertAmount(MoneyUtils.nullToZero(v.getAdvertAmount())).setServiceAmount(MoneyUtils.nullToZero(v.getServiceAmount()))
                         .setVirtualAmount(MoneyUtils.nullToZero(v.getVirtualAmount()));
-                //计算月销售额数据
+                //计算年销售额数据
                 this.computeYearData(yearEntity);
                 insertList.add(yearEntity);
             }
@@ -120,7 +120,7 @@ public class YearServiceImpl implements IYearService {
         yearEntity.setGrossProfitRate( yearEntity.getCostAmount().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
                 : (yearEntity.getGrossProfit().divide(yearEntity.getCostAmount(),5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2, RoundingMode.HALF_UP));
         //年净利润=年销售额-年支出费
-        yearEntity.setRetainedProfits((yearEntity.getGrossProfit().subtract(yearEntity.getAdvertAmount())).subtract(yearEntity.getServiceAmount()).subtract(yearEntity.getVirtualAmount()));
+        yearEntity.setRetainedProfits((yearEntity.getSaleAmount().subtract(yearEntity.getTotalCost())));
         //年净利率=年净利润/年支出费 * 100%
         yearEntity.setRetainedProfitsRate(yearEntity.getTotalCost().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
                 :(yearEntity.getRetainedProfits().divide(yearEntity.getTotalCost(),5,RoundingMode.HALF_UP).multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));

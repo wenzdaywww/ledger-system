@@ -110,7 +110,31 @@ ALTER TABLE     MONTH_SALES         COMMENT '月销售额信息';
 CREATE INDEX    INDEX_SHOP_ID       ON  MONTH_SALES (SHOP_ID);
 CREATE INDEX    INDEX_USER_ID       ON  MONTH_SALES (USER_ID);
 CREATE INDEX    INDEX_MONTH_DATE    ON  MONTH_SALES (MONTH_DATE);
--- 6、订单信息
+-- 6、日销售额信息
+CREATE TABLE IF NOT EXISTS DAY_SALES (
+    DS_ID                     INT               PRIMARY KEY AUTO_INCREMENT        COMMENT '日账单主键ID',
+    SHOP_ID                   INT                                                 COMMENT '店铺主键ID',
+    USER_ID                   VARCHAR(40)                                         COMMENT '用户名',
+    DAY_DATE                  DATE                                                COMMENT '账单日期',
+    RETAINED_PROFITS          DECIMAL(20,2)     DEFAULT 0.0                       COMMENT '日净利润',
+    RETAINED_PROFITS_RATE     DECIMAL(10,2)     DEFAULT 0.0                       COMMENT '日净利率',
+    GROSS_PROFIT              DECIMAL(10,2)     DEFAULT 0.0                       COMMENT '日毛利润',
+    GROSS_PROFIT_RATE         DECIMAL(10,2)     DEFAULT 0.0                       COMMENT '日毛利率',
+    TOTAL_ORDER               INT               DEFAULT 0                         COMMENT '日订单数',
+    SUCCEED_ORDER             INT               DEFAULT 0                         COMMENT '日成交单数',
+    FAILED_ORDER              INT               DEFAULT 0                         COMMENT '日失败单数',
+    SALE_AMOUNT               DECIMAL(20,2)     DEFAULT 0.0                       COMMENT '日销售额',
+    COST_AMOUNT               DECIMAL(20,2)     DEFAULT 0.0                       COMMENT '日成本费',
+    VIRTUAL_AMOUNT            DECIMAL(20,2)     DEFAULT 0.0                       COMMENT '日刷单费',
+    TOTAL_COST                DECIMAL(20,2)     DEFAULT 0.0                       COMMENT '日支出费',
+    UPDATE_TIME               DATETIME          DEFAULT NOW()                     COMMENT '更新时间',
+    CREATE_TIME               DATETIME          DEFAULT NOW()                     COMMENT '创建时间'
+);
+ALTER TABLE     DAY_SALES           COMMENT '日销售额信息';
+CREATE INDEX    INDEX_SHOP_ID       ON  DAY_SALES (SHOP_ID);
+CREATE INDEX    INDEX_USER_ID       ON  DAY_SALES (USER_ID);
+CREATE INDEX    INDEX_DAY_DATE      ON  DAY_SALES (DAY_DATE);
+-- 7、订单信息
 CREATE TABLE IF NOT EXISTS ORDER_INFO (
     OI_ID                     INT                 PRIMARY KEY AUTO_INCREMENT      COMMENT '订单主键ID',
     ORDER_ID                  VARCHAR(40)                                         COMMENT '订单ID',
@@ -139,7 +163,7 @@ CREATE INDEX    INDEX_ORDER_DATE    ON  ORDER_INFO (ORDER_DATE);
 CREATE INDEX    INDEX_SUPPLY_ID     ON  ORDER_INFO (SUPPLY_ID);
 CREATE INDEX    INDEX_ORDER_STATE   ON  ORDER_INFO (ORDER_STATE);
 CREATE INDEX    INDEX_GOODS_ID      ON  ORDER_INFO (GOODS_ID);
--- 7、店铺商品信息
+-- 8、店铺商品信息
 CREATE TABLE IF NOT EXISTS SHOP_GOODS (
     SG_ID                     INT          PRIMARY KEY AUTO_INCREMENT             COMMENT '商品主键ID',
     GOODS_ID                  VARCHAR(40)                                         COMMENT '商品ID',
@@ -156,7 +180,7 @@ CREATE INDEX    INDEX_GOODS_ID      ON  SHOP_GOODS (GOODS_ID);
 CREATE INDEX    INDEX_SHOP_ID       ON  SHOP_GOODS (SHOP_ID);
 CREATE INDEX    INDEX_USER_ID       ON  SHOP_GOODS (USER_ID);
 CREATE INDEX    INDEX_GOODS_STATE   ON  SHOP_GOODS (GOODS_STATE);
--- 8、商品样式信息
+-- 9、商品样式信息
 CREATE TABLE IF NOT EXISTS GOODS_STYLE (
     STYLE_ID                  INT           PRIMARY KEY AUTO_INCREMENT            COMMENT '商品样式主键ID',
     STYLE_NAME                VARCHAR(125)                                        COMMENT '商品样式名称',

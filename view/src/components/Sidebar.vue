@@ -56,6 +56,10 @@ export default {
         index: "/month",
         title: "月销售额",
       },{
+        icon: "el-icon-date",
+        index: "/day",
+        title: "日销售额",
+      },{
         icon: "el-icon-shopping-cart-full",
         index: "/order",
         title: "订单信息",

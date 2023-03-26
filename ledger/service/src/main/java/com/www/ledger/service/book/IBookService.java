@@ -24,7 +24,7 @@ public interface IBookService {
      */
     Result<List<List<OrderDTO>>> findLastDaySales(String userId);
     /**
-     * <p>@Description 查询用户近一年的销售额 </p>
+     * <p>@Description 查询用户最近一年所有店铺销售额趋势图 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/19 16:46 </p>
      * @param userId 用户ID

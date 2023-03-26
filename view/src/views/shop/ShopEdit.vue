@@ -30,7 +30,7 @@
 <script>
 import {getCurrentInstance,  reactive, ref} from "vue";
 import request from '../../utils/request';
-import {ElMessage} from "element-plus";
+import {ElLoading, ElMessage} from "element-plus";
 
 export default {
   name: "shopEdit",
@@ -69,10 +69,14 @@ export default {
     const saveEdit = () => {
       shopForm.value.validate((valid) => {
         if (valid) {
+          let uploadLoading = ElLoading.service({text: "保存中...",fullscreen: true});
           axios.$http.post(shopInfo.value.shopId ? request.shopEdit : request.newShop,shopInfo.value).then(function (res) {
             editVisible.value = false;
-            ElMessage.success(shopInfo.value.shopId ? '修改成功' : '新增成功');
+            uploadLoading.close();
+            ElMessage.success(res.data);
             emit('findShopList',null);//调用父组件OrderList.vue的findOrderList方法
+          }).catch(err => {
+            uploadLoading.close();
           });
         } else {
           return false;

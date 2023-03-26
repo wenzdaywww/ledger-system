@@ -48,7 +48,13 @@ import Password from "../views/user/info/Password.vue";
 export default {
   name: "Header",
   components: {Password},
-  setup() {
+  mounted() {
+    //定义可被同级页面调用的方法
+    window['loginSuccess'] = () => {
+      this.loginSuccess();
+    }
+  },
+  setup(props, context) {
     // 接口请求
     const axios = getCurrentInstance().appContext.config.globalProperties;
     // 路由
@@ -67,6 +73,10 @@ export default {
     });
     //用户注册弹窗对象
     const passwordDialog = ref();
+    // 登入成功方法调用
+    const loginSuccess = () => {
+      getToken();
+    };
     // 侧边栏折叠
     const collapseChage = () => {
       store.commit("handleCollapse", !collapse.value);
@@ -117,7 +127,8 @@ export default {
         router.push("/index");
       }
     };
-    return { isAdmin,isLogin,form, collapse,shwoLogin,collapseChage, handleCommand,passwordDialog,shwoRegister};
+    return { isAdmin,isLogin,form, collapse,passwordDialog,
+      shwoLogin,collapseChage, handleCommand,shwoRegister,loginSuccess};
   },
 };
 </script>

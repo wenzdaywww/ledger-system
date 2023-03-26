@@ -1,7 +1,7 @@
 <!-- 店铺中心Home父页面-->
 <template>
   <div class="about">
-    <v-header />
+    <v-header ref="headerRef"/>
     <v-sidebar />
     <div class="content-box" :class="{ 'content-collapse': collapse }">
       <v-tags></v-tags>
@@ -19,11 +19,12 @@
   </div>
 </template>
 <script>
-import { computed,provide } from "vue";
-import { useStore } from "vuex";
+import {computed, provide, ref} from "vue";
+import {useStore} from "vuex";
 import vHeader from "../components/Header.vue";
 import vSidebar from "../components/Sidebar.vue";
 import vTags from "../components/Tags.vue";
+
 export default {
   components: {
     vHeader,
@@ -31,6 +32,8 @@ export default {
     vTags,
   },
   setup() {
+    //顶部栏对象
+    const headerRef = ref();
     //向子组件传值
     provide("isAdmin",true);
     const store = useStore();
@@ -38,7 +41,7 @@ export default {
         store.state.tagsList.map((item) => item.name)
     );
     const collapse = computed(() => store.state.collapse);
-    return {tagsList,collapse};
+    return {tagsList,collapse,headerRef};
   },
 };
 </script>

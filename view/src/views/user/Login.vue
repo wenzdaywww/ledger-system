@@ -26,13 +26,14 @@
 
 <script>
 
-import {getCurrentInstance, reactive, ref} from "vue";
+import {getCurrentInstance, provide, reactive, ref} from "vue";
 import request from "../../utils/request";
-import {ElMessage} from "element-plus";
 import router from "../../router";
+import {ElMessage} from "element-plus";
 
 export default {
   name: "Login",
+  inject:['loginSuccess'],
   setup(){
     // 接口请求
     const axios = getCurrentInstance().appContext.config.globalProperties;
@@ -67,8 +68,10 @@ export default {
       loginForm.value.validate((valid) => {
         if (valid) {
           axios.$http.post(request.login, form).then(function (res) {
-            //TODO 2023/3/15 21:15 登录成功跳转首页不显示用户是登录状态
+            ElMessage.success("登入成功");
             router.push("/");
+            //调用同级页面的方法loginSuccess
+            window.parent.loginSuccess('Header');
           });
         } else {
           return false;

@@ -57,7 +57,7 @@
 <script>
 import {getCurrentInstance,  reactive, ref} from "vue";
 import request from '../../utils/request';
-import {ElMessage} from "element-plus";
+import {ElLoading, ElMessage} from "element-plus";
 
 export default {
   name: "monthAmtEdit",
@@ -82,11 +82,13 @@ export default {
     }
     // 新增/编辑店铺页面的保存按钮
     const saveEdit = () => {
+      let uploadLoading = ElLoading.service({text: "保存中...",fullscreen: true});
       axios.$http.post(request.amtStep,monthInfo.value).then(function (res) {
+        uploadLoading.close();
         editVisible.value = false;
         ElMessage.success('修改成功');
         emit('findMonthList',null);//调用父组件OrderList.vue的findOrderList方法
-      });
+      }).catch(err => {uploadLoading.close();});
     };
     return {editVisible,monthInfo,
       openMonthAmtDialog,saveEdit};

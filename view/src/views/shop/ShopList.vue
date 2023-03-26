@@ -2,7 +2,7 @@
 <template>
   <div>
     <el-card>
-      <div>
+      <div v-loading="pageLoading">
         <!-- 店铺信息列表查询条件-->
         <div class="handle-box">
           <el-input v-model="query.shopId" placeholder="店铺ID" class="handle-input mr10"></el-input>
@@ -27,7 +27,7 @@
           <el-table-column prop="retPro" label="店净利润" align="center">
             <template v-slot:header='scope'>
               <span>店净利润
-                <el-tooltip :aa="scope" class="item" effect="light" content="店净利润=店销售额 - 店支出费" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="店净利润 = 店销售额 - 店支出费" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -36,7 +36,7 @@
           <el-table-column prop="retProRat" label="店净利率" align="center">
             <template v-slot:header='scope'>
               <span>店净利率
-                <el-tooltip :aa="scope" class="item" effect="light" content="店净利率=店净利润 / 店支出费 * 100%" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="店净利率 = 店净利润 / 店支出费 * 100%" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -45,7 +45,7 @@
           <el-table-column prop="groPro" label="店毛利润" align="center">
             <template v-slot:header='scope'>
               <span>店毛利润
-                <el-tooltip :aa="scope" class="item" effect="light" content="店毛利润=店销售额 - 店成本费" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="店毛利润 = 店销售额 - 店成本费" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -54,24 +54,88 @@
           <el-table-column prop="groProRat" label="店毛利率" align="center">
             <template v-slot:header='scope'>
               <span>店毛利率
-                <el-tooltip :aa="scope" class="item" effect="light" content="店毛利率=店毛利润 / 店成本费 * 100%" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="店毛利率 = 店毛利润 / 店成本费 * 100%" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="talOrd" label="店订单数" align="center"></el-table-column>
-          <el-table-column prop="sucOrd" label="店成交单数" align="center"></el-table-column>
-          <el-table-column prop="faiOrd" label="店失败单数" align="center"></el-table-column>
-          <el-table-column prop="salAmt" label="店销售额" align="center"></el-table-column>
-          <el-table-column prop="cosAmt" label="店成本费" align="center"></el-table-column>
-          <el-table-column prop="advAmt" label="店推广费" align="center"></el-table-column>
-          <el-table-column prop="serAmt" label="店服务费" align="center"></el-table-column>
-          <el-table-column prop="virAmt" label="店刷单费" align="center"></el-table-column>
+          <el-table-column prop="talOrd" label="店订单数" align="center">
+            <template v-slot:header='scope'>
+              <span>店订单数
+                <el-tooltip :aa="scope" class="item" effect="light" content="本店年订单数量合计" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="sucOrd" label="店成交单" align="center">
+            <template v-slot:header='scope'>
+              <span>店成交单
+                <el-tooltip :aa="scope" class="item" effect="light" content="本店年成交单数量合计" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="faiOrd" label="店失败单" align="center">
+            <template v-slot:header='scope'>
+              <span>店失败单
+                <el-tooltip :aa="scope" class="item" effect="light" content="本店年失败单数量合计" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="salAmt" label="店销售额" align="center">
+            <template v-slot:header='scope'>
+              <span>店销售额
+                <el-tooltip :aa="scope" class="item" effect="light" content="本店年销售额合计" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="cosAmt" label="店成本费" align="center">
+            <template v-slot:header='scope'>
+              <span>店成本费
+                <el-tooltip :aa="scope" class="item" effect="light" content="本店年成本费合计" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="advAmt" label="店推广费" align="center">
+            <template v-slot:header='scope'>
+              <span>店推广费
+                <el-tooltip :aa="scope" class="item" effect="light" content="本店年推广费合计" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="serAmt" label="店服务费" align="center">
+            <template v-slot:header='scope'>
+              <span>店服务费
+                <el-tooltip :aa="scope" class="item" effect="light" content="本店年服务费合计" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="virAmt" label="店刷单费" align="center">
+            <template v-slot:header='scope'>
+              <span>店刷单费
+                <el-tooltip :aa="scope" class="item" effect="light" content="本店年刷单费合计" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column prop="talCos" label="店支出费" align="center">
             <template v-slot:header='scope'>
               <span>店支出费
-                <el-tooltip :aa="scope" class="item" effect="light" content="店支出费=店成本费 + 店推广费 + 店服务费 + 店刷单费" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="店支出费 = 店成本费 + 店推广费 + 店服务费 + 店刷单费" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -120,6 +184,8 @@ export default {
       pageNum: 1,
       pageSize: 10
     });
+    // 整个页面Loading 加载遮罩层控制
+    const pageLoading = ref(false);
     //店铺弹出窗对象
     const shopDialog = ref();
     // 表格数据
@@ -166,18 +232,22 @@ export default {
     };
     // 获取表格数据
     const findShopList = () => {
+      pageLoading.value = true;
       axios.$http.get(request.shopList,query).then(function (res) {
+        pageLoading.value = false;
         tableData.value = res.data;
         pageTotal.value = res.totalNum;
-      })
+      }).catch(err => {pageLoading.value = false;});
     };
     findShopList();
     //统计店铺销售额
     const handleCount = () => {
+      pageLoading.value = true;
       axios.$http.post(request.shopCount, null).then(function (res) {
+        pageLoading.value = false;
         ElMessage.success(res.data);
         findShopList();
-      });
+      }).catch(err => {pageLoading.value = false;});
     };
     //删除店铺
     const handleDelete = (row) => {
@@ -185,10 +255,12 @@ export default {
       ElMessageBox.confirm("确定要删除店铺【" + row.shopNm + "】及其所有销售数据吗？", "提示",
           {confirmButtonText: '确定',cancelButtonText: '关闭',type: 'warning',center: true,roundButton: true}
       ).then(() => {
+        pageLoading.value = true;
         axios.$http.post(request.delShop+row.shopId, null).then(function (res) {
-          ElMessage.success('删除成功');
+          pageLoading.value = false;
+          ElMessage.success(res.data);
           findShopList();
-        });
+        }).catch(err => {pageLoading.value = false;});
       }).catch(() => {});
     };
     // 查询数据字典
@@ -198,7 +270,7 @@ export default {
       });
     };
     getCodeDataArr();
-    return { query,tableData,pageTotal,shopTpCode,shopDialog,
+    return { query,tableData,pageTotal,shopTpCode,shopDialog,pageLoading,
       handleSearch,handleReset,handlePageChange,handleEdit,handleAdd,handleDelete,handleCount,findShopList,addCellClass};
   }
 };

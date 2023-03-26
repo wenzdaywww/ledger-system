@@ -52,6 +52,11 @@ export default [
                 meta: { title: '月销售额' },
                 component: () => import ("../views/month/MonthList.vue")
             },{
+                path: "/day",
+                name: "day",
+                meta: { title: '日销售额' },
+                component: () => import ("../views/day/DayList.vue")
+            },{
                 path: "/order",
                 name: "order",
                 meta: { title: '订单信息' },

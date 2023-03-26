@@ -24,7 +24,7 @@ public class OrderInfoEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     /** 订单主键ID **/
     @TableId(value = "OI_ID", type = IdType.AUTO)
-    private String oiId;
+    private Long oiId;
     /** 订单ID **/
     @TableField(value = "ORDER_ID")
     private String orderId;

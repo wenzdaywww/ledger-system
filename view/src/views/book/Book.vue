@@ -1,6 +1,6 @@
 <!-- 我的账簿 -->
 <template>
-  <div>
+  <div  v-loading="pageLoading">
     <el-row :gutter="20">
       <el-col :span="8">
         <!-- 用户信息-->
@@ -24,7 +24,7 @@
             <el-link href="javascript:void(0);" type="primary" @click="openEdit ? openEdit = false : openEdit = true"
                      style="margin-left: 20px;" :underline=false class="el-icon-edit">{{openEdit ? '取消编辑' : '编辑'}}</el-link>
             <el-tooltip class="item" effect="light" content="根据销售数据统计后导出" placement="top">
-              <el-button type="danger" class="el-icon-download" style="float: right;margin-left: 10px;" @click="handleCount" round plain> 导出报表</el-button>
+              <el-button type="danger" class="el-icon-download" style="float: right;margin-left: 10px;" @click="handleExport" round plain> 导出报表</el-button>
             </el-tooltip>
             <el-tooltip class="item" effect="light" content="根据销售数据统计" placement="top">
               <el-button type="success" class="el-icon-s-data" style="float: right;" @click="handleCount" round plain> 统计账簿</el-button>
@@ -81,101 +81,117 @@
             </el-tooltip>
           </el-col>
           <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-3">
-                <i class="el-icon-sell grid-con-icon"></i>
-                <div class="grid-cont-right">
-                  <div class="grid-num">{{ bookData.salAmt }}</div>
-                  <div>总销售额</div>
+            <el-tooltip class="item" effect="light" content="总销售额 = 所有店销售额合计" placement="top">
+              <el-card shadow="hover" :body-style="{ padding: '0px' }">
+                <div class="grid-content grid-con-3">
+                  <i class="el-icon-sell grid-con-icon"></i>
+                  <div class="grid-cont-right">
+                    <div class="grid-num">{{ bookData.salAmt }}</div>
+                    <div>总销售额</div>
+                  </div>
                 </div>
-              </div>
-            </el-card>
+              </el-card>
+            </el-tooltip>
           </el-col>
         </el-row>
         <el-row :gutter="20" class="mgb20">
           <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-1">
-                <i class="el-icon-shopping-cart-full grid-con-icon"></i>
-                <div class="grid-cont-right">
-                  <div class="grid-num">{{ bookData.talOrd }}</div>
-                  <div>总订单量</div>
+            <el-tooltip class="item" effect="light" content="总订单量 = 所有店订单量合计" placement="top">
+              <el-card shadow="hover" :body-style="{ padding: '0px' }">
+                <div class="grid-content grid-con-1">
+                  <i class="el-icon-shopping-cart-full grid-con-icon"></i>
+                  <div class="grid-cont-right">
+                    <div class="grid-num">{{ bookData.talOrd }}</div>
+                    <div>总订单量</div>
+                  </div>
                 </div>
-              </div>
-            </el-card>
+              </el-card>
+            </el-tooltip>
           </el-col>
           <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-1">
-                <i class="el-icon-shopping-cart-1 grid-con-icon"></i>
-                <div class="grid-cont-right">
-                  <div class="grid-num">{{ bookData.sucOrd }}</div>
-                  <div>总订单成交量</div>
+            <el-tooltip class="item" effect="light" content="总订单成交量 = 所有店成交单合计" placement="top">
+              <el-card shadow="hover" :body-style="{ padding: '0px' }">
+                <div class="grid-content grid-con-1">
+                  <i class="el-icon-shopping-cart-1 grid-con-icon"></i>
+                  <div class="grid-cont-right">
+                    <div class="grid-num">{{ bookData.sucOrd }}</div>
+                    <div>总订单成交量</div>
+                  </div>
                 </div>
-              </div>
-            </el-card>
+              </el-card>
+            </el-tooltip>
           </el-col>
           <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-1">
-                <i class="el-icon-shopping-cart-2 grid-con-icon"></i>
-                <div class="grid-cont-right">
-                  <div class="grid-num">{{ bookData.faiOrd }}</div>
-                  <div>总订单流失量</div>
+            <el-tooltip class="item" effect="light" content="总订单流失量 = 总订单量 - 总订单成交量" placement="top">
+              <el-card shadow="hover" :body-style="{ padding: '0px' }">
+                <div class="grid-content grid-con-1">
+                  <i class="el-icon-shopping-cart-2 grid-con-icon"></i>
+                  <div class="grid-cont-right">
+                    <div class="grid-num">{{ bookData.faiOrd }}</div>
+                    <div>总订单流失量</div>
+                  </div>
                 </div>
-              </div>
-            </el-card>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20" class="mgb20">
-          <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-2">
-                <i class="el-icon-sold-out grid-con-icon"></i>
-                <div class="grid-cont-right">
-                  <div class="grid-num">{{ bookData.cosAmt }}</div>
-                  <div>总成本费</div>
-                </div>
-              </div>
-            </el-card>
-          </el-col>
-          <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-2">
-                <i class="el-icon-monitor grid-con-icon"></i>
-                <div class="grid-cont-right">
-                  <div class="grid-num">{{ bookData.advAmt }}</div>
-                  <div>总推广费</div>
-                </div>
-              </div>
-            </el-card>
-          </el-col>
-          <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-2">
-                <i class="el-icon-shopping-bag-1 grid-con-icon"></i>
-                <div class="grid-cont-right">
-                  <div class="grid-num">{{ bookData.serAmt }}</div>
-                  <div>总服务费</div>
-                </div>
-              </div>
-            </el-card>
+              </el-card>
+            </el-tooltip>
           </el-col>
         </el-row>
         <el-row :gutter="20" class="mgb20">
           <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-4">
-                <i class="el-icon-shopping-bag-2 grid-con-icon"></i>
-                <div class="grid-cont-right">
-                  <div class="grid-num">{{ bookData.virAmt }}</div>
-                  <div>总刷单费</div>
+            <el-tooltip class="item" effect="light" content="总成本费 = 所有店成本费合计" placement="top">
+              <el-card shadow="hover" :body-style="{ padding: '0px' }">
+                <div class="grid-content grid-con-2">
+                  <i class="el-icon-sold-out grid-con-icon"></i>
+                  <div class="grid-cont-right">
+                    <div class="grid-num">{{ bookData.cosAmt }}</div>
+                    <div>总成本费</div>
+                  </div>
                 </div>
-              </div>
-            </el-card>
+              </el-card>
+            </el-tooltip>
           </el-col>
           <el-col :span="8">
-            <el-tooltip class="item" effect="light" content="总支出费=总成本费 + 总推广费 + 总服务费 + 总刷单费" placement="top">
+            <el-tooltip class="item" effect="light" content="总推广费 = 所有店推广费合计" placement="top">
+              <el-card shadow="hover" :body-style="{ padding: '0px' }">
+                <div class="grid-content grid-con-2">
+                  <i class="el-icon-monitor grid-con-icon"></i>
+                  <div class="grid-cont-right">
+                    <div class="grid-num">{{ bookData.advAmt }}</div>
+                    <div>总推广费</div>
+                  </div>
+                </div>
+              </el-card>
+            </el-tooltip>
+          </el-col>
+          <el-col :span="8">
+            <el-tooltip class="item" effect="light" content="总服务费 = 所有店服务费合计" placement="top">
+              <el-card shadow="hover" :body-style="{ padding: '0px' }">
+                <div class="grid-content grid-con-2">
+                  <i class="el-icon-shopping-bag-1 grid-con-icon"></i>
+                  <div class="grid-cont-right">
+                    <div class="grid-num">{{ bookData.serAmt }}</div>
+                    <div>总服务费</div>
+                  </div>
+                </div>
+              </el-card>
+            </el-tooltip>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" class="mgb20">
+          <el-col :span="8">
+            <el-tooltip class="item" effect="light" content="总刷单费 = 所有店刷单费合计" placement="top">
+              <el-card shadow="hover" :body-style="{ padding: '0px' }">
+                <div class="grid-content grid-con-4">
+                  <i class="el-icon-shopping-bag-2 grid-con-icon"></i>
+                  <div class="grid-cont-right">
+                    <div class="grid-num">{{ bookData.virAmt }}</div>
+                    <div>总刷单费</div>
+                  </div>
+                </div>
+              </el-card>
+            </el-tooltip>
+          </el-col>
+          <el-col :span="8">
+            <el-tooltip class="item" effect="light" content="总支出费 = 总成本费 + 总推广费 + 总服务费 + 总刷单费" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-4">
                   <i class="el-icon-money grid-con-icon"></i>
@@ -231,6 +247,8 @@ export default {
     const axios = getCurrentInstance().appContext.config.globalProperties;
     //打开编辑
     const openEdit = ref(false);
+    // 整个页面Loading 加载遮罩层控制
+    const pageLoading = ref(false);
     // 用户信息
     const user = ref([]);
     // 账簿数据
@@ -238,12 +256,12 @@ export default {
     // 最近一年销售趋势图数据
     const shopSales = ref({
       type: "bar",
-      title: {text: "最近一年销售趋势图"},
+      title: {text: "最近一年所有店铺销售额趋势图"},
       xRorate: 20,
       labels: [],
       datasets: [
         {
-          label: "销售额",
+          label: "销售额（元）",
           data: [],
         }
       ]
@@ -251,7 +269,7 @@ export default {
     // 销售额最高店铺近10天销售额趋势图
     const monthSales = ref({
       type: "line",
-      title: {text: "销售额最高店铺近10天销售额趋势图"},
+      title: {text: "近10天销售额最高的店铺销售额趋势图"},
       //labels:["2023.1.1", "2023.1.2", "2023.1.3", "2023.1.4", "2023.1.5"]
       labels: [],
       //datasets:[{label: "家电",ata: [1, 2, 3, 4, 5,6, 7, 8, 9, 10]}]
@@ -267,21 +285,22 @@ export default {
     const editForm = ref(null);
     // 导出报表
     const handleExport = () => {
-      axios.$http.post(request.bookCount,null).then(function (res) {
+      pageLoading.value = true;
+      axios.$http.post(request.bookExp,null).then(function (res) {
+        pageLoading.value = false;
         ElMessage.success(res.data);
-        getBookInfoData();
-        getLastYeatData();
-        getLast10DayData();
-      })
+      }).catch(err => {pageLoading.value = false;});
     };
     // 统计年销售
     const handleCount = () => {
+      pageLoading.value = true;
       axios.$http.post(request.bookCount,null).then(function (res) {
+        pageLoading.value = false;
         ElMessage.success(res.data);
         getBookInfoData();
         getLastYeatData();
         getLast10DayData();
-      })
+      }).catch(err => {pageLoading.value = false;});
     };
     // 获取用户数据
     const getUserData = () => {
@@ -334,17 +353,19 @@ export default {
     const onSubmit = () => {
       editForm.value.validate((valid) => {
         if (valid) {
+          pageLoading.value = true;
           axios.$http.post(request.editInfo,user).then(function (res) {
+            pageLoading.value = false;
             ElMessage.success(res.data);
             openEdit.value = false;
             getUserData();
-          });
+          }).catch(err => {pageLoading.value = false;});
         } else {
           return false;
         }
       });
     };
-    return {user,openEdit,editRules,editForm,bookData,shopSales,monthSales,
+    return {user,openEdit,editRules,editForm,bookData,shopSales,monthSales,pageLoading,
       onSubmit,handleCount,handleExport};
   },
 };

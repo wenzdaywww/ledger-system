@@ -2,10 +2,9 @@ package com.www.ledger.data.dao;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.www.ledger.data.dto.MonthDTO;
+import com.www.ledger.data.dto.DayDTO;
 import com.www.ledger.data.dto.OrderDTO;
 import com.www.ledger.data.entity.OrderInfoEntity;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -54,13 +53,13 @@ public interface IOrderInfoDAO extends IService<OrderInfoEntity> {
      */
     String getMaxOrderDate(String userId);
     /**
-     * <p>@Description 统计月销售额 </p>
+     * <p>@Description 统计日销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 15:19 </p>
      * @param userId 用户ID
-     * @return 月销售额
+     * @return 日销售额
      */
-    List<MonthDTO> countMonthSale(String userId);
+    List<DayDTO> countDaySale(String userId);
     /**
      * <p>@Description 查询订单信息 </p>
      * <p>@Author www </p>

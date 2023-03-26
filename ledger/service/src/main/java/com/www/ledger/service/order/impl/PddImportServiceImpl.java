@@ -94,8 +94,10 @@ public class PddImportServiceImpl extends OrderImportService {
     @Override
     protected OrderRowDTO buildOrderDTO(Map<String, HeadDataDTO> headMap, int rowNum, int maxColumn, ArrayList<String> rowList, UserShopEntity shopEntity) {
         OrderRowDTO orderRowDTO = super.buildOrderDTO(headMap, rowNum, maxColumn, rowList, shopEntity);
-        //拼多多未订单状态=已取消的订单没有【订单成交时间】，所以订单日期会为空，则此时截取订单号-前的年月日（yyMMdd）
-        if(StringUtils.equals(orderRowDTO.getOrderState(),CodeDict.getValue(CodeTypeEnum.OrderState_Unpaid.getType(), CodeTypeEnum.OrderState_Unpaid.getKey()))){
+        //拼多多未订单状态=已取消/待支付的订单没有【订单成交时间】，所以订单日期会为空，则此时截取订单号-前的年月日（yyMMdd）
+        if(StringUtils.equalsAny(orderRowDTO.getOrderState(),
+                CodeDict.getValue(CodeTypeEnum.OrderState_Unpaid.getType(), CodeTypeEnum.OrderState_Unpaid.getKey()),
+                CodeDict.getValue(CodeTypeEnum.OrderState_Paidding.getType(), CodeTypeEnum.OrderState_Paidding.getKey()))){
             String dateStr = "20" +StringUtils.substring(orderRowDTO.getOrderId(),0,orderRowDTO.getOrderId().lastIndexOf(CharConstant.MINUS_SIGN));
             orderRowDTO.setOrderDate(DateUtils.parse(dateStr, DateFormatEnum.YYYYMMDD5));
         }
@@ -120,6 +122,7 @@ public class PddImportServiceImpl extends OrderImportService {
             stateMap.put("已签收",CodeDict.getValue(CodeTypeEnum.OrderState_Success.getType(), CodeTypeEnum.OrderState_Success.getKey()));//交易成功
             stateMap.put("未发货，退款成功",CodeDict.getValue(CodeTypeEnum.OrderState_Nosend.getType(), CodeTypeEnum.OrderState_Nosend.getKey()));//未发货，退款成功
             stateMap.put("已取消",CodeDict.getValue(CodeTypeEnum.OrderState_Unpaid.getType(), CodeTypeEnum.OrderState_Unpaid.getKey()));//未支付，交易关闭
+            stateMap.put("待支付",CodeDict.getValue(CodeTypeEnum.OrderState_Paidding.getType(), CodeTypeEnum.OrderState_Paidding.getKey()));//待支付
         }
         String code = stateMap.get(stateName.trim());
         //code为空，则赋值为【待确认】

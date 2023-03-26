@@ -21,6 +21,8 @@ public class OrderRowDTO implements Serializable {
     private int rowNum;
     /** 订单数据文件最大列号 **/
     private int maxColumn;
+    /** 订单主键ID **/
+    private Long oiId;
     /** 订单ID **/
     private String orderId;
     /** 店铺主键ID **/

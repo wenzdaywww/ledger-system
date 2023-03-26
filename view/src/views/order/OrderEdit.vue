@@ -121,7 +121,7 @@
 <script>
 import {getCurrentInstance,  reactive, ref} from "vue";
 import request from '../../utils/request';
-import {ElMessage} from "element-plus";
+import {ElLoading, ElMessage} from "element-plus";
 
 export default {
   name: "orderEdit",
@@ -200,10 +200,14 @@ export default {
     const saveEdit = () => {
       orderForm.value.validate((valid) => {
         if (valid) {
+          let uploadLoading = ElLoading.service({text: "保存中...",fullscreen: true});
           axios.$http.post(request.editOrder,orderInfo.value).then(function (res) {
+            uploadLoading.close();
             editVisible.value = false;
             ElMessage.success(res.data);
             emit('findOrderList',null);//调用父组件OrderList.vue的findOrderList方法
+          }).catch(err => {
+            uploadLoading.close();
           });
         } else {
           return false;

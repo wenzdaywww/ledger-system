@@ -62,7 +62,7 @@ public interface IMonthSalesDAO extends IService<MonthSalesEntity> {
      */
     List<Long> findMaxSalesShop(String userId, String monthStr);
     /**
-     * <p>@Description 查询用户近一年的销售额 </p>
+     * <p>@Description 查询用户最近一年所有店铺销售额趋势图 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 21:40 </p>
      * @param userId 用户ID

@@ -49,11 +49,12 @@
         WHERE R.USER_ID = #{userId} AND S.USER_ID = #{userId}
           AND R.SHOP_ID=S.SHOP_ID AND S.SHOP_STATE='1'
     </select>
-    <!--  统计月销售额-->
-    <select id="countMonthSale" resultType="com.www.ledger.data.dto.MonthDTO">
+    <!--  统计日销售额-->
+    <select id="countDaySale" resultType="com.www.ledger.data.dto.DayDTO">
         SELECT D.SHOP_ID shopId,
                S.SHOP_NAME shopName,
-               D.MONTH monthDateStr,
+               D.ORDER_DATE dayDate,
+               DATE_FORMAT(D.ORDER_DATE,'%Y%m%d') dayDateStr,
                COUNT(D.OI_ID) totalOrder,
                COUNT(IF((D.ORDER_STATE = '3' OR D.ORDER_STATE = '4'), D.OI_ID,NULL)) succeedOrder,
                SUM(IF((D.ORDER_STATE = '3' OR D.ORDER_STATE = '4'), D.PAYMENT_AMOUNT,0)) saleAmount,
@@ -62,40 +63,43 @@
         FROM( SELECT C.OI_ID,
                      C.ORDER_ID,
                      C.SHOP_ID,
-                     CONCAT(DATE_FORMAT(C.ORDER_DATE,'%Y-%m'),'-01') MONTH,
+                     C.ORDER_DATE,
                      C.ORDER_STATE,
                      C.PAYMENT_AMOUNT,
                      C.TOTAL_COST
               FROM  ORDER_INFO C WHERE C.USER_ID = #{userId}) D,USER_SHOP S
         WHERE S.SHOP_ID = D.SHOP_ID AND S.SHOP_STATE='1'
-        GROUP BY D.MONTH,D.SHOP_ID
+        GROUP BY D.ORDER_DATE,D.SHOP_ID
     </select>
     <!--  查询订单信息-->
     <select id="findOrdeList" resultType="com.www.ledger.data.dto.OrderDTO">
         SELECT O.OI_ID oiId,
-        O.ORDER_ID orderId,
-        O.SHOP_ID shopId,
-        S.SHOP_NAME shopName,
-        DATE_FORMAT(O.ORDER_DATE,'%Y-%m-%d') orderDateStr,
-        O.SUPPLY_ID supplyId,
-        O.GOODS_ID goodsId,
-        O.GOODS_NAME goodsName,
-        G.GOODS_URL goodsUrl,
-        O.ORDER_STATE orderState,
-        O.SALE_AMOUNT saleAmount,
-        O.PAYMENT_AMOUNT paymentAmount,
-        O.COST_AMOUNT costAmount,
-        O.PAYOUT_AMOUNT payoutAmount,
-        O.TOTAL_COST totalCost,
-        O.GROSS_PROFIT grossProfit,
-        O.GROSS_PROFIT_RATE grossProfitRate,
-        O.REMARK remark
+                O.ORDER_ID orderId,
+                O.SHOP_ID shopId,
+                S.SHOP_NAME shopName,
+                DATE_FORMAT(O.ORDER_DATE,'%Y-%m-%d') orderDateStr,
+                O.SUPPLY_ID supplyId,
+                O.GOODS_ID goodsId,
+                O.GOODS_NAME goodsName,
+                G.GOODS_URL goodsUrl,
+                O.ORDER_STATE orderState,
+                O.SALE_AMOUNT saleAmount,
+                O.PAYMENT_AMOUNT paymentAmount,
+                O.COST_AMOUNT costAmount,
+                O.PAYOUT_AMOUNT payoutAmount,
+                O.TOTAL_COST totalCost,
+                O.GROSS_PROFIT grossProfit,
+                O.GROSS_PROFIT_RATE grossProfitRate,
+                O.REMARK remark
         FROM USER_SHOP S,ORDER_INFO O
         LEFT JOIN SHOP_GOODS G ON G.GOODS_ID = O.GOODS_ID AND G.SHOP_ID = O.SHOP_ID
         WHERE O.SHOP_ID = S.SHOP_ID AND S.SHOP_STATE='1'
             AND O.USER_ID = #{obj.userId} AND S.USER_ID = #{obj.userId}
-        <if test="obj.orderDateStr != null and obj.orderDateStr != ''">
-            AND O.ORDER_DATE = STR_TO_DATE(#{obj.orderDateStr},'%Y-%m-%d')
+        <if test="obj.startDateStr != null and obj.startDateStr != ''">
+            AND O.ORDER_DATE <![CDATA[ >= ]]> STR_TO_DATE(#{obj.startDateStr},'%Y-%m-%d')
+        </if>
+        <if test="obj.endDateStr != null and obj.endDateStr != ''">
+            AND O.ORDER_DATE <![CDATA[ <= ]]> STR_TO_DATE(#{obj.endDateStr},'%Y-%m-%d')
         </if>
         <if test="obj.orderId != null and obj.orderId != ''">
             AND O.ORDER_ID = #{obj.orderId}

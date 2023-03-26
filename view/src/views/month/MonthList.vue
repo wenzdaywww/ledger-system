@@ -2,7 +2,7 @@
 <template>
   <div>
     <el-card>
-      <div>
+      <div v-loading="pageLoading">
         <!-- 月销售额列表查询条件-->
         <div class="handle-box">
           <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 250px">
@@ -61,12 +61,59 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="talOrd" label="月订单数" align="center"></el-table-column>
-          <el-table-column prop="sucOrd" label="月成交单数" align="center"></el-table-column>
-          <el-table-column prop="faiOrd" label="月失败单数" align="center"></el-table-column>
-          <el-table-column prop="salAmt" label="月销售额" align="center"></el-table-column>
-          <el-table-column prop="cosAmt" label="月成本费" align="center"></el-table-column>
+          <el-table-column prop="talOrd" label="月订单量" align="center">
+            <template v-slot:header='scope'>
+              <span>月订单量
+                <el-tooltip :aa="scope" class="item" effect="light" content="所有订单数量" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="sucOrd" label="月成交单" align="center">
+            <template v-slot:header='scope'>
+              <span>月成交单
+                <el-tooltip :aa="scope" class="item" effect="light" content="订单状态为【交易成功】、【已发货，待签收】的数量" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="faiOrd" label="月失败单" align="center">
+            <template v-slot:header='scope'>
+              <span>月失败单
+                <el-tooltip :aa="scope" class="item" effect="light" content="订单状态非【交易成功】、【已发货，待签收】的数量" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="salAmt" label="月销售额" align="center">
+            <template v-slot:header='scope'>
+              <span>月销售额
+                <el-tooltip :aa="scope" class="item" effect="light" content="订单状态为【交易成功】、【已发货，待签收】的销售额" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="cosAmt" label="月成本费" align="center">
+            <template v-slot:header='scope'>
+              <span>月成本费
+                <el-tooltip :aa="scope" class="item" effect="light" content="订单状态为【交易成功】、【已发货，待签收】的总成本费" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column prop="advAmt" label="月推广费" align="center">
+            <template v-slot:header='scope'>
+              <span>月推广费
+                <el-tooltip :aa="scope" class="item" effect="light" content="需要手动录入" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
             <template #default="scope">
               {{scope.row.advAmt}}<br/>
               <el-tooltip class="item" effect="light" content="增加推广费" placement="top">
@@ -78,6 +125,13 @@
             </template>
           </el-table-column>
           <el-table-column prop="serAmt" label="月服务费" align="center">
+            <template v-slot:header='scope'>
+              <span>月服务费
+                <el-tooltip :aa="scope" class="item" effect="light" content="需要手动录入" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
             <template #default="scope">
               {{scope.row.serAmt}}<br/>
               <el-tooltip class="item" effect="light" content="增加服务费" placement="top">
@@ -88,7 +142,15 @@
               </el-tooltip>
             </template>
           </el-table-column>
-          <el-table-column prop="virAmt" label="月刷单费" align="center"></el-table-column>
+          <el-table-column prop="virAmt" label="月刷单费" align="center">
+            <template v-slot:header='scope'>
+              <span>月刷单费
+                <el-tooltip :aa="scope" class="item" effect="light" content="订单状态为【刷单】的总成本费" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column prop="talCos" label="月支出费" align="center">
             <template v-slot:header='scope'>
               <span>月支出费
@@ -144,6 +206,8 @@ export default {
       pageNum: 1,
       pageSize: 10
     });
+    // 整个页面Loading 加载遮罩层控制
+    const pageLoading = ref(false);
     //月销售弹出窗对象
     const monthDialog = ref();
     //月销售金额弹出窗对象
@@ -191,10 +255,12 @@ export default {
     }
     // 统计月销售额数
     const handleCount = () => {
+      pageLoading.value = true;
       axios.$http.post(request.monthCount,null).then(function (res) {
+        pageLoading.value = false;
         ElMessage.success(res.data);
         findMonthList();
-      })
+      }).catch(err => {pageLoading.value = false;});
     };
     //删除月销售额数据
     const handleDelete = (row) => {
@@ -202,11 +268,13 @@ export default {
       ElMessageBox.confirm("确定要删除店铺【" + row.shopNm + "】" + row.month + "月份的销售数据吗？", "提示",
           {confirmButtonText: '确定',cancelButtonText: '关闭',type: 'warning',center: true,roundButton: true}
       ).then(() => {
+        pageLoading.value = true;
         axios.$http.post(request.delMonth+row.msId, null).then(function (res) {
+          pageLoading.value = false;
           ElMessage.success(res.data);
           findMonthList();
         });
-      }).catch(() => {});
+      }).catch(err => {pageLoading.value = false;});
     };
     //新增月销售额数据
     const handleAdd = () => {
@@ -218,10 +286,14 @@ export default {
     };
     // 获取表格数据
     const findMonthList = () => {
+      pageLoading.value = true;
       axios.$http.get(request.monthList,query).then(function (res) {
+        pageLoading.value = false;
         tableData.value = res.data;
         pageTotal.value = res.totalNum;
-      })
+      }).catch(err => {
+        pageLoading.value = false;
+      });
     };
     findMonthList();
     // 查询用户的所有店铺信息
@@ -231,7 +303,7 @@ export default {
       });
     };
     getUserShopArr();
-    return { query,tableData,pageTotal,userShop,monthDialog,monthAmtDialog,
+    return { query,tableData,pageTotal,userShop,monthDialog,monthAmtDialog,pageLoading,
       handleSearch,handleReset,handlePageChange,handleCount,handleAdd,handleDelete,
       handleEdit,findMonthList,handleIncrease,handleReduce,addCellClass};
   }

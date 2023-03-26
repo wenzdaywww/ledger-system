@@ -99,9 +99,10 @@ public class OrderController {
     @GetMapping("list")
     public Result<List<OrderListOutVO>> findOrdeList(@Validated OrderListInVO orderInVO){
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setUserId(JwtAuthorizationTokenFilter.getUserId()).setOrderDateStr(orderInVO.getOrdDat())
+        orderDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
                 .setShopId(orderInVO.getShopId()).setSupplyId(orderInVO.getSupId()).setOrderId(orderInVO.getOrdId())
-                .setGoodsId(orderInVO.getGdsId()).setOrderState(orderInVO.getOrdSta());
+                .setGoodsId(orderInVO.getGdsId()).setOrderState(orderInVO.getOrdSta())
+                .setStartDateStr(orderInVO.getStrDat()).setEndDateStr(orderInVO.getEndDat());
         Result<List<OrderDTO>> listResult = orderService.findOrdeList(orderDTO,orderInVO.getPageNum(),orderInVO.getPageSize());
         List<OrderListOutVO> respList = Optional.ofNullable(listResult.getData()).filter(e -> CollectionUtils.isNotEmpty(listResult.getData()))
                 .map(list -> {

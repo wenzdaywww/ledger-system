@@ -35,6 +35,9 @@ http.interceptors.response.use(
             ElMessage.error(error.response.data.data);
             //Promise.reject在catch方法使用
             return Promise.reject(error.response.data);
+        }else if(error.response.status == 404){
+            //Promise.reject在catch方法使用
+            return Promise.reject(error);
         }else {
             ElMessage.error("未知错误");
             return Promise.reject(error.response.data);
@@ -55,6 +58,8 @@ export default {
             }).catch(err => {
                 if (err && err.data){
                     reject(err);
+                }else {
+                    reject();
                 }
             });
         });
@@ -73,6 +78,8 @@ export default {
             }).catch((err) => { //请求失败返回响应数据
                 if (err && err.data){
                     reject(err);
+                }else {
+                    reject();
                 }
             });
         });
@@ -90,6 +97,8 @@ export default {
             }).catch(err => {
                 if (err && err.data){
                     reject(err);
+                }else {
+                    reject();
                 }
             })
         });

@@ -10,7 +10,9 @@ import com.www.common.data.constant.FileTypeConstant;
 import com.www.common.data.dto.excel.CellDTO;
 import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.response.Result;
+import com.www.common.utils.CsvUtils;
 import com.www.common.utils.DateUtils;
+import com.www.common.utils.ExcelUtils;
 import com.www.common.utils.FileUtils;
 import com.www.common.utils.MoneyUtils;
 import com.www.common.utils.UidGeneratorUtils;
@@ -122,14 +124,20 @@ public class OrderServiceImpl implements IOrderService {
         saveList.forEach(dto -> {
             Map<Integer, CellDTO> cellMap = new HashMap<>();
             CellDTO cellDTO = new CellDTO();
-            cellDTO.setCellIndex(dto.getMaxColumn()).setCellValue(dto.getMessage());
+            cellDTO.setCellIndex(dto.getMaxColumn());
+            //message已有数据，则说明保存成功，但还有部分问题，需提示
+            if(StringUtils.isNotBlank(dto.getMessage())){
+                cellDTO.setCellValue(dto.getMessage()).setFillBackgroundColor(IndexedColors.YELLOW);
+            }else {
+                cellDTO.setCellValue(dto.getOiId()  == null ? "新增成功" : "更新成功").setFillBackgroundColor(IndexedColors.GREEN);
+            }
             cellMap.put(dto.getMaxColumn(),cellDTO);
             dataMap.put(dto.getRowNum(),cellMap);
         });
         failList.forEach(dto -> {
             Map<Integer, CellDTO> cellMap = new HashMap<>();
             CellDTO cellDTO = new CellDTO();
-            cellDTO.setCellIndex(dto.getMaxColumn()).setCellValue(dto.getMessage());
+            cellDTO.setCellIndex(dto.getMaxColumn()).setCellValue(dto.getMessage()).setFillBackgroundColor(IndexedColors.RED);
             cellMap.put(dto.getMaxColumn(),cellDTO);
             dataMap.put(dto.getRowNum(),cellMap);
         });
@@ -143,12 +151,12 @@ public class OrderServiceImpl implements IOrderService {
         String excelPath = null;
         //csv文件
         if(StringUtils.equals(fileType, FileTypeConstant.CSV)){
-            excelPath = FileUtils.csvToExcel(filePath,dataMap);
+            excelPath = CsvUtils.csvToExcel(filePath,dataMap);
             FileUtils.deleteFile(filePath);
         }else {//excel文件
             Map<Integer,Map<Integer,Map<Integer,CellDTO>>> excelMap = new HashMap<>();
             excelMap.put(0,dataMap);
-            FileUtils.writeUpdateExcel(filePath,password,excelMap);
+            ExcelUtils.writeUpdateExcel(filePath,password,excelMap);
             excelPath = filePath;
         }
         //将文件的绝对路径转为url访问路径
@@ -168,6 +176,7 @@ public class OrderServiceImpl implements IOrderService {
         }
         int insertNum = 0;//新增数量
         int updateNum = 0;//更新数量
+        int steExpNum = 0;//订单状态异常数量
         List<String> ordIdList = saveList.stream().map(dto -> dto.getOrderId()).collect(Collectors.toList());
         //查询订单是否存在
         QueryWrapper<OrderInfoEntity> wrapper = new QueryWrapper<>();
@@ -183,10 +192,14 @@ public class OrderServiceImpl implements IOrderService {
             if(entityMap.containsKey(dto.getOrderId())){
                 entity = entityMap.get(dto.getOrderId());
                 updateNum++;
+                dto.setOiId(entity.getOiId());//设置主键，用于下载文件中标注
             }else {
                 entity = new OrderInfoEntity();
                 insertNum++;
             }
+            //订单状态为【待确定】则是订单状态异常数据
+            steExpNum = StringUtils.equals(dto.getOrderState(),CodeDict.getValue(CodeTypeEnum.OrderState_Unconfirme.getType(), CodeTypeEnum.OrderState_Unconfirme.getKey()))
+                    ? steExpNum + 1 : steExpNum;
             entity.setOrderId(dto.getOrderId()).setShopId(dto.getShopId()).setUserId(dto.getUserId())
                     .setOrderDate(dto.getOrderDate()).setSupplyId(dto.getSupplyId())
                     .setGoodsId(dto.getGoodsId()).setGoodsName(dto.getGoodsName())
@@ -199,8 +212,11 @@ public class OrderServiceImpl implements IOrderService {
         }
         orderInfoDAO.saveOrUpdateBatch(entityList,200);
         StringBuilder sb = new StringBuilder();
-        sb.append("成功读取").append(saveList.size()).append("笔订单，其中新增")
+        sb.append("成功导入").append(saveList.size()).append("笔订单：新增")
                 .append(insertNum).append("笔订单，更新").append(updateNum).append("笔订单。");
+        if(steExpNum > 0){
+            sb.append("其中有").append(steExpNum).append("笔订单状态需要待确认。");
+        }
         return sb.toString();
     }
     /**
@@ -254,13 +270,20 @@ public class OrderServiceImpl implements IOrderService {
     private void computeOrderData(OrderInfoEntity orderEntity){
         //总成本计算
         orderEntity.setTotalCost(MoneyUtils.nullToZero(orderEntity.getCostAmount()).add(MoneyUtils.nullToZero(orderEntity.getPayoutAmount())));
-        //毛利润计算
-        orderEntity.setGrossProfit((orderEntity.getPaymentAmount()
-                .subtract(orderEntity.getCostAmount()).subtract(orderEntity.getPayoutAmount())).setScale(2, RoundingMode.HALF_UP));
-        //毛利率计算
-        orderEntity.setGrossProfitRate(orderEntity.getCostAmount().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
-                : (orderEntity.getGrossProfit().divide(orderEntity.getCostAmount(),4,RoundingMode.HALF_UP)
-                .multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));
+        //订单状态=已发货，待签收、交易成功才计算
+        if(StringUtils.equalsAny(orderEntity.getOrderState(),
+                CodeDict.getValue(CodeTypeEnum.OrderState_Success.getType(), CodeTypeEnum.OrderState_Success.getKey()),
+                CodeDict.getValue(CodeTypeEnum.OrderState_Sended.getType(), CodeTypeEnum.OrderState_Sended.getKey()))){
+            //毛利润计算
+            orderEntity.setGrossProfit((orderEntity.getPaymentAmount()
+                    .subtract(orderEntity.getCostAmount()).subtract(orderEntity.getPayoutAmount())).setScale(2, RoundingMode.HALF_UP));
+            //毛利率计算
+            orderEntity.setGrossProfitRate(orderEntity.getCostAmount().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
+                    : (orderEntity.getGrossProfit().divide(orderEntity.getCostAmount(),4,RoundingMode.HALF_UP)
+                    .multiply(new BigDecimal("100"))).setScale(2,RoundingMode.HALF_UP));
+        }else {
+            orderEntity.setGrossProfit(BigDecimal.ZERO).setGrossProfitRate(BigDecimal.ZERO);
+        }
         orderEntity.setUpdateTime(DateUtils.getCurrentDateTime());
     }
     /**

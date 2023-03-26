@@ -78,18 +78,35 @@ public abstract class OrderImportService implements IOrderImportService {
         //商家备注存的是1688订单、和其他备注信息，格式如：3243663938570794151#10.8#这是备注内容
         String remark = this.getCellData(rowList,headMap,REMARK);
         String[] arr = StringUtils.split(remark, CharConstant.JING_HAO);
-        if(arr != null && arr.length == 3){
-            orderDTO.setSupplyId(StringUtils.replace(arr[0],CharConstant.SINGLE_QUOTATION_MARK,CharConstant.EMPTY));
-            orderDTO.setCostAmount(MoneyUtils.strToAmt(arr[1]));
-            orderDTO.setRemark(arr[2]);
-        }else if(arr != null && arr.length == 2){
-            orderDTO.setSupplyId(StringUtils.replace(arr[0],CharConstant.SINGLE_QUOTATION_MARK,CharConstant.EMPTY));
-            orderDTO.setCostAmount(MoneyUtils.strToAmt(arr[1]));
-        }else if(arr != null && arr.length == 1){
-            orderDTO.setRemark(arr[0]);
+        if(arr != null){
+            if(arr.length >= 2){
+                //订单备注前2项处理
+                this.setOrderRemark(arr,orderDTO);
+            }
+            if(arr.length == 1){
+                orderDTO.setRemark(arr[0]);
+            }else if(arr.length == 3){
+                orderDTO.setRemark(arr[2]);
+            }
         }
         return orderDTO;
     };
+    /**
+     * <p>@Description 订单备注前2项处理 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/26 09:52 </p>
+     * @param arr  订单备注数值
+     * @param orderDTO 一行订单数据对象
+     */
+    private void setOrderRemark(String[] arr,OrderRowDTO orderDTO){
+        //备注以刷单开头，则状态改为刷单
+        if(StringUtils.equals(arr[0],"刷单")){
+            orderDTO.setOrderState(CodeDict.getValue(CodeTypeEnum.OrderState_Virtual.getType(), CodeTypeEnum.OrderState_Virtual.getKey()));
+        }else {
+            orderDTO.setSupplyId(StringUtils.replace(arr[0],CharConstant.SINGLE_QUOTATION_MARK,CharConstant.EMPTY));
+        }
+        orderDTO.setCostAmount(MoneyUtils.strToAmt(arr[1]));
+    }
     /**
      * <p>@Description 订单数据校验 </p>
      * <p>@Author www </p>
@@ -118,22 +135,20 @@ public abstract class OrderImportService implements IOrderImportService {
         }
         if(orderDTO.getSaleAmount() == null){
             errSB.append(headMap.get(SALE_AMOUNT).getName()).append("不能为空或数值错误;");//商品总价不能为空或数值错误
-        }else if(orderDTO.getSaleAmount().compareTo(BigDecimal.ZERO) == -1 || orderDTO.getSaleAmount().compareTo(new BigDecimal("99999999.99")) == 1){
-            errSB.append(headMap.get(SALE_AMOUNT).getName()).append("有效值应为0~99999999.99;");//商品总价有效值应为0~99999999.99
+        }else if(orderDTO.getSaleAmount().compareTo(BigDecimal.ZERO) != 1 || orderDTO.getSaleAmount().compareTo(new BigDecimal("99999999.99")) == 1){
+            errSB.append(headMap.get(SALE_AMOUNT).getName()).append("有效值应大于0且不大于99999999.99;");//商品总价有效值应为0~99999999.99
         }
         if(orderDTO.getPaymentAmount() == null){
             errSB.append(headMap.get(PAYMENT_AMOUNT).getName()).append("不能为空或数值错误;");//支付金额不能为空或数值错误;
-        }else if(orderDTO.getPaymentAmount().compareTo(BigDecimal.ZERO) == -1 || orderDTO.getPaymentAmount().compareTo(new BigDecimal("99999999.99")) == 1){
-            errSB.append(headMap.get(PAYMENT_AMOUNT).getName()).append("有效值应为0~99999999.99;");//支付金额有效值应为0~99999999.99
+        }else if(orderDTO.getPaymentAmount().compareTo(BigDecimal.ZERO) != 1 || orderDTO.getPaymentAmount().compareTo(new BigDecimal("99999999.99")) == 1){
+            errSB.append(headMap.get(PAYMENT_AMOUNT).getName()).append("有效值应大于0且不大于99999999.99;");//支付金额有效值应为0~99999999.99
         }
         if(errSB.length() > 0){
             orderDTO.setMessage(errSB.toString());
             failList.add(orderDTO);
         }else {
             if(StringUtils.equals(orderDTO.getOrderState(),CodeDict.getValue(CodeTypeEnum.OrderState_Unconfirme.getType(),CodeTypeEnum.OrderState_Unconfirme.getKey()))){
-                orderDTO.setMessage("订单状态为【待确定】，请人工确认下实际状态");
-            }else {
-                orderDTO.setMessage("导入成功");
+                orderDTO.setMessage("平台订单状态转换后为【待确定】，请确认实际订单状态");
             }
             saveList.add(orderDTO);
         }

@@ -31,6 +31,8 @@ export default {
     bookYear: "api/book/year",
     //近10天销售额前3名店铺销售额趋势图
     bookDay: "api/book/day",
+    //导出报表
+    bookExp: "api/book/exp",
 
     //查询我的店铺列表
     shopList: "api/shop/list",
@@ -62,6 +64,12 @@ export default {
     editMonth: "api/month/new",
     //增加/减少月销售额的推广费和服务费
     amtStep: "api/month/amt",
+
+    //日销售额
+    //查询日销售额列表
+    dayList: "api/day/list",
+    //统计日销售额
+    dayCount: "api/day/tal",
 
     //订单信息
     //查询订单信息列表

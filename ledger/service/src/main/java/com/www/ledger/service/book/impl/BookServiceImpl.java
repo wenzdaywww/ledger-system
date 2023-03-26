@@ -20,6 +20,7 @@ import com.www.ledger.data.entity.UserBookEntity;
 import com.www.ledger.data.entity.UserShopEntity;
 import com.www.ledger.data.enums.CodeTypeEnum;
 import com.www.ledger.service.book.IBookService;
+import com.www.ledger.service.day.IDayService;
 import com.www.ledger.service.month.IMonthService;
 import com.www.ledger.service.shop.IShopService;
 import com.www.ledger.service.year.IYearService;
@@ -55,6 +56,8 @@ public class BookServiceImpl implements IBookService {
     @Autowired
     private IMonthService monthService;
     @Autowired
+    private IDayService dayService;
+    @Autowired
     private IOrderInfoDAO orderInfoDAO;
     @Autowired
     private IShopGoodsDAO shopGoodsDAO;
@@ -69,7 +72,7 @@ public class BookServiceImpl implements IBookService {
 
 
     /**
-     * <p>@Description 查询近些天销售额前3名店铺销售额趋势图 </p>
+     * <p>@Description 查询近些天销售额排名靠前店铺销售额趋势图 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/19 18:00 </p>
      * @param userId 用户ID
@@ -77,7 +80,7 @@ public class BookServiceImpl implements IBookService {
      */
     @Override
     public Result<List<List<OrderDTO>>> findLastDaySales(String userId) {
-        int lastDays = 10;
+        int lastDays = 10;//统计的天数
         //获取订单中最大的日期
         String maxDateStr = orderInfoDAO.getMaxOrderDate(userId);
         if(StringUtils.isBlank(maxDateStr)){
@@ -138,7 +141,7 @@ public class BookServiceImpl implements IBookService {
         return new Result<>(resultList);
     }
     /**
-     * <p>@Description 查询用户近一年的销售额 </p>
+     * <p>@Description 查询用户最近一年所有店铺销售额趋势图 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/19 16:46 </p>
      * @param userId 用户ID
@@ -181,6 +184,8 @@ public class BookServiceImpl implements IBookService {
      */
     @Override
     public Result<String> saveAndCountBookData(String userId) {
+        //统计月销售额
+        dayService.saveAndCountDayData(userId);
         //统计月销售额
         monthService.saveAndCountMonthData(userId);
         //统计年销售额
