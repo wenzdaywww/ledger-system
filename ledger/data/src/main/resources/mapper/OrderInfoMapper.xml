@@ -49,12 +49,12 @@
         WHERE R.USER_ID = #{userId} AND S.USER_ID = #{userId}
           AND R.SHOP_ID=S.SHOP_ID AND S.SHOP_STATE='1'
     </select>
-    <!--  统计日销售额-->
-    <select id="countDaySale" resultType="com.www.ledger.data.dto.DayDTO">
+    <!--  统计店铺日销售额日销售额-->
+    <select id="countShopDaySale" resultType="com.www.ledger.data.dto.DayDTO">
         SELECT D.SHOP_ID shopId,
                S.SHOP_NAME shopName,
                D.ORDER_DATE dayDate,
-               DATE_FORMAT(D.ORDER_DATE,'%Y%m%d') dayDateStr,
+               DATE_FORMAT(D.ORDER_DATE,'%Y-%m-%d') dayDateStr,
                COUNT(D.OI_ID) totalOrder,
                COUNT(IF((D.ORDER_STATE = '3' OR D.ORDER_STATE = '4'), D.OI_ID,NULL)) succeedOrder,
                SUM(IF((D.ORDER_STATE = '3' OR D.ORDER_STATE = '4'), D.PAYMENT_AMOUNT,0)) saleAmount,

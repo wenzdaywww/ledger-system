@@ -2,6 +2,7 @@ package com.www.ledger.data.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.www.common.config.mybatis.annotation.RowLimitInterceptor;
 import com.www.ledger.data.dto.DayDTO;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.entity.DaySalesEntity;
@@ -19,21 +20,41 @@ import java.util.List;
 @Mapper
 public interface DaySalesMapper extends BaseMapper<DaySalesEntity> {
     /**
-     * <p>@Description 统计月销售额 </p>
+     * <p>@Description 统计店铺月销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 15:19 </p>
      * @param userId 用户ID
-     * @return
+     * @return 店铺月销售额
      */
-    List<MonthDTO> countMonthSale(@Param("userId") String userId);
+    @RowLimitInterceptor
+    List<MonthDTO> countShopMonthSale(@Param("userId") String userId);
     /**
-     * <p>@Description 根据用户ID查询用户日销售额数据 </p>
+     * <p>@Description 统计店铺汇总日销售额 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/18 15:19 </p>
+     * @param userId 用户ID
+     * @return 店铺汇总日销售额
+     */
+    @RowLimitInterceptor
+    List<DayDTO> countTotalDaySale(@Param("userId") String userId);
+    /**
+     * <p>@Description 根据用户ID查询用户店铺日销售额数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/26 19:20 </p>
      * @param userId 用户ID
-     * @return 日销售额entity数据
+     * @return 店铺日销售额entity数据
      */
-    List<DaySalesEntity> findDaySalesList(@Param("userId") String userId);
+    @RowLimitInterceptor
+    List<DaySalesEntity> findShopDaySalesList(@Param("userId") String userId);
+    /**
+     * <p>@Description 根据用户ID查询用户店铺日汇总销售额数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/26 19:20 </p>
+     * @param userId 用户ID
+     * @return 店铺汇总日销售额entity数据
+     */
+    @RowLimitInterceptor
+    List<DaySalesEntity> findTotalDaySalesList(@Param("userId") String userId);
     /**
      * <p>@Description 查询日销售额列表信息 </p>
      * <p>@Author www </p>

@@ -98,6 +98,7 @@ public class PddImportServiceImpl extends OrderImportService {
         if(StringUtils.equalsAny(orderRowDTO.getOrderState(),
                 CodeDict.getValue(CodeTypeEnum.OrderState_Unpaid.getType(), CodeTypeEnum.OrderState_Unpaid.getKey()),
                 CodeDict.getValue(CodeTypeEnum.OrderState_Paidding.getType(), CodeTypeEnum.OrderState_Paidding.getKey()))){
+            //拼多多订单号-前为年月日，格式：yyMMdd
             String dateStr = "20" +StringUtils.substring(orderRowDTO.getOrderId(),0,orderRowDTO.getOrderId().lastIndexOf(CharConstant.MINUS_SIGN));
             orderRowDTO.setOrderDate(DateUtils.parse(dateStr, DateFormatEnum.YYYYMMDD5));
         }
@@ -123,6 +124,7 @@ public class PddImportServiceImpl extends OrderImportService {
             stateMap.put("未发货，退款成功",CodeDict.getValue(CodeTypeEnum.OrderState_Nosend.getType(), CodeTypeEnum.OrderState_Nosend.getKey()));//未发货，退款成功
             stateMap.put("已取消",CodeDict.getValue(CodeTypeEnum.OrderState_Unpaid.getType(), CodeTypeEnum.OrderState_Unpaid.getKey()));//未支付，交易关闭
             stateMap.put("待支付",CodeDict.getValue(CodeTypeEnum.OrderState_Paidding.getType(), CodeTypeEnum.OrderState_Paidding.getKey()));//待支付
+            stateMap.put("待发货",CodeDict.getValue(CodeTypeEnum.OrderState_Sending.getType(), CodeTypeEnum.OrderState_Sending.getKey()));//待发货
         }
         String code = stateMap.get(stateName.trim());
         //code为空，则赋值为【待确认】

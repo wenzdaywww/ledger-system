@@ -26,33 +26,60 @@ public class YearSalesDAOImpl extends ServiceImpl<YearSalesMapper, YearSalesEnti
     private YearSalesMapper yearSalesMapper;
 
     /**
+     * <p>@Description 根据所有店铺的年销售额汇总每年所有店铺销售额 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/27 20:12 </p>
+     * @param userId 用户ID
+     * @return 每年所有店铺销售额
+     */
+    @Override
+    public List<YearDTO> countTotalYearData(String userId) {
+        return yearSalesMapper.countAllYearData(userId);
+    }
+    /**
      * <p>@Description 删除用户的年销售数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/20 20:26 </p>
      * @param userId 用户ID
+     * @param isShop true删除店铺的年销售额，false删除统计的年销售额
      * @return true删除成功，false删除失败
      */
     @Override
-    public boolean deleteYearList(String userId) {
+    public boolean deleteYearList(String userId,boolean isShop) {
         if(StringUtils.isBlank(userId)){
             return false;
         }
         QueryWrapper<YearSalesEntity> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(YearSalesEntity::getUserId,userId);
+        if(isShop){
+            wrapper.lambda().isNotNull(YearSalesEntity::getShopId);
+        }else {
+            wrapper.lambda().isNull(YearSalesEntity::getShopId);
+        }
         return yearSalesMapper.delete(wrapper) != 0;
     }
     /**
-     * <p>@Description 查询用户的年销售数据 </p>
+     * <p>@Description 查询用户店铺的年销售数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/20 20:23 </p>
      * @param userId 用户ID
-     * @return 用户的年销售数据
+     * @return 用户店铺的年销售数据
      */
     @Override
-    public List<YearSalesEntity> findYearSalesList(String userId) {
-        return StringUtils.isBlank(userId) ? null : yearSalesMapper.findYearSalesList(userId);
+    public List<YearSalesEntity> findShopYearSalesList(String userId) {
+        return StringUtils.isBlank(userId) ? null : yearSalesMapper.findShopYearSalesList(userId);
     }
-
+    /**
+     * <p>@Description 查询用户店铺汇总的年销售数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/20 20:23 </p>
+     * @param userId 用户ID
+     * @return 用户店铺汇总的年销售数据
+     */
+    @Override
+    public List<YearSalesEntity> findTotalYearSalesList(String userId) {
+        return StringUtils.isBlank(userId) ? null : yearSalesMapper.findTotalYearSalesList(userId);
+    }
     /**
      * <p>@Description 统计店铺销售额 </p>
      * <p>@Author www </p>
@@ -76,7 +103,7 @@ public class YearSalesDAOImpl extends ServiceImpl<YearSalesMapper, YearSalesEnti
      * @return
      */
     @Override
-    public Page<YearDTO> findYearSalesList(Page<YearDTO> page, YearDTO dto) {
+    public Page<YearDTO> findShopYearSalesList(Page<YearDTO> page, YearDTO dto) {
         return yearSalesMapper.findYearList(page,dto);
     }
 }

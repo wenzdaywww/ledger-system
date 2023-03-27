@@ -21,14 +21,31 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
-    <!-- 根据用户ID查询用户日销售额数据-->
-    <select id="findDaySalesList" resultMap="BaseResultMap">
-        select D.* from DAY_SALES D,USER_SHOP S
+    <!-- 根据用户ID查询用户店铺日销售额数据-->
+    <select id="findShopDaySalesList" resultMap="BaseResultMap">
+        SELECT D.* from DAY_SALES D,USER_SHOP S
         WHERE S.USER_ID = #{userId}  AND D.USER_ID = #{userId}
         AND S.SHOP_STATE='1' AND S.SHOP_ID = D.SHOP_ID
     </select>
+    <!-- 根据用户ID查询用户店铺汇总日销售额数据-->
+    <select id="findTotalDaySalesList" resultMap="BaseResultMap">
+        SELECT D.* from DAY_SALES D  WHERE D.USER_ID = #{userId} AND D.SHOP_ID IS NULL
+    </select>
+    <!-- 统计店铺汇总日销售额-->
+    <select id="countTotalDaySale" resultType="com.www.ledger.data.dto.DayDTO">
+        SELECT A.DAY_DATE dayDate,
+               DATE_FORMAT(A.DAY_DATE,'%Y-%m-%d') dayDateStr,
+               SUM(A.TOTAL_ORDER) totalOrder,
+               SUM(A.SUCCEED_ORDER) succeedOrder,
+               SUM(A.FAILED_ORDER) failedOrder,
+               SUM(A.SALE_AMOUNT) saleAmount,
+               SUM(A.COST_AMOUNT) costAmount,
+               SUM(A.VIRTUAL_AMOUNT) virtualAmount
+        FROM DAY_SALES A ,USER_SHOP S WHERE  A.USER_ID = #{userId} AND S.USER_ID = #{userId} AND S.SHOP_ID = A.SHOP_ID AND S.SHOP_STATE='1'
+        GROUP BY A.DAY_DATE order by a.DAY_DATE desc
+    </select>
     <!--  统计月销售额-->
-    <select id="countMonthSale" resultType="com.www.ledger.data.dto.MonthDTO">
+    <select id="countShopMonthSale" resultType="com.www.ledger.data.dto.MonthDTO">
         SELECT A.SHOP_ID shopId,
                S.SHOP_NAME shopName,
                A.MONTH_DATE monthDateStr,

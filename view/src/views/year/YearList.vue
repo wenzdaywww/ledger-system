@@ -11,7 +11,7 @@
           <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 250px">
             <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
           </el-select>
-          <el-tooltip class="item" effect="light" content="按店铺查：即查询店铺的年销售额&nbsp;&nbsp;&nbsp;按年份查：即查询所有店铺的年销售额" placement="top">
+          <el-tooltip class="item" effect="light" content="按店铺查：即查询店铺的年销售额&nbsp;&nbsp;&nbsp;按年份查：即查询所有店铺汇总的年销售额" placement="top">
             <el-switch v-model="query.all" inactive-text="按店铺查" active-text="按年份查" style="margin-right: 10px;"></el-switch>
           </el-tooltip>
           <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
@@ -22,11 +22,11 @@
         </div>
         <!-- 店铺信息列表-->
         <el-table :data="tableData" border class="table" ref="multipleTable" :cell-class-name="addCellClass" header-cell-class-name="table-header">
-          <el-table-column prop="year" label="年份" align="center" sortable width="90px;"></el-table-column>
-          <el-table-column prop="shopNm" label="店铺名称" align="center" sortable>
+          <el-table-column prop="year" label="年份" align="center" sortable></el-table-column>
+          <el-table-column prop="shopNm" label="店铺名称" align="center" sortable width="120px;">
             <template v-slot:header='scope'>
               <span>店铺名称
-                <el-tooltip :aa="scope" class="item" effect="light" content="店铺名称为空，则该笔数据是所有店铺的年销售额数据" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="店铺名称为空，则该笔数据是所有店铺汇总的年销售额数据" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>

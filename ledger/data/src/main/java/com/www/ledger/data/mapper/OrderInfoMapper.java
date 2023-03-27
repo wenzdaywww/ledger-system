@@ -2,6 +2,7 @@ package com.www.ledger.data.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.www.common.config.mybatis.annotation.RowLimitInterceptor;
 import com.www.ledger.data.dto.DayDTO;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.dto.OrderDTO;
@@ -39,13 +40,14 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfoEntity> {
      */
     String getMaxOrderDate(@Param("userId") String userId);
     /**
-     * <p>@Description 统计日销售额 </p>
+     * <p>@Description 统计店铺日销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 15:19 </p>
      * @param userId 用户ID
-     * @return
+     * @return 店铺日销售额
      */
-    List<DayDTO> countDaySale(@Param("userId") String userId);
+    @RowLimitInterceptor
+    List<DayDTO> countShopDaySale(@Param("userId") String userId);
     /**
      * <p>@Description 查询订单信息 </p>
      * <p>@Author www </p>

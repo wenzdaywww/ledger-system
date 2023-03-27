@@ -151,10 +151,42 @@ public class MonthServiceImpl implements IMonthService {
      */
     @Override
     public Result<String> saveAndCountMonthData(String userId) {
-        //统计月销售额
-        List<MonthDTO> countList = daySalesDAO.countMonthSale(userId);
-        //查询存在的月销售额数据
-        List<MonthSalesEntity> monthList = monthSalesDAO.findMonthSalesList(userId);
+        //统计店铺月销售额
+        List<MonthDTO> countShopList = daySalesDAO.countShopMonthSale(userId);
+        //查询存在的店铺月销售额数据
+        List<MonthSalesEntity> monthShopList = monthSalesDAO.findShopMonthSalesList(userId);
+        //保存店铺的月销售额
+        boolean shopOk = this.saveMonthData(countShopList,monthShopList,userId,true);
+        if(shopOk == false){
+            return new Result<>("统计失败");
+        }
+        //统计店铺汇总的月销售额
+        List<MonthDTO> countToatlList = monthSalesDAO.countTotalMonthData(userId);
+        //查询存在店铺汇总的月销售额数据
+        List<MonthSalesEntity> monthToatlList = monthSalesDAO.findTotalMonthSalesList(userId);
+        //保存店铺的月销售额
+        this.saveMonthData(countToatlList,monthToatlList,userId,false);
+        return new Result<>("统计完成");
+    }
+    /**
+     * <p>@Description 根据统计出的月销售数据和已存在的月销售数据处理保存成新的月销售数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/27 21:17 </p>
+     * @param countList 统计出的月销售数据
+     * @param monthList 已存在的月销售数据
+     * @param userId 用户ID
+     * @param isShop true统计店铺的月销售额，false统计所有店铺汇总的月销售额
+     * @return true保存成功，false保存失败
+     */
+    private boolean saveMonthData(List<MonthDTO> countList,List<MonthSalesEntity> monthList,String userId,boolean isShop){
+        //统计出所有店铺汇总的月销售没有数据，则需要删除存在的数据
+        if(isShop == false && CollectionUtils.isEmpty(countList) && CollectionUtils.isNotEmpty(monthList)){
+            //没有统计的年销售额但有年销售额数据，则需要删除年销售数据
+            if(monthSalesDAO.deleteMonthList(userId,isShop)){
+                return true;
+            }
+            return false;
+        }
         List<MonthSalesEntity> insertList = new ArrayList<>();//待插入的数据
         List<MonthSalesEntity> updateList = new ArrayList<>();//待更新的数据
         //数据转换处理，key=店铺ID+月份日期（默认为月份01日），如：101320230201
@@ -174,6 +206,11 @@ public class MonthServiceImpl implements IMonthService {
                         .setSaleAmount(MoneyUtils.nullToZero(v.getSaleAmount()))
                         .setCostAmount(MoneyUtils.nullToZero(v.getCostAmount()))
                         .setVirtualAmount(MoneyUtils.nullToZero(v.getVirtualAmount()));
+                //统计所有店铺汇总的月销售额的推广费和服务费需要更新
+                if(isShop == false){
+                    monthEntity.setAdvertAmount(MoneyUtils.nullToZero(v.getAdvertAmount()))
+                            .setServiceAmount(MoneyUtils.nullToZero(v.getServiceAmount()));
+                }
                 //计算月销售额数据
                 this.computeMonthData(monthEntity);
                 updateList.add(monthEntity);
@@ -184,10 +221,16 @@ public class MonthServiceImpl implements IMonthService {
                         .setTotalOrder(v.getTotalOrder() == null ? 0L : v.getTotalOrder())
                         .setSucceedOrder(v.getSucceedOrder() == null ? 0L : v.getSucceedOrder())
                         .setFailedOrder(v.getFailedOrder() == null ? 0L : v.getFailedOrder())
-                        .setAdvertAmount(BigDecimal.ZERO).setServiceAmount(BigDecimal.ZERO)
                         .setSaleAmount(MoneyUtils.nullToZero(v.getSaleAmount()))
                         .setCostAmount(MoneyUtils.nullToZero(v.getCostAmount()))
                         .setVirtualAmount(MoneyUtils.nullToZero(v.getVirtualAmount()));
+                //统计所有店铺汇总的月销售额的推广费和服务费需要更新
+                if(isShop == false){
+                    monthEntity.setAdvertAmount(MoneyUtils.nullToZero(v.getAdvertAmount()))
+                            .setServiceAmount(MoneyUtils.nullToZero(v.getServiceAmount()));
+                }else {//统计店铺的月销售额的推广费和服务费需要赋值0
+                    monthEntity.setAdvertAmount(BigDecimal.ZERO).setServiceAmount(BigDecimal.ZERO);
+                }
                 //计算月销售额数据
                 this.computeMonthData(monthEntity);
                 insertList.add(monthEntity);
@@ -201,8 +244,8 @@ public class MonthServiceImpl implements IMonthService {
             //待更新的是数据中没有当前entity，说明没有当前店铺的月销售数据，则需要更新数据
             if(!updateMap.containsKey(k)){
                 v.setTotalOrder(0L).setSucceedOrder(0L)
-                  .setSaleAmount(BigDecimal.ZERO).setCostAmount(BigDecimal.ZERO)
-                  .setVirtualAmount(BigDecimal.ZERO).setUpdateTime(DateUtils.getCurrentDateTime());
+                        .setSaleAmount(BigDecimal.ZERO).setCostAmount(BigDecimal.ZERO)
+                        .setVirtualAmount(BigDecimal.ZERO).setUpdateTime(DateUtils.getCurrentDateTime());
                 //计算月销售额数据
                 this.computeMonthData(v);
                 updateList.add(v);
@@ -210,7 +253,18 @@ public class MonthServiceImpl implements IMonthService {
         });
         monthSalesDAO.updateBatchById(updateList,100);
         monthSalesDAO.saveBatch(insertList,100);
-        return new Result<>("统计完成");
+        //统计出所有店铺汇总的月销售数据在数据库中不存在，则需要删除存在的数据
+        if(isShop == false){
+            List<Long> deleteList = new ArrayList<>();//待删除的数据
+            //查询已存在的年销售额数据（yearList）的主键在统计的年销售额（dtoMap）不存在，则说明没有年销售额数据，需要删除已存在的数据
+            monthList.forEach(e -> {
+                if(!dtoMap.containsKey(e.getShopId() + DateUtils.format(e.getMonthDate(), DateFormatEnum.YYYYMMDD1))){
+                    deleteList.add(e.getMsId());
+                }
+            });
+            monthSalesDAO.removeByIds(deleteList);
+        }
+        return true;
     }
     /**
      * <p>@Description 计算月销售额数据 </p>

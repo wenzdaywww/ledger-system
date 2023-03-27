@@ -2,6 +2,7 @@ package com.www.ledger.data.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.www.common.config.mybatis.annotation.RowLimitInterceptor;
 import com.www.ledger.data.dto.ShopDTO;
 import com.www.ledger.data.dto.YearDTO;
 import com.www.ledger.data.entity.YearSalesEntity;
@@ -19,13 +20,23 @@ import java.util.List;
 @Mapper
 public interface YearSalesMapper extends BaseMapper<YearSalesEntity> {
     /**
-     * <p>@Description 查询用户的年销售数据 </p>
+     * <p>@Description 查询用户店铺的年销售数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/20 20:23 </p>
      * @param userId 用户ID
-     * @return 用户的年销售数据
+     * @return 用户店铺的年销售数据
      */
-    List<YearSalesEntity> findYearSalesList(@Param("userId") String userId);
+    @RowLimitInterceptor
+    List<YearSalesEntity> findShopYearSalesList(@Param("userId") String userId);
+    /**
+     * <p>@Description 查询用户店铺汇总的年销售数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/20 20:23 </p>
+     * @param userId 用户ID
+     * @return 用户店铺汇总的年销售数据
+     */
+    @RowLimitInterceptor
+    List<YearSalesEntity> findTotalYearSalesList(@Param("userId") String userId);
     /**
      * <p>@Description 统计店铺销售额 </p>
      * <p>@Author www </p>
@@ -33,7 +44,17 @@ public interface YearSalesMapper extends BaseMapper<YearSalesEntity> {
      * @param userId 用户ID
      * @return
      */
+    @RowLimitInterceptor
     List<ShopDTO> countShopData(@Param("userId") String userId);
+    /**
+     * <p>@Description 根据所有店铺的年销售额汇总每年所有店铺销售额 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/18 23:50 </p>
+     * @param userId 用户ID
+     * @return 每年所有店铺销售额
+     */
+    @RowLimitInterceptor
+    List<YearDTO> countAllYearData(@Param("userId") String userId);
     /**
      * <p>@Description 查询我的年销售额列表 </p>
      * <p>@Author www </p>

@@ -2,6 +2,7 @@ package com.www.ledger.data.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.www.common.config.mybatis.annotation.RowLimitInterceptor;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.dto.YearDTO;
 import com.www.ledger.data.entity.MonthSalesEntity;
@@ -19,13 +20,23 @@ import java.util.List;
 @Mapper
 public interface MonthSalesMapper extends BaseMapper<MonthSalesEntity> {
     /**
-     * <p>@Description 查询用户的月销售数据 </p>
+     * <p>@Description 查询用户店铺的月销售数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/20 20:40 </p>
      * @param userId 用户ID
-     * @return 月销售数据
+     * @return 店铺月销售数据
      */
-    List<MonthSalesEntity> findMonthSalesList(@Param("userId") String userId);
+    @RowLimitInterceptor
+    List<MonthSalesEntity> findShopMonthSalesList(@Param("userId") String userId);
+    /**
+     * <p>@Description 查询用户店铺汇总的月销售数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/20 20:40 </p>
+     * @param userId 用户ID
+     * @return 店铺汇总月销售数据
+     */
+    @RowLimitInterceptor
+    List<MonthSalesEntity> findTotalMonthSalesList(@Param("userId") String userId);
     /**
      * <p>@Description 查询用户monthStr月份销量前1的店铺 </p>
      * <p>@Author www </p>
@@ -45,13 +56,23 @@ public interface MonthSalesMapper extends BaseMapper<MonthSalesEntity> {
      */
     List<MonthDTO> findLastYearSales(@Param("userId") String userId,@Param("date") String date);
     /**
-     * <p>@Description 统计年销售额 </p>
+     * <p>@Description 统计店铺的年销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 21:40 </p>
      * @param userId 用户ID
-     * @return
+     * @return 店铺的年销售额
      */
-    List<YearDTO> countYearData(@Param("userId") String userId);
+    @RowLimitInterceptor
+    List<YearDTO> countShopYearData(@Param("userId") String userId);
+    /**
+     * <p>@Description 统计店铺汇总的月销售额 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/18 21:40 </p>
+     * @param userId 用户ID
+     * @return 店铺汇总的月销售额
+     */
+    @RowLimitInterceptor
+    List<MonthDTO> countTotalMonthData(@Param("userId") String userId);
     /**
      * <p>@Description 查询月销售额列表信息 </p>
      * <p>@Author www </p>

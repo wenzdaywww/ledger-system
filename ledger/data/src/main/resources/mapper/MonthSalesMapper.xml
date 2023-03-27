@@ -23,15 +23,19 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
-    <!-- 查询用户的月销售数据-->
-    <select id="findMonthSalesList" resultMap="BaseResultMap">
+    <!-- 查询用户店铺的月销售数据-->
+    <select id="findShopMonthSalesList" resultMap="BaseResultMap">
         SELECT M.* FROM MONTH_SALES M,USER_SHOP S
         WHERE S.USER_ID = #{userId}  AND M.USER_ID = #{userId} AND S.SHOP_STATE='1' AND S.SHOP_ID = M.SHOP_ID
+    </select>
+    <!-- 查询用户店铺汇总的月销售数据-->
+    <select id="findTotalMonthSalesList" resultMap="BaseResultMap">
+        SELECT M.* FROM MONTH_SALES M WHERE M.USER_ID = #{userId}  AND M.SHOP_ID IS NULL
     </select>
     <!-- 查询用户monthStr月份销量前3的店铺-->
     <select id="findMaxSalesShop" resultType="java.lang.Long">
         SELECT M.SHOP_ID FROM MONTH_SALES M
-        WHERE M.USER_ID = #{userId} AND M.MONTH_DATE = STR_TO_DATE(#{month},'%Y-%m-%d')
+        WHERE M.USER_ID = #{userId} AND M.MONTH_DATE = STR_TO_DATE(#{month},'%Y-%m-%d') AND M.SHOP_ID IS NOT NULL
         ORDER BY M.SALE_AMOUNT DESC
         LIMIT 1
     </select>
@@ -49,8 +53,22 @@
               ORDER BY M.MONTH_DATE ASC ) D
         GROUP BY D.MONTH_STR
     </select>
-    <!-- 统计年销售额-->
-    <select id="countYearData" resultType="com.www.ledger.data.dto.YearDTO">
+    <!-- 统计店铺汇总的月销售额-->
+    <select id="countTotalMonthData" resultType="com.www.ledger.data.dto.MonthDTO">
+        SELECT DATE_FORMAT(A.MONTH_DATE,'%Y-%m-%d') monthDateStr,
+               SUM(A.TOTAL_ORDER) totalOrder,
+               SUM(A.SUCCEED_ORDER) succeedOrder,
+               SUM(A.FAILED_ORDER) failedOrder,
+               SUM(A.SALE_AMOUNT) saleAmount,
+               SUM(A.COST_AMOUNT) costAmount,
+               SUM(A.ADVERT_AMOUNT) advertAmount,
+               SUM(A.SERVICE_AMOUNT) serviceAmount,
+               SUM(A.VIRTUAL_AMOUNT) virtualAmount
+        FROM MONTH_SALES A,USER_SHOP S WHERE A.USER_ID = #{userId} AND S.USER_ID = #{userId} AND A.SHOP_ID = S.SHOP_ID AND S.SHOP_STATE = '1'
+        GROUP BY A.MONTH_DATE ORDER BY A.MONTH_DATE DESC
+    </select>
+    <!-- 统计店铺的年销售额-->
+    <select id="countShopYearData" resultType="com.www.ledger.data.dto.YearDTO">
         SELECT A.SHOP_ID shopId,
                S.SHOP_NAME shopName,
                A.YEARSTR yearStr,
@@ -63,7 +81,7 @@
                SUM(A.SERVICE_AMOUNT) serviceAmount,
                SUM(A.VIRTUAL_AMOUNT) virtualAmount
         FROM(SELECT C.SHOP_ID,
-                    CONCAT(DATE_FORMAT(C.MONTH_DATE,'%Y'),'0101') YEARSTR,
+                    CONCAT(DATE_FORMAT(C.MONTH_DATE,'%Y'),'-01-01') YEARSTR,
                     C.TOTAL_ORDER,
                     C.SUCCEED_ORDER,
                     C.FAILED_ORDER,

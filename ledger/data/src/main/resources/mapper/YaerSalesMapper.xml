@@ -23,10 +23,14 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
-    <!-- 查询用户的年销售数据-->
-    <select id="findYearSalesList" resultMap="BaseResultMap">
+    <!-- 查询用户店铺的年销售数据-->
+    <select id="findShopYearSalesList" resultMap="BaseResultMap">
         SELECT C.*
         FROM YEAR_SALES C,USER_SHOP S WHERE C.USER_ID = #{userId} AND S.SHOP_STATE='1' AND S.SHOP_ID = C.SHOP_ID
+    </select>
+    <!-- 查询用户店铺汇总的年销售数据-->
+    <select id="findTotalYearSalesList" resultMap="BaseResultMap">
+        SELECT C.* FROM YEAR_SALES C WHERE C.USER_ID = #{userId} AND C.SHOP_ID IS NULL
     </select>
     <!--  统计店铺销售额-->
     <select id="countShopData" resultType="com.www.ledger.data.dto.ShopDTO">
@@ -51,6 +55,20 @@
               FROM  YEAR_SALES C,USER_SHOP S WHERE C.USER_ID = #{userId} AND S.SHOP_STATE='1' AND S.SHOP_ID = C.SHOP_ID
               ) A,SHOP_SALES S WHERE S.SHOP_ID = A.SHOP_ID
         GROUP BY A.SHOP_ID
+    </select>
+    <!--    根据所有店铺的年销售额汇总每年所有店铺销售额 -->
+    <select id="countAllYearData" resultType="com.www.ledger.data.dto.YearDTO">
+        SELECT DATE_FORMAT(A.YEAR,'%Y-%m-%d') yearStr,
+               SUM(A.TOTAL_ORDER) totalOrder,
+               SUM(A.SUCCEED_ORDER) succeedOrder,
+               SUM(A.FAILED_ORDER) failedOrder,
+               SUM(A.SALE_AMOUNT) saleAmount,
+               SUM(A.COST_AMOUNT) costAmount,
+               SUM(A.ADVERT_AMOUNT) advertAmount,
+               SUM(A.SERVICE_AMOUNT) serviceAmount,
+               SUM(A.VIRTUAL_AMOUNT) virtualAmount
+        FROM  YEAR_SALES A,user_shop S WHERE A.USER_ID = #{userId} AND A.SHOP_ID=S.SHOP_ID AND S.USER_ID = #{userId} AND S.SHOP_STATE ='1'
+        GROUP BY A.YEAR ORDER BY A.YEAR DESC
     </select>
     <!--  查询年销售额列表信息-->
     <select id="findYearList" resultType="com.www.ledger.data.dto.YearDTO">
@@ -85,7 +103,7 @@
             </otherwise>
         </choose>
         <if test="obj.yearStr != null and obj.yearStr != ''">
-            AND Y.YEAR = STR_TO_DATE(#{obj.yearStr},'%Y%m%d')
+            AND Y.YEAR = STR_TO_DATE(#{obj.yearStr},'%Y-%m-%d')
         </if>
         ORDER BY Y.YEAR DESC
     </select>

@@ -38,15 +38,15 @@
             </div>
           </template>
           净利率
-          <el-tooltip class="item" effect="light" content="净利率=净利润 / 总支出费 * 100%" placement="top">
+          <el-tooltip class="item" effect="light" content="净利率 = 净利润 / 总支出费 * 100%" placement="top">
             <el-progress :percentage="bookData.retProRat" color="red"></el-progress>
           </el-tooltip>
           毛利率
-          <el-tooltip class="item" effect="light" content="毛利率=毛利润 / 成本费 * 100%" placement="top">
+          <el-tooltip class="item" effect="light" content="毛利率 = 毛利润 / 成本费 * 100%" placement="top">
             <el-progress :percentage="bookData.groProRat" color="#f1e05a"></el-progress>
           </el-tooltip>
           订单成交率
-          <el-tooltip class="item" effect="light" content="订单成交率=成功订单量 / 订单量 * 100%" placement="top">
+          <el-tooltip class="item" effect="light" content="订单成交率 = 成功订单量 / 订单量 * 100%" placement="top">
             <el-progress :percentage="bookData.sucOrdRat"></el-progress>
           </el-tooltip>
         </el-card>
@@ -55,7 +55,7 @@
       <el-col :span="16">
         <el-row :gutter="20" class="mgb20">
           <el-col :span="8">
-            <el-tooltip class="item" effect="light" content="净利润=总销售额 - 总支出费" placement="top">
+            <el-tooltip class="item" effect="light" content="净利润 = 总销售额 - 总支出费" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-3">
                   <i class="el-icon-data-line grid-con-icon"></i>
@@ -68,7 +68,7 @@
             </el-tooltip>
           </el-col>
           <el-col :span="8">
-            <el-tooltip class="item" effect="light" content="毛利润=销售额 - 成本费" placement="top">
+            <el-tooltip class="item" effect="light" content="毛利润 = 销售额 - 成本费" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-3">
                   <i class="el-icon-data-analysis grid-con-icon"></i>
@@ -336,7 +336,7 @@ export default {
         let dateData = [];//日期坐标
         //res.data = [{shopNm:"test",day:[{day:2021/01/01,sales:100}]}]
         res.data.forEach(function (item) {
-          let shopData = {label:item.shopNm + "  (单位元)",data:[]};
+          let shopData = {label:item.shopNm + "  (元)",data:[]};
           item.day.forEach(function (dayItem){
             shopData.data.push(dayItem.sales);
             if (dateData.length < item.day.length){
@@ -354,7 +354,7 @@ export default {
       editForm.value.validate((valid) => {
         if (valid) {
           pageLoading.value = true;
-          axios.$http.post(request.editInfo,user).then(function (res) {
+          axios.$http.post(request.editInfo,user.value).then(function (res) {
             pageLoading.value = false;
             ElMessage.success(res.data);
             openEdit.value = false;

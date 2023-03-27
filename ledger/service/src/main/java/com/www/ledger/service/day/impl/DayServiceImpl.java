@@ -44,23 +44,47 @@ public class DayServiceImpl implements IDayService {
      */
     @Override
     public Result<String> saveAndCountDayData(String userId) {
-        //统计的日销售额
-        List<DayDTO> countList = orderInfoDAO.countDaySale(userId);
-        //查询存在的日销售额数据
-        List<DaySalesEntity> dayList = daySalesDAO.findDaySalesList(userId);
+        //统计的店铺日销售额
+        List<DayDTO> countShopList = orderInfoDAO.countShopDaySale(userId);
+        //查询存在的店铺日销售额数据
+        List<DaySalesEntity> dayShopList = daySalesDAO.findShopDaySalesList(userId);
+        //保存店铺日销售数据
+        boolean shopOk = this.saveDayData(countShopList,dayShopList,userId,true);
+        if (shopOk == false){
+            return new Result<>("统计失败");
+        }
+        //统计的店铺汇总日销售额
+        List<DayDTO> countTotalList = daySalesDAO.countTotalDaySale(userId);
+        //查询存在的店铺汇总日销售额数据
+        List<DaySalesEntity> dayTotalList = daySalesDAO.findTotalDaySalesList(userId);
+        //保存店铺汇总日销售数据
+        this.saveDayData(countTotalList,dayTotalList,userId,false);
+        return new Result<>("统计完成");
+    }
+    /**
+     * <p>@Description 根据统计出的日销售数据和已存在的日销售数据处理保存成新的日销售数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/27 20:26 </p>
+     * @param countList 统计出的日销售数据
+     * @param dayList 已存在的日销售数据
+     * @param userId 用户ID
+     * @param isShop true统计店铺的日销售额，false统计所有店铺汇总的日销售额
+     * @return true保存成功，false保存失败
+     */
+    private boolean saveDayData(List<DayDTO> countList,List<DaySalesEntity> dayList,String userId,boolean isShop){
         if(CollectionUtils.isEmpty(countList) && CollectionUtils.isNotEmpty(dayList)){
             //没有统计的日销售额但有日销售额数据，则需要删除日销售数据
-            if(daySalesDAO.deleteDayList(userId)){
-                return new Result<>("统计完成");
+            if(daySalesDAO.deleteDayList(userId,isShop)){
+                return true;
             }
-            return new Result<>("统计失败");
+            return false;
         }
         List<DaySalesEntity> insertList = new ArrayList<>();//待插入的数据
         List<DaySalesEntity> updateList = new ArrayList<>();//待更新的数据
         List<Long> deleteList = new ArrayList<>();//待删除的数据
-        //数据转换处理，key=店铺ID+日期，如：101320230101
+        //数据转换处理，key=店铺ID+日期，如：10132023-01-01
         Map<String,DaySalesEntity> entityMap = CollectionUtils.isEmpty(dayList) ? new HashMap<>()
-                : dayList.stream().collect(Collectors.toMap(k -> k.getShopId() + DateUtils.format(k.getDayDate(), DateFormatEnum.YYYYMMDD5), month -> month));
+                : dayList.stream().collect(Collectors.toMap(k -> k.getShopId() + DateUtils.format(k.getDayDate(), DateFormatEnum.YYYYMMDD1), month -> month));
         Map<String, DayDTO> dtoMap = CollectionUtils.isEmpty(countList) ? new HashMap<>()
                 : countList.stream().collect(Collectors.toMap(k -> k.getShopId() + k.getDayDateStr(), month -> month));
         //处理统计的日销售额
@@ -89,14 +113,14 @@ public class DayServiceImpl implements IDayService {
         });
         //查询已存在的日销售额数据（yearList）的主键在统计的日销售额（dtoMap）不存在，则说明没有日销售额数据，需要删除已存在的数据
         dayList.forEach(e -> {
-            if(!dtoMap.containsKey(e.getShopId() + DateUtils.format(e.getDayDate(), DateFormatEnum.YYYYMMDD5))){
+            if(!dtoMap.containsKey(e.getShopId() + DateUtils.format(e.getDayDate(), DateFormatEnum.YYYYMMDD1))){
                 deleteList.add(e.getDsId());
             }
         });
         daySalesDAO.updateBatchById(updateList,100);
         daySalesDAO.saveBatch(insertList,100);
         daySalesDAO.removeByIds(deleteList);
-        return new Result<>("统计完成");
+        return true;
     }
     /**
      * <p>@Description 计算日销售额数据 </p>

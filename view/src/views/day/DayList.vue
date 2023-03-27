@@ -33,7 +33,15 @@
         <!-- 店铺信息列表-->
         <el-table :data="tableData" border class="table" ref="multipleTable" :cell-class-name="addCellClass" header-cell-class-name="table-header">
           <el-table-column prop="day" label="日期" align="center" sortable></el-table-column>
-          <el-table-column prop="shopNm" label="店铺名称" align="center" sortable></el-table-column>
+          <el-table-column prop="shopNm" label="店铺名称" align="center" sortable width="120px;">
+            <template v-slot:header='scope'>
+              <span>店铺名称
+                <el-tooltip :aa="scope" class="item" effect="light" content="店铺名称为空，则该笔数据是所有店铺汇总的日销售额数据" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column prop="retPro" label="日净利润" align="center">
             <template v-slot:header='scope'>
               <span>日净利润

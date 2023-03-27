@@ -19,6 +19,15 @@ public interface IMonthSalesDAO extends IService<MonthSalesEntity> {
     /**
      * <p>@Description 删除用户的月销售数据 </p>
      * <p>@Author www </p>
+     * <p>@Date 2023/3/20 20:26 </p>
+     * @param userId 用户ID
+     * @param isShop true统计店铺的月销售额，false统计所有店铺的月销售额
+     * @return true删除成功，false删除失败
+     */
+    boolean deleteMonthList(String userId,boolean isShop);
+    /**
+     * <p>@Description 删除用户的月销售数据 </p>
+     * <p>@Author www </p>
      * <p>@Date 2023/3/20 20:40 </p>
      * @param userId 用户ID
      * @param msId 月销售ID
@@ -26,13 +35,21 @@ public interface IMonthSalesDAO extends IService<MonthSalesEntity> {
      */
     boolean deleteMonthSales(String userId,Long msId);
     /**
-     * <p>@Description 查询用户的月销售数据 </p>
+     * <p>@Description 查询用户店铺的月销售数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/20 20:40 </p>
      * @param userId 用户ID
-     * @return 月销售数据
+     * @return 店铺月销售数据
      */
-    List<MonthSalesEntity> findMonthSalesList(String userId);
+    List<MonthSalesEntity> findShopMonthSalesList(String userId);
+    /**
+     * <p>@Description 查询用户店铺汇总的月销售数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/20 20:40 </p>
+     * @param userId 用户ID
+     * @return 店铺汇总月销售数据
+     */
+    List<MonthSalesEntity> findTotalMonthSalesList(String userId);
     /**
      * <p>@Description 查询用户的月销售数据 </p>
      * <p>@Author www </p>
@@ -71,13 +88,21 @@ public interface IMonthSalesDAO extends IService<MonthSalesEntity> {
      */
     List<MonthDTO> findLastYearSales(String userId, String date);
     /**
-     * <p>@Description 统计年销售额 </p>
+     * <p>@Description 统计店铺的年销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 21:40 </p>
      * @param userId 用户ID
-     * @return
+     * @return 店铺的年销售额
      */
-    List<YearDTO> countYearData(String userId);
+    List<YearDTO> countShopYearData(String userId);
+    /**
+     * <p>@Description 统计店铺汇总的月销售额 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/18 21:40 </p>
+     * @param userId 用户ID
+     * @return 店铺汇总的月销售额
+     */
+    List<MonthDTO> countTotalMonthData(String userId);
     /**
      * <p>@Description 查询月销售额列表信息 </p>
      * <p>@Author www </p>

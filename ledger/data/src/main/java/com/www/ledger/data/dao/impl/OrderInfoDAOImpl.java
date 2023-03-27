@@ -87,17 +87,16 @@ public class OrderInfoDAOImpl extends ServiceImpl<OrderInfoMapper, OrderInfoEnti
         return orderInfoMapper.getMaxOrderDate(userId);
     }
     /**
-     * <p>@Description 统计日销售额 </p>
+     * <p>@Description 统计店铺日销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 15:19 </p>
      * @param userId 用户ID
-     * @return 日销售额
+     * @return 店铺日销售额
      */
     @Override
-    public List<DayDTO> countDaySale(String userId) {
-        return orderInfoMapper.countDaySale(userId);
+    public List<DayDTO> countShopDaySale(String userId) {
+        return orderInfoMapper.countShopDaySale(userId);
     }
-
     /**
      * <p>@Description 查询订单信息 </p>
      * <p>@Author www </p>

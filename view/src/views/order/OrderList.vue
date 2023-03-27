@@ -173,18 +173,20 @@ export default {
     const addRowClass = ({row,rowIndex}) => {
       //【交易成功】、【已发货，待签收】设置红色
       if (['4','3'].indexOf(row.ordSta) != -1) {
-        return 'tr-red';
+        return 'tr-success';
       }//【刷单】设置绿色
       else if (['7'].indexOf(row.ordSta) != -1) {
-        return 'tr-green';
-      }//【待确认】设置红色
+        return 'tr-virtual';
+      }//【待确认】设置蓝色
       else if (['0'].indexOf(row.ordSta) != -1) {
-        return 'tr-blue';
+        return 'tr-unconfirme';
+      }//【待发货】设置
+      else if (['8'].indexOf(row.ordSta) != -1) {
+        return 'tr-sending';
       }//【待支付】设置黄色
       else if (['10'].indexOf(row.ordSta) != -1) {
-        return 'tr-yellow';
-      }//其他设置灰色
-      else{
+        return 'tr-paidding';
+      }else {
         return 'tr-gray';
       }
     };
@@ -304,18 +306,27 @@ body {
   text-overflow: ellipsis; /* 溢出用省略号*/
   -webkit-box-orient: vertical;/*伸缩盒子的子元素排列：从上到下*/
 }
-.el-table .tr-red {
+/* 交易成功颜色 */
+.el-table .tr-success {
   color: red ;
 }
-.el-table .tr-yellow {
-  color: #f9db05 ;
+/* 待支付颜色 */
+.el-table .tr-paidding {
+  color: #e5bd32;
 }
-.el-table .tr-green {
+/* 刷单颜色 */
+.el-table .tr-virtual {
   color: #07bd07;
 }
-.el-table .tr-blue {
+/* 待确认颜色 */
+.el-table .tr-unconfirme {
   color: blue ;
 }
+/* 待发货颜色 */
+.el-table .tr-sending {
+  color: #db87de;
+}
+/*灰色*/
 .el-table .tr-gray {
   color: gainsboro ;
 }

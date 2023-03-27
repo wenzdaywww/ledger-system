@@ -27,7 +27,15 @@
           <el-table-column prop="msId" label="ID" v-if="false" align="center"></el-table-column>
           <el-table-column prop="month" label="月份" align="center" sortable></el-table-column>
           <el-table-column prop="shopId" label="店铺ID" v-if="false" align="center"></el-table-column>
-          <el-table-column prop="shopNm" label="店铺名称" align="center" sortable></el-table-column>
+          <el-table-column prop="shopNm" label="店铺名称" align="center" sortable width="120px;">
+            <template v-slot:header='scope'>
+              <span>店铺名称
+                <el-tooltip :aa="scope" class="item" effect="light" content="店铺名称为空，则该笔数据是所有店铺汇总的月销售额数据" placement="top">
+                 <i class="el-icon-question"></i>
+                </el-tooltip>
+              </span>
+            </template>
+          </el-table-column>
           <el-table-column prop="retPro" label="月净利润" align="center">
             <template v-slot:header='scope'>
               <span>月净利润
@@ -250,14 +258,14 @@ export default {
     //列添加颜色
     const addCellClass = ({row, column, rowIndex, columnIndex}) => {
       //列的label的名称
-      if (row.retPro > 0) {
+      if(!row.shopNm && columnIndex == 15){
+        return 'col-display-none div';
+      }else if (row.retPro > 0) {
         return 'col-red';
       }else if(row.retPro < 0){
         return 'col-green';
       }
-      if(!row.shopNm && columnIndex == 15){
-        return 'col-display-none div';
-      }
+
     }
     // 统计月销售额数
     const handleCount = () => {
