@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.www.ledger.data.dto.PayDTO;
 import com.www.ledger.data.entity.PayInfoEntity;
 
+import java.math.BigDecimal;
+
 /**
  * <p>@Description 支出信息Service接口 </p>
  * <p>@Version 1.0 </p>
@@ -12,6 +14,14 @@ import com.www.ledger.data.entity.PayInfoEntity;
  * <p>@Date 2023/3/13 20:45 </p>
  */
 public interface IPayInfoDAO extends IService<PayInfoEntity> {
+    /**
+     * <p>@Description 查询店铺保证金 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/29 22:32 </p>
+     * @param userId 用户ID
+     * @return 店铺保证金
+     */
+    BigDecimal findShopGuarantee(String userId);
     /**
      * <p>@Description 查询支出信息 </p>
      * <p>@Author www </p>

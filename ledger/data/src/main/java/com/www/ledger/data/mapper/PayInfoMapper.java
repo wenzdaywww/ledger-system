@@ -7,6 +7,8 @@ import com.www.ledger.data.entity.PayInfoEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
+
 /**
  * <p>@Description 支出信息Mapper </p>
  * <p>@Version 1.0 </p>
@@ -15,6 +17,14 @@ import org.apache.ibatis.annotations.Param;
  */
 @Mapper
 public interface PayInfoMapper extends BaseMapper<PayInfoEntity> {
+    /**
+     * <p>@Description 查询店铺保证金 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/29 22:32 </p>
+     * @param userId 用户ID
+     * @return 店铺保证金
+     */
+    BigDecimal findShopGuarantee(@Param("userId")String userId);
     /**
      * <p>@Description 查询支出信息列表 </p>
      * <p>@Author www </p>

@@ -23,20 +23,6 @@ public class UserShopServiceImpl extends ServiceImpl<UserShopMapper, UserShopEnt
     private UserShopMapper userShopMapper;
 
     /**
-     * <p>@Description 查询用户的有效店铺数量 </p>
-     * <p>@Author www </p>
-     * <p>@Date 2023/3/20 20:36 </p>
-     * @param userId 用户ID
-     * @return 有效店铺数量
-     */
-    @Override
-    public int countUserShop(String userId) {
-        QueryWrapper<UserShopEntity> shopWrapper = new QueryWrapper<>();
-        shopWrapper.lambda().eq(UserShopEntity::getUserId,userId)
-                .eq(UserShopEntity::getShopState, CodeDict.getValue(CodeTypeEnum.ShopState_Valid.getType(),CodeTypeEnum.ShopState_Valid.getKey()));
-        return userShopMapper.selectCount(shopWrapper);
-    }
-    /**
      * <p>@Description 查询用户的有效店铺 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/20 20:07 </p>

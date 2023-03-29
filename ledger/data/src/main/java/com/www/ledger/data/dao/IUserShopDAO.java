@@ -19,12 +19,4 @@ public interface IUserShopDAO extends IService<UserShopEntity> {
      * @return 店铺信息
      */
     UserShopEntity findUserShop(String userId,Long shopId);
-    /**
-     * <p>@Description 查询用户的有效店铺数量 </p>
-     * <p>@Author www </p>
-     * <p>@Date 2023/3/20 20:36 </p>
-     * @param userId 用户ID
-     * @return 有效店铺数量
-     */
-    int countUserShop(String userId);
 }

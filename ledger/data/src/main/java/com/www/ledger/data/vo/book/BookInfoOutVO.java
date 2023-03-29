@@ -44,8 +44,6 @@ public class BookInfoOutVO implements Serializable {
     private BigDecimal virAmt;
     /** 总支出费 **/
     private BigDecimal talCos;
-    /** 店铺数 **/
-    private int shopNum;
-    /** 商品数 **/
-    private int gdsNum;
+    /** 总店铺保证金 **/
+    private BigDecimal guatee;
 }

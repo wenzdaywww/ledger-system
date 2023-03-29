@@ -119,7 +119,7 @@
           <el-table-column prop="advAmt" label="月推广费" align="center">
             <template v-slot:header='scope'>
               <span>月推广费
-                <el-tooltip :aa="scope" class="item" effect="light" content="需要手动录入" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="根据【支出管理】中的推广费汇总" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -128,7 +128,7 @@
           <el-table-column prop="serAmt" label="月服务费" align="center">
             <template v-slot:header='scope'>
               <span>月服务费
-                <el-tooltip :aa="scope" class="item" effect="light" content="需要手动录入" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="根据【支出管理】中的服务费汇总" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>

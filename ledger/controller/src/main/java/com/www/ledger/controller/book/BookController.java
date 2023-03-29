@@ -103,8 +103,8 @@ public class BookController {
                         .setSucOrdRat(dto.getSucceedOrderRate()).setFaiOrd(dto.getFailedOrder())
                         .setSalAmt(dto.getSaleAmount()).setCosAmt(dto.getCostAmount())
                         .setAdvAmt(dto.getAdvertAmount()).setSerAmt(dto.getServiceAmount())
-                        .setVirAmt(dto.getVirtualAmount()).setShopNum(dto.getShopNum())
-                        .setGdsNum(dto.getGoodsNum()).setTalCos(dto.getTotalCost());
+                        .setVirAmt(dto.getVirtualAmount()).setTalCos(dto.getTotalCost())
+                        .setGuatee(dto.getGuarantee());
                     return tempOutVO;
                 }).orElse(null);
         return new Result<>(dtoResult,bookInfoOutVO);

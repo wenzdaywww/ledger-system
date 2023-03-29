@@ -1,7 +1,5 @@
 package com.www.ledger.service.book.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.www.common.config.code.CodeDict;
 import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.response.Result;
 import com.www.common.utils.DateUtils;
@@ -9,16 +7,14 @@ import com.www.common.utils.MoneyUtils;
 import com.www.ledger.data.dao.IDaySalesDAO;
 import com.www.ledger.data.dao.IMonthSalesDAO;
 import com.www.ledger.data.dao.IOrderInfoDAO;
-import com.www.ledger.data.dao.IShopGoodsDAO;
+import com.www.ledger.data.dao.IPayInfoDAO;
 import com.www.ledger.data.dao.IShopSalesDAO;
 import com.www.ledger.data.dao.IUserBookDAO;
 import com.www.ledger.data.dao.IUserShopDAO;
 import com.www.ledger.data.dto.BookDTO;
 import com.www.ledger.data.dto.DayDTO;
 import com.www.ledger.data.dto.MonthDTO;
-import com.www.ledger.data.entity.ShopGoodsEntity;
 import com.www.ledger.data.entity.UserBookEntity;
-import com.www.ledger.data.enums.CodeTypeEnum;
 import com.www.ledger.service.book.IBookService;
 import com.www.ledger.service.day.IDayService;
 import com.www.ledger.service.month.IMonthService;
@@ -62,15 +58,13 @@ public class BookServiceImpl implements IBookService {
     @Autowired
     private IDaySalesDAO daySalesDAO;
     @Autowired
-    private IShopGoodsDAO shopGoodsDAO;
-    @Autowired
     private IShopSalesDAO shopSalesDAO;
     @Autowired
     private IMonthSalesDAO monthSalesDAO;
     @Autowired
     private IUserBookDAO userBookDAO;
     @Autowired
-    private IUserShopDAO userShopDAO;
+    private IPayInfoDAO payInfoDAO;
 
 
     /**
@@ -228,12 +222,7 @@ public class BookServiceImpl implements IBookService {
         bookDTO.setSucceedOrderRate(totalNum.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
                 : (succeedNum.divide(totalNum,4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"))).setScale(2, RoundingMode.HALF_UP));
         //查询店铺数量
-        bookDTO.setShopNum(userShopDAO.countUserShop(userId));
-        //查询商品数
-        QueryWrapper<ShopGoodsEntity> goodsWrapper = new QueryWrapper<>();
-        goodsWrapper.lambda().eq(ShopGoodsEntity::getUserId,userId)
-                .ne(ShopGoodsEntity::getGoodsState,CodeDict.getValue(CodeTypeEnum.GoodsState_Del.getType(),CodeTypeEnum.GoodsState_Del.getKey()));
-        bookDTO.setGoodsNum(shopGoodsDAO.count(goodsWrapper));
+        bookDTO.setGuarantee(payInfoDAO.findShopGuarantee(userId));
         return new Result<>(bookDTO);
     }
 }

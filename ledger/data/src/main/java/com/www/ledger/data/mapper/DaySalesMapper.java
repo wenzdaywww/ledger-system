@@ -28,7 +28,7 @@ public interface DaySalesMapper extends BaseMapper<DaySalesEntity> {
      * @param endDate 截止日期
      * @return 店铺汇总日销售额
      */
-    List<DayDTO> findLastDaySales(@Param("userId")String userId,@Param("startData") String startData,@Param("endDate") String endDate);
+    List<DayDTO> findLastDaySales(@Param("userId") String userId,@Param("startData") String startData,@Param("endDate") String endDate);
     /**
      * <p>@Description 统计店铺月销售额 </p>
      * <p>@Author www </p>

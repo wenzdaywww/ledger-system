@@ -208,8 +208,8 @@
               <div class="grid-content grid-con-4">
                 <i class="el-icon-s-shop grid-con-icon"></i>
                 <div class="grid-cont-right">
-                  <div class="grid-num">{{ bookData.shopNum }}</div>
-                  <div>店铺数</div>
+                  <div class="grid-num">{{ bookData.guatee }}</div>
+                  <div>总店铺保证金</div>
                 </div>
               </div>
             </el-card>

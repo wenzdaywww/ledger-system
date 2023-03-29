@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+
 /**
  * <p>@Description 支出信息DAO实现类 </p>
  * <p>@Version 1.0 </p>
@@ -23,6 +25,17 @@ public class PayInfoDAOImpl extends ServiceImpl<PayInfoMapper, PayInfoEntity> im
     @Autowired
     private PayInfoMapper payInfoMapper;
 
+    /**
+     * <p>@Description 查询店铺保证金 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/29 22:32 </p>
+     * @param userId 用户ID
+     * @return 店铺保证金
+     */
+    @Override
+    public BigDecimal findShopGuarantee(String userId) {
+        return payInfoMapper.findShopGuarantee(userId);
+    }
     /**
      * <p>@Description 查询支出信息 </p>
      * <p>@Author www </p>

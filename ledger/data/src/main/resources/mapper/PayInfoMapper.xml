@@ -13,6 +13,14 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
+    <!-- 查询店铺保证金-->
+    <select id="findShopGuarantee" resultType="java.math.BigDecimal">
+        SELECT SUM(IFNULL(P.PAY_AMOUNT,0)) amount
+        FROM PAY_INFO P,USER_SHOP S
+        WHERE P.SHOP_ID = S.SHOP_ID AND S.SHOP_STATE = '1'
+          AND P.USER_ID = #{userId} AND P.USER_ID = #{userId}
+          AND P.PAY_TYPE = '3'
+    </select>
     <!--    查询支出信息列表-->
     <select id="findPayList" resultType="com.www.ledger.data.dto.PayDTO">
         SELECT P.PAY_ID payId,
