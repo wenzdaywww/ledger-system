@@ -64,6 +64,10 @@ export default {
         index: "/order",
         title: "订单信息",
       },{
+        icon: "el-icon-bank-card",
+        index: "/pay",
+        title: "支出管理",
+      },{
         icon: "el-icon-s-goods",
         index: "/goods",
         title: "商品信息",

@@ -62,20 +62,6 @@ public class OrderInfoDAOImpl extends ServiceImpl<OrderInfoMapper, OrderInfoEnti
         return orderInfoMapper.selectOne(wrapper);
     }
     /**
-     * <p>@Description 查询销量店铺近些日的销售额 </p>
-     * <p>@Author www </p>
-     * <p>@Date 2023/3/19 19:19 </p>
-     * @param userId 用户ID
-     * @param shopList 待统计的店铺ID
-     * @param minDate 订单统计起始日期
-     * @param maxDate 订单统计截止日期
-     * @return 店铺近些日的销售额
-     */
-    @Override
-    public List<OrderDTO> findMaxSalesOrder(String userId, List<Long> shopList, String minDate, String maxDate) {
-        return orderInfoMapper.findMaxSalesOrder(userId,shopList,minDate,maxDate);
-    }
-    /**
      * <p>@Description 获取订单中最大的日期 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/19 19:08 </p>

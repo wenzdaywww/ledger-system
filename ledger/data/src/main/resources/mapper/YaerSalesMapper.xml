@@ -52,7 +52,7 @@
                      C.ADVERT_AMOUNT,
                      C.SERVICE_AMOUNT,
                      C.VIRTUAL_AMOUNT
-              FROM  YEAR_SALES C,USER_SHOP S WHERE C.USER_ID = #{userId} AND S.SHOP_STATE='1' AND S.SHOP_ID = C.SHOP_ID
+              FROM  YEAR_SALES C,USER_SHOP S WHERE C.USER_ID = #{userId}  AND C.SHOP_ID IS NOT NULL AND S.SHOP_STATE='1' AND S.SHOP_ID = C.SHOP_ID
               ) A,SHOP_SALES S WHERE S.SHOP_ID = A.SHOP_ID
         GROUP BY A.SHOP_ID
     </select>

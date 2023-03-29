@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.www.common.config.mybatis.annotation.RowLimitInterceptor;
 import com.www.ledger.data.dto.DayDTO;
-import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.dto.OrderDTO;
 import com.www.ledger.data.entity.OrderInfoEntity;
 import org.apache.ibatis.annotations.Mapper;
@@ -20,17 +19,6 @@ import java.util.List;
  */
 @Mapper
 public interface OrderInfoMapper extends BaseMapper<OrderInfoEntity> {
-    /**
-     * <p>@Description 查询销量店铺近些日的销售额 </p>
-     * <p>@Author www </p>
-     * <p>@Date 2023/3/19 19:19 </p>
-     * @param userId 用户ID
-     * @param shopList 待统计的店铺ID
-     * @param minDate 订单统计起始日期
-     * @param maxDate 订单统计截止日期
-     * @return 店铺近些日的销售额
-     */
-    List<OrderDTO> findMaxSalesOrder(@Param("userId") String userId, @Param("shop") List<Long> shopList, @Param("minDt") String minDate, @Param("maxDt") String maxDate);
     /**
      * <p>@Description 获取订单中最大的日期 </p>
      * <p>@Author www </p>

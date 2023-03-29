@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.www.ledger.data.mapper.PayInfoMapper">
+    <resultMap id="BaseResultMap" type="com.www.ledger.data.entity.PayInfoEntity">
+        <!--@Table PAY_INFO-->
+        <id column="PAY_ID" property="payId" />
+        <result column="SHOP_ID" property="shopId" />
+        <result column="USER_ID" property="userId" />
+        <result column="PAY_DATE" property="payDate" />
+        <result column="PAY_TYPE" property="payType" />
+        <result column="PAY_AMOUNT" property="payAmount" />
+        <result column="REMARK" property="remark" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="CREATE_TIME" property="createTime" />
+    </resultMap>
+    <!--    查询支出信息列表-->
+    <select id="findPayList" resultType="com.www.ledger.data.dto.PayDTO">
+        SELECT P.PAY_ID payId,
+               DATE_FORMAT(P.PAY_DATE,'%Y-%m-%d') payDateStr,
+               S.SHOP_ID shopId,
+               S.SHOP_NAME shopName,
+               P.PAY_TYPE  payType,
+               P.PAY_AMOUNT payAmount,
+               P.REMARK remark
+        FROM PAY_INFO P,USER_SHOP S
+        WHERE P.SHOP_ID = S.SHOP_ID AND P.USER_ID = #{obj.userId} AND S.USER_ID = #{obj.userId}
+            AND S.SHOP_STATE = '1'
+        <if test="obj.shopId != null and obj.shopId != ''">
+            AND P.SHOP_ID = #{obj.shopId}
+        </if>
+        <if test="obj.payType != null and obj.payType != ''">
+            AND P.PAY_TYPE = #{obj.payType}
+        </if>
+        <if test="obj.startDate != null and obj.startDate != ''">
+            AND P.PAY_DATE <![CDATA[ >= ]]> STR_TO_DATE(#{obj.startDate},'%Y-%m-%d')
+        </if>
+        <if test="obj.endDate != null and obj.endDate != ''">
+            AND P.PAY_DATE <![CDATA[ <= ]]> STR_TO_DATE(#{obj.endDate},'%Y-%m-%d')
+        </if>
+        ORDER BY P.PAY_DATE DESC,P.SHOP_ID
+    </select>
+</mapper>

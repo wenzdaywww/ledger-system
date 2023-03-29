@@ -10,7 +10,7 @@
           <el-select v-model="query.shopTp" placeholder="请选择店铺平台" class="handle-select mr10" style="width: 250px">
             <el-option v-for="item in shopTpCode" :key="item.value" :label="item.name" :value="item.value"></el-option>
           </el-select>
-          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>查询</el-button>
           <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
           <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round plain>新增店铺</el-button>
           <el-tooltip class="item" effect="light" content="根据年销售统计店销售额" placement="top">

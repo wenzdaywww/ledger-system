@@ -23,25 +23,6 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
-    <!-- 查询销量前3店铺近10日的销售额-->
-    <select id="findMaxSalesOrder" resultType="com.www.ledger.data.dto.OrderDTO">
-        SELECT R.SHOP_ID shopId,
-               S.SHOP_NAME shopName,
-               R.ORDER_DATE orderDate,
-               DATE_FORMAT(R.ORDER_DATE,'%Y.%c.%e') orderDateStr,
-               SUM(R.SALE_AMOUNT) saleAmount
-        FROM ORDER_INFO R,USER_SHOP S
-        WHERE R.USER_ID = #{userId} AND S.USER_ID = #{userId}
-            AND R.SHOP_ID = S.SHOP_ID
-            AND R.SHOP_ID IN
-            <foreach collection="shop" item="id" separator="," open="(" close=")">
-                #{id}
-            </foreach>
-            AND R.ORDER_DATE <![CDATA[ <= ]]> STR_TO_DATE(#{maxDt},'%Y-%m-%d')
-            AND R.ORDER_DATE <![CDATA[ >= ]]> STR_TO_DATE(#{minDt},'%Y-%m-%d')
-        GROUP BY R.SHOP_ID,R.ORDER_DATE
-        ORDER BY R.SHOP_ID,R.ORDER_DATE ASC
-    </select>
     <!-- 获取订单中最大的日期-->
     <select id="getMaxOrderDate" resultType="java.lang.String">
         SELECT date_format(MAX(R.ORDER_DATE),'%Y-%m-%d') MAX_DATE

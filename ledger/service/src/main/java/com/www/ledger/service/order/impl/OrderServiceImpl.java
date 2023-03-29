@@ -90,7 +90,7 @@ public class OrderServiceImpl implements IOrderService {
         List<OrderRowDTO> saveList = new ArrayList<>();
         List<OrderRowDTO> failList = orderImportService.handleOrderData(importList,saveList,shopEntity);
         //保存导入的订单数据
-        String sucMsg = this.saveimportOrderData(saveList);
+        String sucMsg = this.saveImportOrderData(saveList);
         StringBuilder resultSb = new StringBuilder();
         String[] msgArr = new String[2];
         resultSb.append("导入的订单文件共有").append(CollectionUtils.size(importList)-1).append("笔订单。").append(sucMsg);
@@ -170,7 +170,7 @@ public class OrderServiceImpl implements IOrderService {
      * @param saveList 待保存的订单数据
      * @return 保存成功信息
      */
-    private String saveimportOrderData(List<OrderRowDTO> saveList){
+    private String saveImportOrderData(List<OrderRowDTO> saveList){
         if(CollectionUtils.isEmpty(saveList)){
             return CharConstant.EMPTY;
         }

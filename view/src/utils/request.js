@@ -31,8 +31,6 @@ export default {
     bookYear: "api/book/year",
     //近10天销售额前3名店铺销售额趋势图
     bookDay: "api/book/day",
-    //导出报表
-    bookExp: "api/book/exp",
 
     //查询我的店铺列表
     shopList: "api/shop/list",
@@ -79,5 +77,12 @@ export default {
     //删除订单信息
     delOrder: "api/order/dlt/",
     //导入订单信息
-    importOrder: "api/order/ipt"
+    importOrder: "api/order/ipt",
+
+    //新增/修改我的支出信息
+    payEdit: "api/pay/info",
+    //删除我的支出信息
+    payDel: "api/pay/dlt/",
+    //查询支出信息列表
+    payList: "api/pay/list"
 }

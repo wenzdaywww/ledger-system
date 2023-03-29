@@ -3,8 +3,8 @@ package com.www.ledger.controller.book;
 import com.www.common.config.security.meta.JwtAuthorizationTokenFilter;
 import com.www.common.data.response.Result;
 import com.www.ledger.data.dto.BookDTO;
+import com.www.ledger.data.dto.DayDTO;
 import com.www.ledger.data.dto.MonthDTO;
-import com.www.ledger.data.dto.OrderDTO;
 import com.www.ledger.data.vo.book.BookDayOutVO;
 import com.www.ledger.data.vo.book.BookInfoOutVO;
 import com.www.ledger.data.vo.book.BookYearOutVO;
@@ -33,34 +33,22 @@ public class BookController {
     private IBookService bookService;
 
     /**
-     * <p>@Description 查询近些天销售额排名靠前店铺销售额趋势图 </p>
+     * <p>@Description 查询日期区间的店铺汇总日销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/19 16:45 </p>
-     * @return
+     * @return 店铺汇总日销售额
      */
     @GetMapping("day")
     public Result<List<BookDayOutVO>> findLastDaySales(){
-        Result<List<List<OrderDTO>>> listResult = bookService.findLastDaySales(JwtAuthorizationTokenFilter.getUserId());
+        Result<List<DayDTO>> listResult = bookService.findLastDaySales(JwtAuthorizationTokenFilter.getUserId());
         List<BookDayOutVO> lastList = Optional.ofNullable(listResult.getData()).filter(e -> CollectionUtils.isNotEmpty(listResult.getData()))
-                .map(list0 -> {
+                .map(list -> {
                     //第1层List,即前3店铺
                     List<BookDayOutVO> tempList = new ArrayList<>();
-                    list0.forEach(list1 -> {
-                        BookDayOutVO dayOutVO = new BookDayOutVO();
-                        dayOutVO.setShopNm(list1.get(0).getShopName());
-                        //第2层List,即店铺的订单
-                        List<BookDayOutVO.DaySales> dayList = Optional.ofNullable(list1).filter(e1 -> CollectionUtils.isNotEmpty(list1))
-                                .map(list3 -> {
-                                    List<BookDayOutVO.DaySales> dayTempList = new ArrayList<>();
-                                    list3.forEach(dto -> {
-                                        BookDayOutVO.DaySales day = new BookDayOutVO.DaySales();
-                                        day.setDay(dto.getOrderDateStr()).setSales(dto.getSaleAmount());
-                                        dayTempList.add(day);
-                                    });
-                                    return dayTempList;
-                                }).orElse(null);
-                        dayOutVO.setDay(dayList);
-                        tempList.add(dayOutVO);
+                    list.forEach(dto -> {
+                        BookDayOutVO outVO = new BookDayOutVO();
+                        outVO.setDay(dto.getDayDateStr()).setSales(dto.getSaleAmount());
+                        tempList.add(outVO);
                     });
                     return tempList;
                 }).orElse(null);

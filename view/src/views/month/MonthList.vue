@@ -14,9 +14,8 @@
           <el-tooltip class="item" effect="light" content="按店铺查：即查询店铺的月销售额&nbsp;&nbsp;&nbsp;按月份查：即查询所有店铺的月销售额" placement="top">
             <el-switch v-model="query.all" inactive-text="按店铺查" active-text="按月份查" style="margin-right: 10px;"></el-switch>
           </el-tooltip>
-          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>查询</el-button>
           <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
-          <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round plain>新增月销售</el-button>
           <el-tooltip class="item" effect="light" content="根据订单信息统计每月销售额" placement="top">
             <el-button type="success" icon="el-icon-s-data" @click="handleCount" round plain>统计月销售</el-button>
           </el-tooltip>
@@ -125,15 +124,6 @@
                 </el-tooltip>
               </span>
             </template>
-            <template #default="scope">
-              {{scope.row.advAmt}}<br/>
-              <el-tooltip class="item" effect="light" content="增加推广费" placement="top">
-                <div class="el-icon-plus" @click="handleIncrease(scope.row)" style="width: 16px;height: 16px;margin-right:5px;color: deepskyblue;"></div>
-              </el-tooltip>
-              <el-tooltip class="item" effect="light" content="减少推广费" placement="top">
-                <div class="el-icon-minus" @click="handleReduce(scope.row)" style="width: 16px;height: 16px;color: red;"></div>
-              </el-tooltip>
-            </template>
           </el-table-column>
           <el-table-column prop="serAmt" label="月服务费" align="center">
             <template v-slot:header='scope'>
@@ -142,15 +132,6 @@
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
-            </template>
-            <template #default="scope">
-              {{scope.row.serAmt}}<br/>
-              <el-tooltip class="item" effect="light" content="增加服务费" placement="top">
-                <div class="el-icon-plus" @click="handleIncrease(scope.row)" style="width: 16px;height: 16px;margin-right:5px;color: deepskyblue"></div>
-              </el-tooltip>
-              <el-tooltip class="item" effect="light" content="减少服务费" placement="top">
-                <div class="el-icon-minus" @click="handleReduce(scope.row)" style="width: 16px;height: 16px;margin-right:5px;color: red;"></div>
-              </el-tooltip>
             </template>
           </el-table-column>
           <el-table-column prop="virAmt" label="月刷单费" align="center">
@@ -171,16 +152,6 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" align="center" width="70px">
-            <template #default="scope">
-              <el-tooltip class="item" effect="light" content="新增" placement="top">
-                <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)"></el-button>
-              </el-tooltip>
-              <el-tooltip class="item" effect="light" content="删除" placement="top">
-                <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.row)"></el-button>
-              </el-tooltip>
-            </template>
-          </el-table-column>
         </el-table>
         <div class="pagination">
           <el-pagination background layout="total, prev, pager, next" :current-page="query.pageNum"
@@ -191,22 +162,19 @@
       <!-- 新增/编辑月销售弹出框 -->
       <!-- @findOrderList="findOrderList" 设置子弹窗可以调用父页面的方法 -->
       <month-edit ref="monthDialog" @findMonthList="findMonthList"></month-edit>
-      <!-- 增加/减少月销售费用弹出框-->
-      <month-amt-edit ref="monthAmtDialog" @findMonthList="findMonthList"></month-amt-edit>
     </el-card>
   </div>
 </template>
 
 <script>
-import { ref, reactive, getCurrentInstance } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+import {getCurrentInstance, reactive, ref} from "vue";
+import {ElMessage} from "element-plus";
 import request from '../../utils/request';
 import monthEdit from "./MonthEdit.vue";
-import monthAmtEdit from "./MonthAmtEdit.vue";
 
 export default {
   name: "monthSales",
-  components: { monthEdit,monthAmtEdit },
+  components: { monthEdit },
   setup() {
     // 接口请求
     const axios = getCurrentInstance().appContext.config.globalProperties;
@@ -222,8 +190,6 @@ export default {
     const pageLoading = ref(false);
     //月销售弹出窗对象
     const monthDialog = ref();
-    //月销售金额弹出窗对象
-    const monthAmtDialog = ref();
     // 表格数据
     const tableData = ref([]);
     // 页数
@@ -247,25 +213,14 @@ export default {
       query.pageNum = val;
       findMonthList();
     };
-    //增加月销售费用弹出框
-    const handleIncrease = (row) => {
-      monthAmtDialog.value.openMonthAmtDialog(row,true);//调用子组件方法
-    };
-    //减少月销售费用弹出框
-    const handleReduce = (row) => {
-      monthAmtDialog.value.openMonthAmtDialog(row,false);//调用子组件方法
-    };
     //列添加颜色
     const addCellClass = ({row, column, rowIndex, columnIndex}) => {
       //列的label的名称
-      if(!row.shopNm && columnIndex == 15){
-        return 'col-display-none div';
-      }else if (row.retPro > 0) {
+      if (row.retPro > 0) {
         return 'col-red';
       }else if(row.retPro < 0){
         return 'col-green';
       }
-
     }
     // 统计月销售额数
     const handleCount = () => {
@@ -275,28 +230,6 @@ export default {
         ElMessage.success(res.data);
         findMonthList();
       }).catch(err => {pageLoading.value = false;});
-    };
-    //删除月销售额数据
-    const handleDelete = (row) => {
-      // 二次确认删除
-      ElMessageBox.confirm("确定要删除店铺【" + row.shopNm + "】" + row.month + "月份的销售数据吗？", "提示",
-          {confirmButtonText: '确定',cancelButtonText: '关闭',type: 'warning',center: true,roundButton: true}
-      ).then(() => {
-        pageLoading.value = true;
-        axios.$http.post(request.delMonth+row.msId, null).then(function (res) {
-          pageLoading.value = false;
-          ElMessage.success(res.data);
-          findMonthList();
-        });
-      }).catch(err => {pageLoading.value = false;});
-    };
-    //新增月销售额数据
-    const handleAdd = () => {
-      monthDialog.value.openMonthDialog("新增月销售额",null,userShop);//调用子组件方法
-    };
-    //编辑月销售额数据
-    const handleEdit = (row) => {
-      monthDialog.value.openMonthDialog("编辑月销售额",row,userShop);//调用子组件方法
     };
     // 获取表格数据
     const findMonthList = () => {
@@ -317,9 +250,8 @@ export default {
       });
     };
     getUserShopArr();
-    return { query,tableData,pageTotal,userShop,monthDialog,monthAmtDialog,pageLoading,
-      handleSearch,handleReset,handlePageChange,handleCount,handleAdd,handleDelete,
-      handleEdit,findMonthList,handleIncrease,handleReduce,addCellClass};
+    return { query,tableData,pageTotal,userShop,monthDialog,pageLoading,
+      handleSearch,handleReset,handlePageChange,handleCount,findMonthList,addCellClass};
   }
 };
 </script>
@@ -353,8 +285,5 @@ export default {
 }
 /deep/.col-gray {
   color: black ;
-}
-/deep/.col-display-none div{
-  display: none;
 }
 </style>

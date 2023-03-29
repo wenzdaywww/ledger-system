@@ -22,7 +22,7 @@
               <el-tooltip class="item" effect="light" content="按店铺查：即查询店铺的日销售额&nbsp;&nbsp;&nbsp;按日查：即查询所有店铺的日销售额" placement="top">
                 <el-switch v-model="query.all" inactive-text="按店铺查" active-text="按日期查" style="margin-right: 10px;"></el-switch>
               </el-tooltip>
-              <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
+              <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>查询</el-button>
               <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
               <el-tooltip class="item" effect="light" content="根据订单信息统计日销售额" placement="top">
                 <el-button type="success" icon="el-icon-s-data" @click="handleCount" round plain>统计日销售</el-button>

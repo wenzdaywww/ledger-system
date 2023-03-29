@@ -35,7 +35,7 @@
           </el-row>
           <el-row style="margin-bottom: 5px;">
             <el-col>
-              <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>搜索</el-button>
+              <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>查询</el-button>
               <el-button icon="el-icon-refresh-left" @click="handleReset" round plain>重置</el-button>
               <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round plain>新增订单</el-button>
               <el-button type="success" icon="el-icon-upload2" @click="handleImport" round plain>导入订单</el-button>
@@ -328,6 +328,6 @@ body {
 }
 /*灰色*/
 .el-table .tr-gray {
-  color: gainsboro ;
+  color: #83868d ;
 }
 </style>

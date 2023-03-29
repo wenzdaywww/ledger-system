@@ -14,7 +14,7 @@
         <div class="handle-box">
           <el-input v-model="query.shopId" placeholder="店铺ID" class="handle-input mr10"></el-input>
           <el-input v-model="query.shopNm" placeholder="店铺名称" class="handle-input mr10"></el-input>
-          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round>搜索</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch" round>查询</el-button>
           <el-button icon="el-icon-refresh-left" @click="handleReset" round>重置</el-button>
           <el-button type="danger" icon="el-icon-plus" @click="handleAdd" round>新增店铺</el-button>
         </div>

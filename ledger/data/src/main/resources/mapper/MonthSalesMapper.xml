@@ -32,22 +32,14 @@
     <select id="findTotalMonthSalesList" resultMap="BaseResultMap">
         SELECT M.* FROM MONTH_SALES M WHERE M.USER_ID = #{userId}  AND M.SHOP_ID IS NULL
     </select>
-    <!-- 查询用户monthStr月份销量前3的店铺-->
-    <select id="findMaxSalesShop" resultType="java.lang.Long">
-        SELECT M.SHOP_ID FROM MONTH_SALES M
-        WHERE M.USER_ID = #{userId} AND M.MONTH_DATE = STR_TO_DATE(#{month},'%Y-%m-%d') AND M.SHOP_ID IS NOT NULL
-        ORDER BY M.SALE_AMOUNT DESC
-        LIMIT 1
-    </select>
     <!-- 查询用户近一年的销售额-->
     <select id="findLastYearSales" resultType="com.www.ledger.data.dto.MonthDTO">
         SELECT  D.MONTH_STR monthDateStr,
                 SUM(D.SALE_AMOUNT) saleAmount
         FROM (SELECT DATE_FORMAT(M.MONTH_DATE,'%Y年%m月') MONTH_STR,
                      M.SALE_AMOUNT
-        FROM MONTH_SALES M,USER_SHOP S
-        WHERE M.USER_ID = #{userId} AND S.USER_ID = #{userId}
-                AND M.SHOP_ID=S.SHOP_ID AND S.SHOP_STATE='1'
+        FROM MONTH_SALES M
+        WHERE M.USER_ID = #{userId} AND M.SHOP_ID IS NULL
                 AND M.MONTH_DATE <![CDATA[ <= ]]>  STR_TO_DATE(#{date},'%Y-%m-%d')
                 AND M.MONTH_DATE <![CDATA[ >= ]]>  DATE_SUB(STR_TO_DATE(#{date},'%Y-%m-%d'),INTERVAL 1 YEAR)
               ORDER BY M.MONTH_DATE ASC ) D

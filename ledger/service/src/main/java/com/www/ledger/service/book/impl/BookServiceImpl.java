@@ -6,6 +6,7 @@ import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.response.Result;
 import com.www.common.utils.DateUtils;
 import com.www.common.utils.MoneyUtils;
+import com.www.ledger.data.dao.IDaySalesDAO;
 import com.www.ledger.data.dao.IMonthSalesDAO;
 import com.www.ledger.data.dao.IOrderInfoDAO;
 import com.www.ledger.data.dao.IShopGoodsDAO;
@@ -13,11 +14,10 @@ import com.www.ledger.data.dao.IShopSalesDAO;
 import com.www.ledger.data.dao.IUserBookDAO;
 import com.www.ledger.data.dao.IUserShopDAO;
 import com.www.ledger.data.dto.BookDTO;
+import com.www.ledger.data.dto.DayDTO;
 import com.www.ledger.data.dto.MonthDTO;
-import com.www.ledger.data.dto.OrderDTO;
 import com.www.ledger.data.entity.ShopGoodsEntity;
 import com.www.ledger.data.entity.UserBookEntity;
-import com.www.ledger.data.entity.UserShopEntity;
 import com.www.ledger.data.enums.CodeTypeEnum;
 import com.www.ledger.service.book.IBookService;
 import com.www.ledger.service.day.IDayService;
@@ -60,6 +60,8 @@ public class BookServiceImpl implements IBookService {
     @Autowired
     private IOrderInfoDAO orderInfoDAO;
     @Autowired
+    private IDaySalesDAO daySalesDAO;
+    @Autowired
     private IShopGoodsDAO shopGoodsDAO;
     @Autowired
     private IShopSalesDAO shopSalesDAO;
@@ -72,14 +74,14 @@ public class BookServiceImpl implements IBookService {
 
 
     /**
-     * <p>@Description 查询近些天销售额排名靠前店铺销售额趋势图 </p>
+     * <p>@Description 查询日期区间的店铺汇总日销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/19 18:00 </p>
      * @param userId 用户ID
-     * @return
+     * @return 店铺汇总日销售额
      */
     @Override
-    public Result<List<List<OrderDTO>>> findLastDaySales(String userId) {
+    public Result<List<DayDTO>> findLastDaySales(String userId) {
         int lastDays = 10;//统计的天数
         //获取订单中最大的日期
         String maxDateStr = orderInfoDAO.getMaxOrderDate(userId);
@@ -88,56 +90,29 @@ public class BookServiceImpl implements IBookService {
         }
         //查询销量前3店铺近10日的订单信息
         Date maxDate = DateUtils.parse(maxDateStr,DateFormatEnum.YYYYMMDD1);
-        // 查询订单中最大的日期的月份销量前1的店铺
-        List<Long> shopList = monthSalesDAO.findMaxSalesShop(userId,DateUtils.format(maxDate,DateFormatEnum.YYYYMM1)+"-01");
-        if(CollectionUtils.isEmpty(shopList)){
-            return new Result<>();
-        }
         //获取maxDateStr的10天前日期
         int dayStep = -1*lastDays;
         String minData = DateUtils.format(DateUtils.stepDay(maxDate,dayStep),DateFormatEnum.YYYYMMDD1);
-        List<OrderDTO> orderList = orderInfoDAO.findMaxSalesOrder(userId,shopList,minData,maxDateStr);
-        if(CollectionUtils.isEmpty(orderList)){
+        //查询日期区间的店铺汇总日销售额
+        List<DayDTO> dayList = daySalesDAO.findLastDaySales(userId,minData,maxDateStr);
+        if(CollectionUtils.isEmpty(dayList)){
             return new Result<>();
         }
-        //orderList转为map，用于判断近10日哪天没有销售额
-        //Map<店铺ID, Map<日期，当日销售额>>
-        Map<Long, Map<String,OrderDTO>> ordMap = new HashMap<>();
-        //销量前1店铺近10日的订单信息处理
-        orderList.forEach(dto -> {
-            Map<String,OrderDTO> tempMap = null;
-            //已添加key
-            if(ordMap.containsKey(dto.getShopId())){
-                tempMap = ordMap.get(dto.getShopId());
-            }else {
-                tempMap = new HashMap<>();
-                ordMap.put(dto.getShopId(),tempMap);
-            }
-            OrderDTO tempDTO = new OrderDTO();
-            tempDTO.setShopId(dto.getShopId()).setShopName(dto.getShopName()).setOrderDate(dto.getOrderDate())
-                    .setOrderDateStr(dto.getOrderDateStr()).setSaleAmount(dto.getSaleAmount());
-            tempMap.put(tempDTO.getOrderDateStr(),tempDTO);
-        });
+        //dayList转为map，用于判断近10日哪天没有销售额
+        //Map<日期，当日销售额>
+        Map<String,DayDTO> ordMap = dayList.stream().collect(Collectors.toMap(k -> k.getDayDateStr(),day -> day));
         //循环判断近10日是否都有销售额，没有则补齐数据,从最早日期开始
-        ordMap.forEach((k,v) -> {
-            for (int i = (-1*(lastDays-1)); i <= 0; i++){
-                Date day = DateUtils.stepDay(maxDate,i);
-                String dayStr = DateUtils.format(day,DateFormatEnum.YYYYMD4);
-                if(!v.containsKey(dayStr)){
-                    OrderDTO tempDTO = new OrderDTO();
-                    UserShopEntity shopEntity = userShopDAO.getById(k);
-                    tempDTO.setShopId(k).setShopName(shopEntity.getShopName()).setOrderDate(day)
-                            .setOrderDateStr(dayStr).setSaleAmount(BigDecimal.ZERO);
-                    v.put(dayStr,tempDTO);
-                }
+        for (int i = (-1*(lastDays-1)); i <= 0; i++){
+            Date day = DateUtils.stepDay(maxDate,i);
+            String dayStr = DateUtils.format(day,DateFormatEnum.YYYYMD4);
+            if(!ordMap.containsKey(dayStr)){
+                DayDTO tempDTO = new DayDTO();
+                tempDTO.setDayDate(day).setDayDateStr(dayStr).setSaleAmount(BigDecimal.ZERO);
+                ordMap.put(dayStr,tempDTO);
             }
-        });
-        List<List<OrderDTO>> resultList = new ArrayList<>();
-        ordMap.forEach((k,v) -> {
-            List<OrderDTO> dayList = new ArrayList<>(v.values());
-            dayList.sort((a,b) -> a.getOrderDate().compareTo(b.getOrderDate()));
-            resultList.add(dayList);
-        });
+        }
+        List<DayDTO> resultList = new ArrayList<>(ordMap.values());
+        resultList.sort((a,b) -> a.getDayDate().compareTo(b.getDayDate()));
         return new Result<>(resultList);
     }
     /**

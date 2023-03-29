@@ -6,7 +6,6 @@ import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.dto.YearDTO;
 import com.www.ledger.data.entity.MonthSalesEntity;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,15 +25,6 @@ public interface IMonthSalesDAO extends IService<MonthSalesEntity> {
      */
     boolean deleteMonthList(String userId,boolean isShop);
     /**
-     * <p>@Description 删除用户的月销售数据 </p>
-     * <p>@Author www </p>
-     * <p>@Date 2023/3/20 20:40 </p>
-     * @param userId 用户ID
-     * @param msId 月销售ID
-     * @return true成功，false失败
-     */
-    boolean deleteMonthSales(String userId,Long msId);
-    /**
      * <p>@Description 查询用户店铺的月销售数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/20 20:40 </p>
@@ -50,34 +40,6 @@ public interface IMonthSalesDAO extends IService<MonthSalesEntity> {
      * @return 店铺汇总月销售数据
      */
     List<MonthSalesEntity> findTotalMonthSalesList(String userId);
-    /**
-     * <p>@Description 查询用户的月销售数据 </p>
-     * <p>@Author www </p>
-     * <p>@Date 2023/3/20 20:40 </p>
-     * @param userId 用户ID
-     * @param msId 月销售ID
-     * @return 月销售数据
-     */
-    MonthSalesEntity findMonthSales(String userId,Long msId);
-    /**
-     * <p>@Description 查询用户的月销售数据 </p>
-     * <p>@Author www </p>
-     * <p>@Date 2023/3/20 20:40 </p>
-     * @param userId 用户ID
-     * @param shopId 店铺ID
-     * @param month 月份（每月1日）
-     * @return 月销售数据
-     */
-    MonthSalesEntity findMonthSales(String userId, Long shopId, Date month);
-    /**
-     * <p>@Description 查询用户monthStr月份销量前1的店铺 </p>
-     * <p>@Author www </p>
-     * <p>@Date 2023/3/19 19:13 </p>
-     * @param userId 用户ID
-     * @param monthStr 月份
-     * @return 店铺ID
-     */
-    List<Long> findMaxSalesShop(String userId, String monthStr);
     /**
      * <p>@Description 查询用户最近一年所有店铺销售额趋势图 </p>
      * <p>@Author www </p>

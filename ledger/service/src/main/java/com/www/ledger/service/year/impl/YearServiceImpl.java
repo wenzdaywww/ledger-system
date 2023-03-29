@@ -74,8 +74,8 @@ public class YearServiceImpl implements IYearService {
      * @return true保存成功，false保存失败
      */
     private boolean saveYearData(List<YearDTO> countList,List<YearSalesEntity> yearList,String userId,boolean isShop){
+        //没有统计的年销售额但有年销售额数据，则需要删除年销售数据
         if(CollectionUtils.isEmpty(countList) && CollectionUtils.isNotEmpty(yearList)){
-            //没有统计的年销售额但有年销售额数据，则需要删除年销售数据
             if(yearSalesDAO.deleteYearList(userId,isShop)){
                 return true;
             }

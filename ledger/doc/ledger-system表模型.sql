@@ -163,7 +163,23 @@ CREATE INDEX    INDEX_ORDER_DATE    ON  ORDER_INFO (ORDER_DATE);
 CREATE INDEX    INDEX_SUPPLY_ID     ON  ORDER_INFO (SUPPLY_ID);
 CREATE INDEX    INDEX_ORDER_STATE   ON  ORDER_INFO (ORDER_STATE);
 CREATE INDEX    INDEX_GOODS_ID      ON  ORDER_INFO (GOODS_ID);
--- 8、店铺商品信息
+-- 8、支出信息
+CREATE TABLE IF NOT EXISTS PAY_INFO (
+    PAY_ID                    INT                   PRIMARY KEY AUTO_INCREMENT    COMMENT '支出主键ID',
+    SHOP_ID                   INT                                                 COMMENT '店铺主键ID',
+    USER_ID                   VARCHAR(40)                                         COMMENT '用户名',
+    PAY_DATE                  DATE                                                COMMENT '支出日期',
+    PAY_TYPE                  VARCHAR(2)                                          COMMENT '支出类型(code=PayType)',
+    PAY_AMOUNT                DECIMAL(10,2)         DEFAULT 0.0                   COMMENT '支出金额',
+    REMARK                    VARCHAR(256)                                        COMMENT '备注',
+    UPDATE_TIME               DATETIME              DEFAULT NOW()                 COMMENT '更新时间',
+    CREATE_TIME               DATETIME              DEFAULT NOW()                 COMMENT '创建时间'
+);
+ALTER TABLE     PAY_INFO            COMMENT '支出信息';
+CREATE INDEX    INDEX_SHOP_ID       ON  PAY_INFO (SHOP_ID);
+CREATE INDEX    INDEX_USER_ID       ON  PAY_INFO (USER_ID);
+CREATE INDEX    INDEX_PAY_DATE      ON  PAY_INFO (PAY_DATE);
+-- 9、店铺商品信息
 CREATE TABLE IF NOT EXISTS SHOP_GOODS (
     SG_ID                     INT          PRIMARY KEY AUTO_INCREMENT             COMMENT '商品主键ID',
     GOODS_ID                  VARCHAR(40)                                         COMMENT '商品ID',
@@ -180,7 +196,7 @@ CREATE INDEX    INDEX_GOODS_ID      ON  SHOP_GOODS (GOODS_ID);
 CREATE INDEX    INDEX_SHOP_ID       ON  SHOP_GOODS (SHOP_ID);
 CREATE INDEX    INDEX_USER_ID       ON  SHOP_GOODS (USER_ID);
 CREATE INDEX    INDEX_GOODS_STATE   ON  SHOP_GOODS (GOODS_STATE);
--- 9、商品样式信息
+-- 10、商品样式信息
 CREATE TABLE IF NOT EXISTS GOODS_STYLE (
     STYLE_ID                  INT           PRIMARY KEY AUTO_INCREMENT            COMMENT '商品样式主键ID',
     STYLE_NAME                VARCHAR(125)                                        COMMENT '商品样式名称',

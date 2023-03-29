@@ -57,6 +57,10 @@ public enum CodeTypeEnum {
     OrderState_Refunding("OrderState","订单状态","K9","待申请退款"),
     /** 订单状态：待支付 **/
     OrderState_Paidding("OrderState","订单状态","K10","待支付"),
+    /** 支出类型：推广费 **/
+    PayType_advert("PayType","支出类型","K1","推广费"),
+    /** 支出类型：服务费 **/
+    PayType_Service("PayType","支出类型","K2","服务费"),
     ;
 
 

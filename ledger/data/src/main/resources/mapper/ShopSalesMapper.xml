@@ -3,7 +3,7 @@
 <mapper namespace="com.www.ledger.data.mapper.ShopSalesMapper">
     <resultMap id="BaseResultMap" type="com.www.ledger.data.entity.ShopSalesEntity">
         <!--@Table SHOP_SALES-->
-        <id column="UB_ID" property="ssId" />
+        <id column="SS_ID" property="ssId" />
         <result column="SHOP_ID" property="shopId" />
         <result column="USER_ID" property="userId" />
         <result column="RETAINED_PROFITS" property="retainedProfits" />

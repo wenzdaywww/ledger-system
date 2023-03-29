@@ -62,6 +62,11 @@ export default [
                 meta: { title: '订单信息' },
                 component: () => import ("../views/order/OrderList.vue")
             },{
+                path: "/pay",
+                name: "pay",
+                meta: { title: '支出管理' },
+                component: () => import ("../views/pay/PayList.vue")
+            },{
                 path: "/goods",
                 name: "goods",
                 meta: { title: '商品信息' },

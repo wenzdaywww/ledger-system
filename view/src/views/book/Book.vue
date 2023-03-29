@@ -256,7 +256,7 @@ export default {
     // 最近一年销售趋势图数据
     const shopSales = ref({
       type: "bar",
-      title: {text: "最近一年所有店铺销售额趋势图"},
+      title: {text: "近一年总销售额趋势图"},
       xRorate: 20,
       labels: [],
       datasets: [
@@ -269,7 +269,7 @@ export default {
     // 销售额最高店铺近10天销售额趋势图
     const monthSales = ref({
       type: "line",
-      title: {text: "近10天销售额最高的店铺销售额趋势图"},
+      title: {text: "近10天总销售额趋势图"},
       //labels:["2023.1.1", "2023.1.2", "2023.1.3", "2023.1.4", "2023.1.5"]
       labels: [],
       //datasets:[{label: "家电",ata: [1, 2, 3, 4, 5,6, 7, 8, 9, 10]}]
@@ -285,11 +285,7 @@ export default {
     const editForm = ref(null);
     // 导出报表
     const handleExport = () => {
-      pageLoading.value = true;
-      axios.$http.post(request.bookExp,null).then(function (res) {
-        pageLoading.value = false;
-        ElMessage.success(res.data);
-      }).catch(err => {pageLoading.value = false;});
+      //TODO 2023/3/28 22:15 待开发
     };
     // 统计年销售
     const handleCount = () => {
@@ -334,17 +330,13 @@ export default {
         monthSales.value.datasets = [];
         monthSales.value.labels = [];
         let dateData = [];//日期坐标
-        //res.data = [{shopNm:"test",day:[{day:2021/01/01,sales:100}]}]
+        //res.data = [{day:2021/01/01,sales:100}]
+        let shopData = {label:"销售额(元)",data:[]};
         res.data.forEach(function (item) {
-          let shopData = {label:item.shopNm + "  (元)",data:[]};
-          item.day.forEach(function (dayItem){
-            shopData.data.push(dayItem.sales);
-            if (dateData.length < item.day.length){
-              dateData.push(dayItem.day);
-            }
-          });
-          monthSales.value.datasets.push(shopData);
+          shopData.data.push(item.sales);
+          dateData.push(item.day);
         });
+        monthSales.value.datasets.push(shopData);
         monthSales.value.labels = dateData;
       });
     };

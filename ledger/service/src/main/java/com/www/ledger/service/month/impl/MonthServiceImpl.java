@@ -1,18 +1,14 @@
 package com.www.ledger.service.month.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.www.common.config.exception.BusinessException;
 import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.response.Result;
 import com.www.common.utils.DateUtils;
 import com.www.common.utils.MoneyUtils;
 import com.www.ledger.data.dao.IDaySalesDAO;
 import com.www.ledger.data.dao.IMonthSalesDAO;
-import com.www.ledger.data.dao.IOrderInfoDAO;
-import com.www.ledger.data.dao.IUserShopDAO;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.entity.MonthSalesEntity;
-import com.www.ledger.data.entity.UserShopEntity;
 import com.www.ledger.service.month.IMonthService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -22,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,110 +33,11 @@ import java.util.stream.Collectors;
 @Service
 public class MonthServiceImpl implements IMonthService {
     @Autowired
-    private IOrderInfoDAO orderInfoDAO;
-    @Autowired
-    private IUserShopDAO userShopDAO;
-    @Autowired
     private IMonthSalesDAO monthSalesDAO;
     @Autowired
     private IDaySalesDAO daySalesDAO;
 
 
-    /**
-     * <p>@Description 增加/减少月销售推广及服务费用  </p>
-     * <p>@Author www </p>
-     * <p>@Date 2023/3/19 16:09 </p>
-     * @param monthDTO 费用信息
-     * @return
-     */
-    @Override
-    public Result<String> updateMonthAmt(MonthDTO monthDTO) {
-        monthDTO.setAdvertAmount(MoneyUtils.nullToZero(monthDTO.getAdvertAmount()));
-        monthDTO.setServiceAmount(MoneyUtils.nullToZero(monthDTO.getServiceAmount()));
-        if(monthDTO.getAdvertAmount().compareTo(BigDecimal.ZERO) == 0 && monthDTO.getServiceAmount().compareTo(BigDecimal.ZERO) == 0){
-            throw new BusinessException("推广费和服务费不能都为0");
-        }
-        MonthSalesEntity monthEntity = monthSalesDAO.findMonthSales(monthDTO.getUserId(),monthDTO.getMsId());
-        if(monthEntity == null){
-            throw new BusinessException("月销售数据不存在");
-        }
-        //增加月销售推广及服务费用
-        monthEntity.setAdvertAmount((monthEntity.getAdvertAmount().add(monthDTO.getAdvertAmount())).setScale(2,RoundingMode.HALF_UP))
-                .setServiceAmount((monthEntity.getServiceAmount().add(monthDTO.getServiceAmount())).setScale(2,RoundingMode.HALF_UP));
-        if(monthEntity.getAdvertAmount().compareTo(BigDecimal.ZERO) == -1){
-            throw new BusinessException("推广费不能为负数");
-        }
-        if(monthEntity.getServiceAmount().compareTo(BigDecimal.ZERO) == -1){
-            throw new BusinessException("服务费不能为负数");
-        }
-        //计算月销售额数据
-        this.computeMonthData(monthEntity);
-        if(monthSalesDAO.updateById(monthEntity)){
-            return new Result<>("修改成功");
-        }
-        return new Result<>("修改失败");
-    }
-    /**
-     * <p>@Description 编辑月销售额数据 </p>
-     * <p>@Author www </p>
-     * <p>@Date 2023/3/18 18:26 </p>
-     * @param monthDTO 月销售额数据
-     * @return
-     */
-    @Override
-    public Result<String> saveMonthSales(MonthDTO monthDTO) {
-        Date monthDate = DateUtils.parse(monthDTO.getMonthDateStr() + "-01",DateFormatEnum.YYYYMMDD1);
-        if(monthDate == null){
-            throw new BusinessException("月份格式错误");
-        }
-        //判断当前店铺是否属于用户的
-        UserShopEntity shopEntity = userShopDAO.findUserShop(monthDTO.getUserId(),monthDTO.getShopId());
-        MonthSalesEntity monthEntity = null;
-        //月销售数据修改
-        if(monthDTO.getMsId() != null){
-            monthEntity = monthSalesDAO.findMonthSales(monthDTO.getUserId(),monthDTO.getMsId());
-            if(monthEntity == null){
-                throw new BusinessException("店铺月销售数据不存在");
-            }
-        }else {//月销售数据新增
-            monthEntity = monthSalesDAO.findMonthSales(monthDTO.getUserId(),monthDTO.getShopId(),monthDate);
-            if(monthEntity != null){
-                throw new BusinessException("已存在店铺月销售数据");
-            }
-        }
-        //月销售数据新增
-        if(monthEntity == null){
-            monthEntity = new MonthSalesEntity();
-            monthEntity.setShopId(monthDTO.getShopId()).setUserId(monthDTO.getUserId())
-                    .setMonthDate(monthDate).setTotalOrder(0L).setCreateTime(DateUtils.getCurrentDateTime())
-                    .setSucceedOrder(0L).setSaleAmount(BigDecimal.ZERO)
-                    .setCostAmount(BigDecimal.ZERO).setVirtualAmount(BigDecimal.ZERO);
-        }
-        monthEntity.setUpdateTime(DateUtils.getCurrentDateTime())
-                .setAdvertAmount(MoneyUtils.nullToZero(monthDTO.getAdvertAmount()))
-                .setServiceAmount(MoneyUtils.nullToZero(monthDTO.getServiceAmount()));
-        //计算月销售额数据
-        this.computeMonthData(monthEntity);
-        if(monthSalesDAO.saveOrUpdate(monthEntity)){
-            return new Result<>("编辑成功");
-        }
-        return new Result<>("编辑失败");
-    }
-    /**
-     * <p>@Description 删除月销售额数据 </p>
-     * <p>@Author www </p>
-     * <p>@Date 2023/3/18 18:21 </p>
-     * @param userId 用户ID
-     * @param msId 月销售额ID
-     * @return
-     */
-    @Override
-    public Result<String> deleteMonthData(String userId,Long msId) {
-        if(monthSalesDAO.deleteMonthSales(userId,msId)){
-            return new Result<>("删除成功");
-        }
-        return new Result<>("删除失败");
-    }
     /**
      * <p>@Description 统计月销售额 </p>
      * <p>@Author www </p>
@@ -179,9 +75,8 @@ public class MonthServiceImpl implements IMonthService {
      * @return true保存成功，false保存失败
      */
     private boolean saveMonthData(List<MonthDTO> countList,List<MonthSalesEntity> monthList,String userId,boolean isShop){
-        //统计出所有店铺汇总的月销售没有数据，则需要删除存在的数据
-        if(isShop == false && CollectionUtils.isEmpty(countList) && CollectionUtils.isNotEmpty(monthList)){
-            //没有统计的年销售额但有年销售额数据，则需要删除年销售数据
+        //没有统计的年销售额但有年销售额数据，则需要删除年销售数据
+        if(CollectionUtils.isEmpty(countList) && CollectionUtils.isNotEmpty(monthList)){
             if(monthSalesDAO.deleteMonthList(userId,isShop)){
                 return true;
             }
@@ -189,6 +84,7 @@ public class MonthServiceImpl implements IMonthService {
         }
         List<MonthSalesEntity> insertList = new ArrayList<>();//待插入的数据
         List<MonthSalesEntity> updateList = new ArrayList<>();//待更新的数据
+        List<Long> deleteList = new ArrayList<>();//待删除的数据
         //数据转换处理，key=店铺ID+月份日期（默认为月份01日），如：101320230201
         Map<String,MonthSalesEntity> entityMap = CollectionUtils.isEmpty(monthList) ? new HashMap<>()
                 : monthList.stream().collect(Collectors.toMap(k -> k.getShopId() + DateUtils.format(k.getMonthDate(), DateFormatEnum.YYYYMMDD1), month -> month));
@@ -205,12 +101,9 @@ public class MonthServiceImpl implements IMonthService {
                         .setUpdateTime(DateUtils.getCurrentDateTime())
                         .setSaleAmount(MoneyUtils.nullToZero(v.getSaleAmount()))
                         .setCostAmount(MoneyUtils.nullToZero(v.getCostAmount()))
+                        .setAdvertAmount(MoneyUtils.nullToZero(v.getAdvertAmount()))
+                        .setServiceAmount(MoneyUtils.nullToZero(v.getServiceAmount()))
                         .setVirtualAmount(MoneyUtils.nullToZero(v.getVirtualAmount()));
-                //统计所有店铺汇总的月销售额的推广费和服务费需要更新
-                if(isShop == false){
-                    monthEntity.setAdvertAmount(MoneyUtils.nullToZero(v.getAdvertAmount()))
-                            .setServiceAmount(MoneyUtils.nullToZero(v.getServiceAmount()));
-                }
                 //计算月销售额数据
                 this.computeMonthData(monthEntity);
                 updateList.add(monthEntity);
@@ -223,47 +116,23 @@ public class MonthServiceImpl implements IMonthService {
                         .setFailedOrder(v.getFailedOrder() == null ? 0L : v.getFailedOrder())
                         .setSaleAmount(MoneyUtils.nullToZero(v.getSaleAmount()))
                         .setCostAmount(MoneyUtils.nullToZero(v.getCostAmount()))
+                        .setAdvertAmount(MoneyUtils.nullToZero(v.getAdvertAmount()))
+                        .setServiceAmount(MoneyUtils.nullToZero(v.getServiceAmount()))
                         .setVirtualAmount(MoneyUtils.nullToZero(v.getVirtualAmount()));
-                //统计所有店铺汇总的月销售额的推广费和服务费需要更新
-                if(isShop == false){
-                    monthEntity.setAdvertAmount(MoneyUtils.nullToZero(v.getAdvertAmount()))
-                            .setServiceAmount(MoneyUtils.nullToZero(v.getServiceAmount()));
-                }else {//统计店铺的月销售额的推广费和服务费需要赋值0
-                    monthEntity.setAdvertAmount(BigDecimal.ZERO).setServiceAmount(BigDecimal.ZERO);
-                }
                 //计算月销售额数据
                 this.computeMonthData(monthEntity);
                 insertList.add(monthEntity);
             }
         });
-        //待更新的数据的数据转换
-        Map<String,MonthSalesEntity> updateMap = CollectionUtils.isEmpty(updateList) ? new HashMap<>()
-                : updateList.stream().collect(Collectors.toMap(k -> k.getShopId() + DateUtils.format(k.getMonthDate(), DateFormatEnum.YYYYMMDD1), month -> month));
-        //处理已存在的entity数据
-        entityMap.forEach((k,v) -> {
-            //待更新的是数据中没有当前entity，说明没有当前店铺的月销售数据，则需要更新数据
-            if(!updateMap.containsKey(k)){
-                v.setTotalOrder(0L).setSucceedOrder(0L)
-                        .setSaleAmount(BigDecimal.ZERO).setCostAmount(BigDecimal.ZERO)
-                        .setVirtualAmount(BigDecimal.ZERO).setUpdateTime(DateUtils.getCurrentDateTime());
-                //计算月销售额数据
-                this.computeMonthData(v);
-                updateList.add(v);
+        //查询已存在的年销售额数据（yearList）的主键在统计的年销售额（dtoMap）不存在，则说明没有年销售额数据，需要删除已存在的数据
+        monthList.forEach(e -> {
+            if(!dtoMap.containsKey(e.getShopId() + DateUtils.format(e.getMonthDate(), DateFormatEnum.YYYYMMDD1))){
+                deleteList.add(e.getMsId());
             }
         });
         monthSalesDAO.updateBatchById(updateList,100);
         monthSalesDAO.saveBatch(insertList,100);
-        //统计出所有店铺汇总的月销售数据在数据库中不存在，则需要删除存在的数据
-        if(isShop == false){
-            List<Long> deleteList = new ArrayList<>();//待删除的数据
-            //查询已存在的年销售额数据（yearList）的主键在统计的年销售额（dtoMap）不存在，则说明没有年销售额数据，需要删除已存在的数据
-            monthList.forEach(e -> {
-                if(!dtoMap.containsKey(e.getShopId() + DateUtils.format(e.getMonthDate(), DateFormatEnum.YYYYMMDD1))){
-                    deleteList.add(e.getMsId());
-                }
-            });
-            monthSalesDAO.removeByIds(deleteList);
-        }
+        monthSalesDAO.removeByIds(deleteList);
         return true;
     }
     /**
