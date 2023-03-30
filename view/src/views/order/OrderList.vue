@@ -24,7 +24,7 @@
               </el-select>
             </el-col>
             <el-col :span="2.5">
-              <el-input v-model="query.ordId" placeholder="订单ID" class="handle-input mr10" style="width: 200px" clearable="true"></el-input>
+              <el-input v-model="query.ordId" placeholder="订单ID" class="handle-input mr10" style="width: 230px" clearable="true"></el-input>
             </el-col>
             <el-col :span="2.5">
               <el-input v-model="query.supId" placeholder="1688订单ID" class="handle-input mr10" style="width: 170px" clearable="true"></el-input>

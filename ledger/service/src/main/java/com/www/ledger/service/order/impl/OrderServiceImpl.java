@@ -205,7 +205,11 @@ public class OrderServiceImpl implements IOrderService {
                     .setGoodsId(dto.getGoodsId()).setGoodsName(dto.getGoodsName())
                     .setOrderState(dto.getOrderState()).setSaleAmount(dto.getSaleAmount())
                     .setPaymentAmount(dto.getPaymentAmount()).setCostAmount(dto.getCostAmount())
-                    .setPayoutAmount(BigDecimal.ZERO).setRemark(dto.getRemark());
+                    .setRemark(dto.getRemark());
+            //新插入的订单才赋值【其他支出】，更新的则保持原值
+            if(entity.getOiId() == null){
+                entity.setPayoutAmount(BigDecimal.ZERO);
+            }
             //订单数据计算
             this.computeOrderData(entity);
             entityList.add(entity);

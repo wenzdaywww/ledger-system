@@ -135,12 +135,12 @@ public abstract class OrderImportService implements IOrderImportService {
         }
         if(orderDTO.getSaleAmount() == null){
             errSB.append(headMap.get(SALE_AMOUNT).getName()).append("不能为空或数值错误;");//商品总价不能为空或数值错误
-        }else if(orderDTO.getSaleAmount().compareTo(BigDecimal.ZERO) != 1 || orderDTO.getSaleAmount().compareTo(new BigDecimal("99999999.99")) == 1){
+        }else if(!(orderDTO.getSaleAmount().compareTo(BigDecimal.ZERO) != -1 && orderDTO.getSaleAmount().compareTo(new BigDecimal("99999999.99")) != 1)){
             errSB.append(headMap.get(SALE_AMOUNT).getName()).append("有效值应大于0且不大于99999999.99;");//商品总价有效值应为0~99999999.99
         }
         if(orderDTO.getPaymentAmount() == null){
             errSB.append(headMap.get(PAYMENT_AMOUNT).getName()).append("不能为空或数值错误;");//支付金额不能为空或数值错误;
-        }else if(orderDTO.getPaymentAmount().compareTo(BigDecimal.ZERO) != 1 || orderDTO.getPaymentAmount().compareTo(new BigDecimal("99999999.99")) == 1){
+        }else if(!(orderDTO.getPaymentAmount().compareTo(BigDecimal.ZERO) != -1 && orderDTO.getPaymentAmount().compareTo(new BigDecimal("99999999.99")) != 1)){
             errSB.append(headMap.get(PAYMENT_AMOUNT).getName()).append("有效值应大于0且不大于99999999.99;");//支付金额有效值应为0~99999999.99
         }
         if(errSB.length() > 0){
