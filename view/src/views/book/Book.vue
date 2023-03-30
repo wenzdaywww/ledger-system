@@ -204,15 +204,17 @@
             </el-tooltip>
           </el-col>
           <el-col :span="8">
-            <el-card shadow="hover" :body-style="{ padding: '0px' }">
-              <div class="grid-content grid-con-4">
-                <i class="el-icon-s-shop grid-con-icon"></i>
-                <div class="grid-cont-right">
-                  <div class="grid-num">{{ bookData.guatee }}</div>
-                  <div>总店铺保证金</div>
+            <el-tooltip class="item" effect="light" content="根据【支出管理】统计所有店铺保证金" placement="top">
+              <el-card shadow="hover" :body-style="{ padding: '0px' }">
+                <div class="grid-content grid-con-4">
+                  <i class="el-icon-s-shop grid-con-icon"></i>
+                  <div class="grid-cont-right">
+                    <div class="grid-num">{{ bookData.guatee }}</div>
+                    <div>总店铺保证金</div>
+                  </div>
                 </div>
-              </div>
-            </el-card>
+              </el-card>
+            </el-tooltip>
           </el-col>
         </el-row>
       </el-col>

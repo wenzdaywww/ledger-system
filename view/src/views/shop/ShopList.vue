@@ -5,9 +5,9 @@
       <div v-loading="pageLoading">
         <!-- 店铺信息列表查询条件-->
         <div class="handle-box">
-          <el-input v-model="query.shopId" placeholder="店铺ID" class="handle-input mr10"></el-input>
-          <el-input v-model="query.shopNm" placeholder="店铺名称" class="handle-input mr10"></el-input>
-          <el-select v-model="query.shopTp" placeholder="请选择店铺平台" class="handle-select mr10" style="width: 250px">
+          <el-input v-model="query.shopId" placeholder="店铺ID" class="handle-input mr10" clearable="true"></el-input>
+          <el-input v-model="query.shopNm" placeholder="店铺名称" class="handle-input mr10" clearable="true"></el-input>
+          <el-select v-model="query.shopTp" placeholder="请选择店铺平台" class="handle-select mr10" style="width: 250px" clearable="true">
             <el-option v-for="item in shopTpCode" :key="item.value" :label="item.name" :value="item.value"></el-option>
           </el-select>
           <el-button type="primary" icon="el-icon-search" @click="handleSearch" round plain>查询</el-button>

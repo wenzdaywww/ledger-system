@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 新增/编辑支出信息弹出框 -->
-    <el-dialog title="支出喜喜" v-model="editVisible" width="450px">
+    <el-dialog :title="dialogTitle" v-model="editVisible" width="450px">
       <el-form label-width="120px" :model="payInfo" :rules="payRules" ref="payForm">
         <el-form-item label="支出日期" prop="payDat">
           <div class="block" style="float: left; margin-right: 10px;">
@@ -52,6 +52,8 @@ export default {
     const axios = getCurrentInstance().appContext.config.globalProperties;
     // 新增/编辑支出信息弹出框
     const editVisible = ref(false);
+    // 弹窗标题
+    let dialogTitle = ref();
     // 编辑支出信息
     let payInfo = ref({});
     // 支出信息的规则校验
@@ -77,6 +79,7 @@ export default {
       payInfo.value = pay ? pay : {};
       userShop.value = userShopArr.value;
       payType.value = payTpArr.value;
+      dialogTitle.value = pay ? "编辑支出信息" : "新增支出信息";
     }
     // 新增/编辑支出页面的保存按钮
     const saveEdit = () => {
@@ -96,13 +99,16 @@ export default {
         }
       });
     };
-    return {editVisible,payInfo,payRules,payForm,userShop,payType,
+    return {editVisible,payInfo,payRules,payForm,userShop,payType,dialogTitle,
       openPayDialog,saveEdit};
   }
 }
 </script>
-<style scoped>
+<style>
 .btn-save{
+  text-align: center;
+}
+.el-dialog .el-dialog__header{
   text-align: center;
 }
 </style>

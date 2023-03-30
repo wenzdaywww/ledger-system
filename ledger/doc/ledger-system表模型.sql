@@ -179,42 +179,6 @@ ALTER TABLE     PAY_INFO            COMMENT '支出信息';
 CREATE INDEX    INDEX_SHOP_ID       ON  PAY_INFO (SHOP_ID);
 CREATE INDEX    INDEX_USER_ID       ON  PAY_INFO (USER_ID);
 CREATE INDEX    INDEX_PAY_DATE      ON  PAY_INFO (PAY_DATE);
--- 9、店铺商品信息
-CREATE TABLE IF NOT EXISTS SHOP_GOODS (
-    SG_ID                     INT          PRIMARY KEY AUTO_INCREMENT             COMMENT '商品主键ID',
-    GOODS_ID                  VARCHAR(40)                                         COMMENT '商品ID',
-    GOODS_NAME                VARCHAR(60)                                         COMMENT '商品名称',
-    GOODS_URL                 VARCHAR(500)                                        COMMENT '商品链接',
-    SHOP_ID                   INT                                                 COMMENT '店铺主键ID',
-    USER_ID                   VARCHAR(40)                                         COMMENT '用户名',
-    GOODS_STATE               CHAR(1)      DEFAULT '1'                            COMMENT '商品状态(code=GoodsState)：0删除，1上架，2下架',
-    UPDATE_TIME               DATETIME     DEFAULT NOW()                          COMMENT '更新时间',
-    CREATE_TIME               DATETIME     DEFAULT NOW()                          COMMENT '创建时间'
-);
-ALTER TABLE     SHOP_GOODS          COMMENT '店铺商品信息';
-CREATE INDEX    INDEX_GOODS_ID      ON  SHOP_GOODS (GOODS_ID);
-CREATE INDEX    INDEX_SHOP_ID       ON  SHOP_GOODS (SHOP_ID);
-CREATE INDEX    INDEX_USER_ID       ON  SHOP_GOODS (USER_ID);
-CREATE INDEX    INDEX_GOODS_STATE   ON  SHOP_GOODS (GOODS_STATE);
--- 10、商品样式信息
-CREATE TABLE IF NOT EXISTS GOODS_STYLE (
-    STYLE_ID                  INT           PRIMARY KEY AUTO_INCREMENT            COMMENT '商品样式主键ID',
-    STYLE_NAME                VARCHAR(125)                                        COMMENT '商品样式名称',
-    GOODS_ID                  VARCHAR(40)                                         COMMENT '商品ID',
-    SHOP_ID                   INT                                                 COMMENT '店铺主键ID',
-    USER_ID                   VARCHAR(40)                                         COMMENT '用户名',
-    SALE_AMOUNT               DECIMAL(6,2)  DEFAULT 0.0                           COMMENT '价格',
-    COST_AMOUNT               DECIMAL(6,2)  DEFAULT 0.0                           COMMENT '成本',
-    GROSS_PROFIT              DECIMAL(6,2)  DEFAULT 0.0                           COMMENT '毛利润',
-    GROSS_PROFIT_RATE         DECIMAL(6,2)  DEFAULT 0.0                           COMMENT '毛利率',
-    UPDATE_TIME               DATETIME      DEFAULT NOW()                         COMMENT '更新时间',
-    CREATE_TIME               DATETIME      DEFAULT NOW()                         COMMENT '创建时间'
-);
-ALTER TABLE     GOODS_STYLE          COMMENT '商品样式信息';
-CREATE INDEX    INDEX_STYLE_NAME     ON  GOODS_STYLE (STYLE_NAME);
-CREATE INDEX    INDEX_GOODS_ID       ON  GOODS_STYLE (GOODS_ID);
-CREATE INDEX    INDEX_SHOP_ID        ON  GOODS_STYLE (SHOP_ID);
-CREATE INDEX    INDEX_USER_ID        ON  GOODS_STYLE (USER_ID);
 
 
 

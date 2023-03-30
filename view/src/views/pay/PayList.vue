@@ -1,4 +1,4 @@
-<!-- 店铺信息列表 -->
+<!-- 支出信息列表 -->
 <template>
   <div>
     <el-card>
@@ -14,12 +14,12 @@
               </div>
             </el-col>
             <el-col :span="2.5">
-              <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 250px">
+              <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 250px" clearable="true">
                 <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
               </el-select>
             </el-col>
             <el-col :span="2.5">
-              <el-select v-model="query.payTp" placeholder="支出类型" class="handle-select mr10" style="width: 250px">
+              <el-select v-model="query.payTp" placeholder="支出类型" class="handle-select mr10" style="width: 250px" clearable="true">
                 <el-option v-for="item in payType" :key="item.value" :label="item.name" :value="item.value"></el-option>
               </el-select>
             </el-col>
@@ -47,12 +47,8 @@
           </el-table-column>
           <el-table-column label="操作" align="center">
             <template #default="scope">
-              <el-tooltip class="item" effect="light" content="编辑" placement="top">
-                <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)"></el-button>
-              </el-tooltip>
-              <el-tooltip class="item" effect="light" content="删除" placement="top">
-                <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.row)"></el-button>
-              </el-tooltip>
+              <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑 </el-button>
+              <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.row)">删除 </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -144,7 +140,7 @@ export default {
       }).catch(err => {pageLoading.value = false;});
     };
     findPayList();
-    //删除店铺
+    //删除支出信息
     const handleDelete = (row) => {
       // 二次确认删除
       ElMessageBox.confirm("确定要删除店铺【" + row.shopNm + "】"+ row.payDat + "的支出信息吗？", "提示",

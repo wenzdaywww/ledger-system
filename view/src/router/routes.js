@@ -66,11 +66,6 @@ export default [
                 name: "pay",
                 meta: { title: '支出管理' },
                 component: () => import ("../views/pay/PayList.vue")
-            },{
-                path: "/goods",
-                name: "goods",
-                meta: { title: '商品信息' },
-                component: () => import ("../views/goods/GoodsList.vue")
             }
         ]
     }, {

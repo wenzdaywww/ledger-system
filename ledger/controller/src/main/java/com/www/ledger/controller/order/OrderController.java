@@ -113,12 +113,11 @@ public class OrderController {
                              .setShopNm(dto.getShopName()).setOrdDat(dto.getOrderDateStr())
                              .setSupId(dto.getSupplyId()).setGdsId(dto.getGoodsId())
                              .setGdsName(dto.getGoodsName()).setShopNm(dto.getShopName())
-                             .setUrl(dto.getGoodsUrl()).setOrdSta(dto.getOrderState())
-                             .setOrdStaNm(dto.getOrderStateName()).setSalAmt(dto.getSaleAmount())
-                             .setPayAmt(dto.getPaymentAmount()).setCosAmt(dto.getCostAmount())
-                             .setOthAmt(dto.getPayoutAmount()).setTalCos(dto.getTotalCost())
-                             .setGroPro(dto.getGrossProfit()).setGroProRat(dto.getGrossProfitRate())
-                             .setRemark(dto.getRemark()).setOiId(dto.getOiId());
+                             .setOrdSta(dto.getOrderState()).setOrdStaNm(dto.getOrderStateName())
+                             .setSalAmt(dto.getSaleAmount()).setPayAmt(dto.getPaymentAmount())
+                             .setCosAmt(dto.getCostAmount()).setOthAmt(dto.getPayoutAmount())
+                             .setTalCos(dto.getTotalCost()).setGroPro(dto.getGrossProfit())
+                             .setGroProRat(dto.getGrossProfitRate()).setRemark(dto.getRemark()).setOiId(dto.getOiId());
                         tempList.add(order);
                     });
                     return tempList;

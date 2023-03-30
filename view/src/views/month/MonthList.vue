@@ -8,7 +8,7 @@
           <div class="block" style="float: left; margin-right: 10px;">
             <el-date-picker v-model="query.month" type="month" format="YYYY-MM" value-format="YYYY-MM" placeholder="选择月份"></el-date-picker>
           </div>
-          <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 250px">
+          <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 250px" clearable="true">
             <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
           </el-select>
           <el-tooltip class="item" effect="light" content="按店铺查：即查询店铺的月销售额&nbsp;&nbsp;&nbsp;按月份查：即查询所有店铺的月销售额" placement="top">
@@ -159,9 +159,6 @@
           </el-pagination>
         </div>
       </div>
-      <!-- 新增/编辑月销售弹出框 -->
-      <!-- @findOrderList="findOrderList" 设置子弹窗可以调用父页面的方法 -->
-      <month-edit ref="monthDialog" @findMonthList="findMonthList"></month-edit>
     </el-card>
   </div>
 </template>
@@ -170,11 +167,10 @@
 import {getCurrentInstance, reactive, ref} from "vue";
 import {ElMessage} from "element-plus";
 import request from '../../utils/request';
-import monthEdit from "./MonthEdit.vue";
 
 export default {
   name: "monthSales",
-  components: { monthEdit },
+  components: {  },
   setup() {
     // 接口请求
     const axios = getCurrentInstance().appContext.config.globalProperties;
@@ -188,8 +184,6 @@ export default {
     });
     // 整个页面Loading 加载遮罩层控制
     const pageLoading = ref(false);
-    //月销售弹出窗对象
-    const monthDialog = ref();
     // 表格数据
     const tableData = ref([]);
     // 页数
@@ -250,7 +244,7 @@ export default {
       });
     };
     getUserShopArr();
-    return { query,tableData,pageTotal,userShop,monthDialog,pageLoading,
+    return { query,tableData,pageTotal,userShop,pageLoading,
       handleSearch,handleReset,handlePageChange,handleCount,findMonthList,addCellClass};
   }
 };

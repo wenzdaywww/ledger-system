@@ -67,10 +67,6 @@ export default {
         icon: "el-icon-bank-card",
         index: "/pay",
         title: "支出管理",
-      },{
-        icon: "el-icon-s-goods",
-        index: "/goods",
-        title: "商品信息",
       }
     ];
     // 路由

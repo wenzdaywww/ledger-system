@@ -62,7 +62,6 @@
                 O.SUPPLY_ID supplyId,
                 O.GOODS_ID goodsId,
                 O.GOODS_NAME goodsName,
-                G.GOODS_URL goodsUrl,
                 O.ORDER_STATE orderState,
                 O.SALE_AMOUNT saleAmount,
                 O.PAYMENT_AMOUNT paymentAmount,
@@ -73,7 +72,6 @@
                 O.GROSS_PROFIT_RATE grossProfitRate,
                 O.REMARK remark
         FROM USER_SHOP S,ORDER_INFO O
-        LEFT JOIN SHOP_GOODS G ON G.GOODS_ID = O.GOODS_ID AND G.SHOP_ID = O.SHOP_ID
         WHERE O.SHOP_ID = S.SHOP_ID AND S.SHOP_STATE='1'
             AND O.USER_ID = #{obj.userId} AND S.USER_ID = #{obj.userId}
         <if test="obj.startDateStr != null and obj.startDateStr != ''">

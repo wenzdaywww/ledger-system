@@ -14,7 +14,7 @@
               </div>
             </el-col>
             <el-col :span="2.5">
-              <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 170px">
+              <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 170px" clearable="true">
                 <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
               </el-select>
             </el-col>

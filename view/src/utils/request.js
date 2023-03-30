@@ -84,5 +84,13 @@ export default {
     //删除我的支出信息
     payDel: "api/pay/dlt/",
     //查询支出信息列表
-    payList: "api/pay/list"
+    payList: "api/pay/list",
+
+    //修改我的商品信息
+    goodsEdit: "api/goods/info",
+    //删除店铺信息
+    delGoods: "api/goods/dlt/",
+    //查询商品列表
+    goodsList: "api/goods/list",
+
 }

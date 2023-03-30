@@ -32,8 +32,6 @@ public class OrderListOutVO implements Serializable {
     private String gdsId;
     /** 商品名称 **/
     private String gdsName;
-    /** 商品链接 **/
-    private String url;
     /** 订单状态 **/
     private String ordSta;
     /** 订单状态名称 **/

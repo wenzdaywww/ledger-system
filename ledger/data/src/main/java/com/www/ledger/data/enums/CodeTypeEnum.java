@@ -29,12 +29,6 @@ public enum CodeTypeEnum {
     ShopState_Valid("ShopState","店铺状态","K1","有效"),
     /** 店铺状态：注销 **/
     ShopState_Logout("ShopState","店铺状态","K0","注销"),
-    /** 商品状态：删除 **/
-    GoodsState_Del("GoodsState","商品状态","K0","删除"),
-    /** 商品状态：上架 **/
-    GoodsState_Up("GoodsState","商品状态","K1","上架"),
-    /** 商品状态：有效 **/
-    GoodsState_Down("GoodsState","商品状态","K2","下架"),
     /** 订单状态：待确认 **/
     OrderState_Unconfirme("OrderState","订单状态","K0","待确认"),
     /** 订单状态：未支付，交易关闭 **/

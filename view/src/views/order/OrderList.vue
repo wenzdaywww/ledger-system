@@ -14,23 +14,23 @@
               </div>
             </el-col>
             <el-col :span="2.5">
-              <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 170px">
+              <el-select v-model="query.shopId" placeholder="请选择店铺" class="handle-select mr10" style="width: 170px" clearable="true">
                 <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
               </el-select>
             </el-col>
             <el-col :span="2.5">
-              <el-select v-model="query.ordSta" placeholder="请选择订单状态" class="handle-select mr10" style="width: 170px">
+              <el-select v-model="query.ordSta" placeholder="请选择订单状态" class="handle-select mr10" style="width: 170px" clearable="true">
                 <el-option v-for="item in orderState" :key="item.value" :label="item.name" :value="item.value"></el-option>
               </el-select>
             </el-col>
             <el-col :span="2.5">
-              <el-input v-model="query.ordId" placeholder="订单ID" class="handle-input mr10" style="width: 200px"></el-input>
+              <el-input v-model="query.ordId" placeholder="订单ID" class="handle-input mr10" style="width: 200px" clearable="true"></el-input>
             </el-col>
             <el-col :span="2.5">
-              <el-input v-model="query.supId" placeholder="1688订单ID" class="handle-input mr10" style="width: 170px"></el-input>
+              <el-input v-model="query.supId" placeholder="1688订单ID" class="handle-input mr10" style="width: 170px" clearable="true"></el-input>
             </el-col>
             <el-col :span="2.5">
-              <el-input v-model="query.gdsId" placeholder="商品ID" class="handle-input mr10" style="width: 170px"></el-input>
+              <el-input v-model="query.gdsId" placeholder="商品ID" class="handle-input mr10" style="width: 170px" clearable="true"></el-input>
             </el-col>
           </el-row>
           <el-row style="margin-bottom: 5px;">
@@ -55,8 +55,7 @@
           <el-table-column prop="gdsName" label="商品名称" align="center" class="ellipsis-line1">
             <template #default="scope">
               <el-tooltip class="item" effect="light" :content="scope.row.gdsName" placement="top">
-                <el-link v-if="scope.row.url" :href="scope.row.url" target="_blank" type="primary" class="ellipsis-line1">{{scope.row.gdsName}}</el-link>
-                <span v-else class="ellipsis-line1">{{scope.row.gdsName}}</span>
+                <span class="ellipsis-line1">{{scope.row.gdsName}}</span>
               </el-tooltip>
             </template>
           </el-table-column>

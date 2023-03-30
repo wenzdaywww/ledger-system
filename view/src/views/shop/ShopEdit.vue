@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 新增/编辑店铺弹出框 -->
-    <el-dialog title="修改店铺" v-model="editVisible" width="450px">
+    <el-dialog :title="dialogTitle" v-model="editVisible" width="450px">
       <el-form label-width="120px" :model="shopInfo" :rules="shopRules" ref="shopForm">
         <el-form-item label="店铺ID">
           <el-input v-model="shopInfo.shopId" :disabled="true" style="width: 250px"></el-input>
@@ -40,6 +40,8 @@ export default {
     const axios = getCurrentInstance().appContext.config.globalProperties;
     // 新增/编辑店铺弹窗控制
     const editVisible = ref(false);
+    // 弹窗标题
+    let dialogTitle = ref();
     // 编辑店铺信息
     let shopInfo = ref({});
     // 店铺信息的规则校验
@@ -64,6 +66,7 @@ export default {
       editVisible.value = true;
       shopInfo.value = shop ? shop : {};
       shopTpCode.value = shopTpArr.value;
+      dialogTitle.value = shop ? "编辑店铺信息" : "新增店铺信息";
     }
     // 新增/编辑店铺页面的保存按钮
     const saveEdit = () => {
@@ -83,13 +86,16 @@ export default {
         }
       });
     };
-    return {editVisible,shopInfo,shopRules,shopForm,shopTpCode,
+    return {editVisible,shopInfo,shopRules,shopForm,shopTpCode,dialogTitle,
       openShopDialog,saveEdit};
   }
 }
 </script>
-<style scoped>
+<style>
 .btn-save{
+  text-align: center;
+}
+.el-dialog .el-dialog__header{
   text-align: center;
 }
 </style>

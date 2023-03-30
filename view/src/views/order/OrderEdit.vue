@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 新增/编辑订单弹出框 -->
-    <el-dialog title="编辑店铺" v-model="editVisible" width="850px">
+    <el-dialog :title="dialogTitle" v-model="editVisible" width="850px">
       <el-form label-width="120px" :model="orderInfo" :rules="orderRules" ref="orderForm">
         <el-row>
           <el-col :span="12">
@@ -131,6 +131,8 @@ export default {
     const axios = getCurrentInstance().appContext.config.globalProperties;
     // 新增/编辑订单弹窗控制
     const editVisible = ref(false);
+    // 弹窗标题
+    let dialogTitle = ref();
     // 编辑订单信息
     let orderInfo = ref({});
     // 订单信息的规则校验
@@ -195,6 +197,7 @@ export default {
       userShop.value = shopArr.value;
       orderSate.value = stateArr.value;
       orderInfo.value = order ? order : {};
+      dialogTitle.value = order ? "编辑订单信息" : "新增订单信息";
     }
     // 新增/编辑店铺页面的保存按钮
     const saveEdit = () => {
@@ -214,13 +217,16 @@ export default {
         }
       });
     };
-    return {editVisible,orderInfo,orderRules,orderForm,userShop,orderSate,
+    return {editVisible,orderInfo,orderRules,orderForm,userShop,orderSate,dialogTitle,
       openOrderDialog,saveEdit};
   }
 }
 </script>
 <style scoped>
 .btn-save{
+  text-align: center;
+}
+.el-dialog .el-dialog__header{
   text-align: center;
 }
 </style>
