@@ -1,6 +1,5 @@
-<!-- 我的账簿 -->
 <template>
-  <div  v-loading="pageLoading">
+  <div>
     <el-row :gutter="20">
       <el-col :span="8">
         <!-- 用户信息-->
@@ -38,7 +37,7 @@
             </div>
           </template>
           净利率
-          <el-tooltip class="item" effect="light" content="净利率 = 净利润 / 总支出费 * 100%" placement="top">
+          <el-tooltip class="item" effect="light" content="净利率 = 净利润 / 支出费 * 100%" placement="top">
             <el-progress :percentage="bookData.retProRat" color="red"></el-progress>
           </el-tooltip>
           毛利率
@@ -55,10 +54,10 @@
       <el-col :span="16">
         <el-row :gutter="20" class="mgb20">
           <el-col :span="8">
-            <el-tooltip class="item" effect="light" content="净利润 = 总销售额 - 总支出费" placement="top">
+            <el-tooltip class="item" effect="light" content="净利润 = 销售额 - 支出费" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-3">
-                  <i class="el-icon-data-line grid-con-icon"></i>
+                  <i class="el-icon-lx-recharge grid-con-icon"></i>
                   <div class="grid-cont-right">
                     <div class="grid-num">{{ bookData.retPro }}</div>
                     <div>净利润</div>
@@ -71,7 +70,7 @@
             <el-tooltip class="item" effect="light" content="毛利润 = 销售额 - 成本费" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-3">
-                  <i class="el-icon-data-analysis grid-con-icon"></i>
+                  <i class="el-icon-lx-redpacket grid-con-icon"></i>
                   <div class="grid-cont-right">
                     <div class="grid-num">{{ bookData.groPro }}</div>
                     <div>毛利润</div>
@@ -81,13 +80,13 @@
             </el-tooltip>
           </el-col>
           <el-col :span="8">
-            <el-tooltip class="item" effect="light" content="总销售额 = 所有店销售额合计" placement="top">
+            <el-tooltip class="item" effect="light" content="销售额 = 所有店销售额合计" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-3">
                   <i class="el-icon-sell grid-con-icon"></i>
                   <div class="grid-cont-right">
                     <div class="grid-num">{{ bookData.salAmt }}</div>
-                    <div>总销售额</div>
+                    <div>销售额</div>
                   </div>
                 </div>
               </el-card>
@@ -96,39 +95,39 @@
         </el-row>
         <el-row :gutter="20" class="mgb20">
           <el-col :span="8">
-            <el-tooltip class="item" effect="light" content="总订单量 = 所有店订单量合计" placement="top">
+            <el-tooltip class="item" effect="light" content="订单量 = 所有店订单量合计" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-1">
                   <i class="el-icon-shopping-cart-full grid-con-icon"></i>
                   <div class="grid-cont-right">
                     <div class="grid-num">{{ bookData.talOrd }}</div>
-                    <div>总订单量</div>
+                    <div>订单量</div>
                   </div>
                 </div>
               </el-card>
             </el-tooltip>
           </el-col>
           <el-col :span="8">
-            <el-tooltip class="item" effect="light" content="总订单成交量 = 所有店成交单合计" placement="top">
+            <el-tooltip class="item" effect="light" content="订单成交量 = 所有店成交单合计" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-1">
                   <i class="el-icon-shopping-cart-1 grid-con-icon"></i>
                   <div class="grid-cont-right">
                     <div class="grid-num">{{ bookData.sucOrd }}</div>
-                    <div>总订单成交量</div>
+                    <div>订单成交量</div>
                   </div>
                 </div>
               </el-card>
             </el-tooltip>
           </el-col>
           <el-col :span="8">
-            <el-tooltip class="item" effect="light" content="总订单流失量 = 总订单量 - 总订单成交量" placement="top">
+            <el-tooltip class="item" effect="light" content="订单流失量 = 订单量 - 订单成交量" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-1">
                   <i class="el-icon-shopping-cart-2 grid-con-icon"></i>
                   <div class="grid-cont-right">
                     <div class="grid-num">{{ bookData.faiOrd }}</div>
-                    <div>总订单流失量</div>
+                    <div>订单流失量</div>
                   </div>
                 </div>
               </el-card>
@@ -137,39 +136,39 @@
         </el-row>
         <el-row :gutter="20" class="mgb20">
           <el-col :span="8">
-            <el-tooltip class="item" effect="light" content="总成本费 = 所有店成本费合计" placement="top">
+            <el-tooltip class="item" effect="light" content="成本费 = 所有店成本费合计" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-2">
                   <i class="el-icon-sold-out grid-con-icon"></i>
                   <div class="grid-cont-right">
                     <div class="grid-num">{{ bookData.cosAmt }}</div>
-                    <div>总成本费</div>
+                    <div>成本费</div>
                   </div>
                 </div>
               </el-card>
             </el-tooltip>
           </el-col>
           <el-col :span="8">
-            <el-tooltip class="item" effect="light" content="总推广费 = 所有店推广费合计" placement="top">
+            <el-tooltip class="item" effect="light" content="推广费 = 所有店推广费合计" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-2">
-                  <i class="el-icon-monitor grid-con-icon"></i>
+                  <i class="el-icon-lx-global grid-con-icon"></i>
                   <div class="grid-cont-right">
                     <div class="grid-num">{{ bookData.advAmt }}</div>
-                    <div>总推广费</div>
+                    <div>推广费</div>
                   </div>
                 </div>
               </el-card>
             </el-tooltip>
           </el-col>
           <el-col :span="8">
-            <el-tooltip class="item" effect="light" content="总服务费 = 所有店服务费合计" placement="top">
+            <el-tooltip class="item" effect="light" content="服务费 = 所有店服务费合计" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-2">
                   <i class="el-icon-shopping-bag-1 grid-con-icon"></i>
                   <div class="grid-cont-right">
                     <div class="grid-num">{{ bookData.serAmt }}</div>
-                    <div>总服务费</div>
+                    <div>服务费</div>
                   </div>
                 </div>
               </el-card>
@@ -178,26 +177,26 @@
         </el-row>
         <el-row :gutter="20" class="mgb20">
           <el-col :span="8">
-            <el-tooltip class="item" effect="light" content="总刷单费 = 所有店刷单费合计" placement="top">
+            <el-tooltip class="item" effect="light" content="刷单费 = 所有店刷单费合计" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-4">
                   <i class="el-icon-shopping-bag-2 grid-con-icon"></i>
                   <div class="grid-cont-right">
                     <div class="grid-num">{{ bookData.virAmt }}</div>
-                    <div>总刷单费</div>
+                    <div>刷单费</div>
                   </div>
                 </div>
               </el-card>
             </el-tooltip>
           </el-col>
           <el-col :span="8">
-            <el-tooltip class="item" effect="light" content="总支出费 = 总成本费 + 总推广费 + 总服务费 + 总刷单费" placement="top">
+            <el-tooltip class="item" effect="light" content="支出费 = 成本费 + 推广费 + 服务费 + 刷单费" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-4">
                   <i class="el-icon-money grid-con-icon"></i>
                   <div class="grid-cont-right">
                     <div class="grid-num">{{ bookData.talCos }}</div>
-                    <div>总支出费</div>
+                    <div>支出费</div>
                   </div>
                 </div>
               </el-card>
@@ -207,10 +206,10 @@
             <el-tooltip class="item" effect="light" content="根据【支出管理】统计所有店铺保证金" placement="top">
               <el-card shadow="hover" :body-style="{ padding: '0px' }">
                 <div class="grid-content grid-con-4">
-                  <i class="el-icon-s-shop grid-con-icon"></i>
+                  <i class="el-icon-lx-shop grid-con-icon"></i>
                   <div class="grid-cont-right">
                     <div class="grid-num">{{ bookData.guatee }}</div>
-                    <div>总店铺保证金</div>
+                    <div>店铺保证金</div>
                   </div>
                 </div>
               </el-card>
@@ -219,31 +218,16 @@
         </el-row>
       </el-col>
     </el-row>
-    <el-row :gutter="20">
-      <el-col :span="12">
-        <!-- 最近一年销售趋势图-->
-        <el-card shadow="hover">
-          <schart ref="bar" class="schart" canvasId="bar" :options="shopSales"></schart>
-        </el-card>
-      </el-col>
-      <el-col :span="12">
-        <!-- 销售额最高店铺近10天销售额趋势图-->
-        <el-card shadow="hover">
-          <schart ref="line" class="schart" canvasId="line" :options="monthSales"></schart>
-        </el-card>
-      </el-col>
-    </el-row>
   </div>
 </template>
 
 <script>
-import Schart from "vue-schart";
-import {getCurrentInstance, reactive, ref} from "vue";
+import {getCurrentInstance, ref} from "vue";
 import request from "../../utils/request";
 import {ElMessage} from "element-plus";
+
 export default {
-  name: "Book",
-  components: { Schart },
+  name: "Data",
   setup() {
     // 接口请求
     const axios = getCurrentInstance().appContext.config.globalProperties;
@@ -255,28 +239,6 @@ export default {
     const user = ref([]);
     // 账簿数据
     const bookData = ref([]);
-    // 最近一年销售趋势图数据
-    const shopSales = ref({
-      type: "bar",
-      title: {text: "近一年总销售额趋势图"},
-      xRorate: 20,
-      labels: [],
-      datasets: [
-        {
-          label: "销售额（元）",
-          data: [],
-        }
-      ]
-    });
-    // 销售额最高店铺近10天销售额趋势图
-    const monthSales = ref({
-      type: "line",
-      title: {text: "近10天总销售额趋势图"},
-      //labels:["2023.1.1", "2023.1.2", "2023.1.3", "2023.1.4", "2023.1.5"]
-      labels: [],
-      //datasets:[{label: "家电",ata: [1, 2, 3, 4, 5,6, 7, 8, 9, 10]}]
-      datasets: []
-    });
     // 编辑用户的规则校验
     const editRules = {
       userName : [
@@ -314,35 +276,6 @@ export default {
       });
     };
     getBookInfoData();
-    // 查询最近一年销售趋势图
-    const getLastYeatData = () => {
-      axios.$http.get(request.bookYear,null).then(function (res) {
-        shopSales.value.labels = [];
-        shopSales.value.datasets[0].data = [];
-        res.data.forEach(function (item) {
-          shopSales.value.labels.push(item.month);
-          shopSales.value.datasets[0].data.push(item.sales);
-        });
-      });
-    };
-    getLastYeatData();
-    // 查询销售额最高店铺近10天销售额趋势图
-    const getLast10DayData = () => {
-      axios.$http.get(request.bookDay,null).then(function (res) {
-        monthSales.value.datasets = [];
-        monthSales.value.labels = [];
-        let dateData = [];//日期坐标
-        //res.data = [{day:2021/01/01,sales:100}]
-        let shopData = {label:"销售额(元)",data:[]};
-        res.data.forEach(function (item) {
-          shopData.data.push(item.sales);
-          dateData.push(item.day);
-        });
-        monthSales.value.datasets.push(shopData);
-        monthSales.value.labels = dateData;
-      });
-    };
-    getLast10DayData();
     // 保存按钮
     const onSubmit = () => {
       editForm.value.validate((valid) => {
@@ -359,10 +292,10 @@ export default {
         }
       });
     };
-    return {user,openEdit,editRules,editForm,bookData,shopSales,monthSales,pageLoading,
-      onSubmit,handleCount,handleExport};
-  },
-};
+    return {openEdit,pageLoading,user,bookData,editRules,editForm,
+      handleExport,handleCount,onSubmit};
+  }
+}
 </script>
 
 <style scoped>
@@ -452,9 +385,5 @@ export default {
 }
 .mgb20 {
   margin-bottom: 20px;
-}
-.schart {
-  width: 100%;
-  height: 300px;
 }
 </style>

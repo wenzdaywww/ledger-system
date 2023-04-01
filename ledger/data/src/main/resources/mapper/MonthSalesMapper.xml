@@ -33,17 +33,34 @@
         SELECT M.* FROM MONTH_SALES M WHERE M.USER_ID = #{userId}  AND M.SHOP_ID IS NULL
     </select>
     <!-- 查询用户近一年的销售额-->
-    <select id="findLastYearSales" resultType="com.www.ledger.data.dto.MonthDTO">
-        SELECT  D.MONTH_STR monthDateStr,
-                SUM(D.SALE_AMOUNT) saleAmount
-        FROM (SELECT DATE_FORMAT(M.MONTH_DATE,'%Y年%m月') MONTH_STR,
-                     M.SALE_AMOUNT
+    <select id="findLastMonthData" resultType="com.www.ledger.data.dto.MonthDTO">
+        SELECT  M.MONTH_DATE monthDate,
+                DATE_FORMAT(M.MONTH_DATE,'%Y年%m月') monthDateStr,
+                M.RETAINED_PROFITS retainedProfits,
+                M.GROSS_PROFIT grossProfit,
+                M.TOTAL_ORDER totalOrder,
+                M.SUCCEED_ORDER succeedOrder,
+                M.FAILED_ORDER failedOrder,
+                M.SALE_AMOUNT saleAmount,
+                M.COST_AMOUNT costAmount,
+                M.ADVERT_AMOUNT advertAmount,
+                M.SERVICE_AMOUNT serviceAmount,
+                M.VIRTUAL_AMOUNT virtualAmount,
+                M.TOTAL_COST totalCost
         FROM MONTH_SALES M
-        WHERE M.USER_ID = #{userId} AND M.SHOP_ID IS NULL
-                AND M.MONTH_DATE <![CDATA[ <= ]]>  STR_TO_DATE(#{date},'%Y-%m-%d')
-                AND M.MONTH_DATE <![CDATA[ >= ]]>  DATE_SUB(STR_TO_DATE(#{date},'%Y-%m-%d'),INTERVAL 1 YEAR)
-              ORDER BY M.MONTH_DATE ASC ) D
-        GROUP BY D.MONTH_STR
+        WHERE M.USER_ID = #{userId}
+        <choose>
+            <when test="shopId != null">
+                AND EXISTS(SELECT 1 FROM USER_SHOP S WHERE S.USER_ID = #{userId}
+                    AND S.SHOP_ID = M.SHOP_ID AND S.SHOP_STATE = '1' AND S.SHOP_ID = #{shopId})
+            </when>
+            <otherwise>
+                AND M.SHOP_ID IS NULL
+            </otherwise>
+        </choose>
+        AND M.MONTH_DATE <![CDATA[ <= ]]> STR_TO_DATE(#{date},'%Y-%m-%d')
+        AND M.MONTH_DATE <![CDATA[ >= ]]> DATE_SUB(STR_TO_DATE(#{date},'%Y-%m-%d'),INTERVAL 1 YEAR)
+        ORDER BY M.MONTH_DATE ASC
     </select>
     <!-- 统计店铺汇总的月销售额-->
     <select id="countTotalMonthData" resultType="com.www.ledger.data.dto.MonthDTO">
@@ -88,22 +105,22 @@
     <!--  查询月销售额列表信息-->
     <select id="findMonthList" resultType="com.www.ledger.data.dto.MonthDTO">
         SELECT  M.MS_ID msId,
-                DATE_FORMAT(M.MONTH_DATE,'%Y-%m') monthDateStr,
-                M.SHOP_ID shopId,
-                S.SHOP_NAME shopName,
-                M.RETAINED_PROFITS retainedProfits,
-                M.RETAINED_PROFITS_RATE retainedProfitsRate,
-                M.GROSS_PROFIT grossProfit,
-                M.GROSS_PROFIT_RATE grossProfitRate,
-                M.TOTAL_ORDER totalOrder,
-                M.SUCCEED_ORDER succeedOrder,
-                M.FAILED_ORDER failedOrder,
-                M.SALE_AMOUNT saleAmount,
-                M.COST_AMOUNT costAmount,
-                M.ADVERT_AMOUNT advertAmount,
-                M.SERVICE_AMOUNT serviceAmount,
-                M.VIRTUAL_AMOUNT virtualAmount,
-                M.TOTAL_COST totalCost
+        DATE_FORMAT(M.MONTH_DATE,'%Y-%m') monthDateStr,
+        M.SHOP_ID shopId,
+        S.SHOP_NAME shopName,
+        M.RETAINED_PROFITS retainedProfits,
+        M.RETAINED_PROFITS_RATE retainedProfitsRate,
+        M.GROSS_PROFIT grossProfit,
+        M.GROSS_PROFIT_RATE grossProfitRate,
+        M.TOTAL_ORDER totalOrder,
+        M.SUCCEED_ORDER succeedOrder,
+        M.FAILED_ORDER failedOrder,
+        M.SALE_AMOUNT saleAmount,
+        M.COST_AMOUNT costAmount,
+        M.ADVERT_AMOUNT advertAmount,
+        M.SERVICE_AMOUNT serviceAmount,
+        M.VIRTUAL_AMOUNT virtualAmount,
+        M.TOTAL_COST totalCost
         FROM MONTH_SALES M
         LEFT JOIN USER_SHOP S ON  S.USER_ID = #{obj.userId} AND S.SHOP_STATE='1' AND S.SHOP_ID = M.SHOP_ID
         WHERE M.USER_ID = #{obj.userId}

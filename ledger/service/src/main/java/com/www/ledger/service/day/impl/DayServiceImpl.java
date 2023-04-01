@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.response.Result;
 import com.www.common.utils.DateUtils;
-import com.www.common.utils.MoneyUtils;
+import com.www.common.utils.BigDecimalUtils;
 import com.www.ledger.data.dao.IDaySalesDAO;
 import com.www.ledger.data.dao.IOrderInfoDAO;
 import com.www.ledger.data.dto.DayDTO;
@@ -94,8 +94,8 @@ public class DayServiceImpl implements IDayService {
                 DaySalesEntity dayEntity = entityMap.get(k);
                 dayEntity.setTotalOrder(v.getTotalOrder() == null ? 0L : v.getTotalOrder())
                         .setSucceedOrder(v.getSucceedOrder() == null ? 0L : v.getSucceedOrder())
-                        .setSaleAmount(MoneyUtils.nullToZero(v.getSaleAmount())).setCostAmount(MoneyUtils.nullToZero(v.getCostAmount()))
-                        .setVirtualAmount(MoneyUtils.nullToZero(v.getVirtualAmount()));
+                        .setSaleAmount(BigDecimalUtils.nullToZero(v.getSaleAmount())).setCostAmount(BigDecimalUtils.nullToZero(v.getCostAmount()))
+                        .setVirtualAmount(BigDecimalUtils.nullToZero(v.getVirtualAmount()));
                 //计算月销售额数据
                 this.computeDayData(dayEntity);
                 updateList.add(dayEntity);
@@ -104,8 +104,8 @@ public class DayServiceImpl implements IDayService {
                 dayEntity.setShopId(v.getShopId()).setUserId(userId).setDayDate(v.getDayDate())
                         .setTotalOrder(v.getTotalOrder() == null ? 0L : v.getTotalOrder())
                         .setSucceedOrder(v.getSucceedOrder() == null ? 0L : v.getSucceedOrder())
-                        .setSaleAmount(MoneyUtils.nullToZero(v.getSaleAmount())).setCostAmount(MoneyUtils.nullToZero(v.getCostAmount()))
-                        .setVirtualAmount(MoneyUtils.nullToZero(v.getVirtualAmount()));
+                        .setSaleAmount(BigDecimalUtils.nullToZero(v.getSaleAmount())).setCostAmount(BigDecimalUtils.nullToZero(v.getCostAmount()))
+                        .setVirtualAmount(BigDecimalUtils.nullToZero(v.getVirtualAmount()));
                 //计算日销售额数据
                 this.computeDayData(dayEntity);
                 insertList.add(dayEntity);

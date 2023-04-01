@@ -24,11 +24,14 @@
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
     <!-- 获取订单中最大的日期-->
-    <select id="getMaxOrderDate" resultType="java.lang.String">
-        SELECT date_format(MAX(R.ORDER_DATE),'%Y-%m-%d') MAX_DATE
+    <select id="getMaxOrderDate" resultType="java.util.Date">
+        SELECT MAX(R.ORDER_DATE) ORDER_DATE
         FROM ORDER_INFO R,USER_SHOP S
-        WHERE R.USER_ID = #{userId} AND S.USER_ID = #{userId}
-          AND R.SHOP_ID=S.SHOP_ID AND S.SHOP_STATE='1'
+        WHERE R.USER_ID = #{userId}  AND S.USER_ID = #{userId}
+            AND S.SHOP_STATE = '1' AND S.SHOP_ID = R.SHOP_ID
+        <if test="shopId != null">
+            AND R.SHOP_ID = #{shopId}
+        </if>
     </select>
     <!--  统计店铺日销售额日销售额-->
     <select id="countShopDaySale" resultType="com.www.ledger.data.dto.DayDTO">
@@ -37,9 +40,9 @@
                D.ORDER_DATE dayDate,
                DATE_FORMAT(D.ORDER_DATE,'%Y-%m-%d') dayDateStr,
                COUNT(D.OI_ID) totalOrder,
-               COUNT(IF((D.ORDER_STATE = '3' OR D.ORDER_STATE = '4'), D.OI_ID,NULL)) succeedOrder,
-               SUM(IF((D.ORDER_STATE = '3' OR D.ORDER_STATE = '4'), D.PAYMENT_AMOUNT,0)) saleAmount,
-               SUM(IF((D.ORDER_STATE = '3' OR D.ORDER_STATE = '4'), D.TOTAL_COST,0)) costAmount,
+               COUNT(IF(D.ORDER_STATE IN ('3','4'), D.OI_ID,NULL)) succeedOrder,
+               SUM(IF(D.ORDER_STATE IN ('3','4'), D.PAYMENT_AMOUNT,0)) saleAmount,
+               SUM(IF(D.ORDER_STATE IN ('3','4','5','6'), D.TOTAL_COST,0)) costAmount,
                SUM(IF(D.ORDER_STATE = '7', D.TOTAL_COST,0)) virtualAmount
         FROM( SELECT C.OI_ID,
                      C.ORDER_ID,

@@ -9,6 +9,7 @@ import com.www.ledger.data.entity.OrderInfoEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,9 +25,10 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfoEntity> {
      * <p>@Author www </p>
      * <p>@Date 2023/3/19 19:08 </p>
      * @param userId 用户ID
+     * @param shopId 店铺ID 为空则查询用户下所有店铺订单，不为空则查询指定店铺下订单
      * @return 最大的日期
      */
-    String getMaxOrderDate(@Param("userId") String userId);
+    Date getMaxOrderDate(@Param("userId") String userId, @Param("shopId") Long shopId);
     /**
      * <p>@Description 统计店铺日销售额 </p>
      * <p>@Author www </p>

@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -66,11 +67,12 @@ public class OrderInfoDAOImpl extends ServiceImpl<OrderInfoMapper, OrderInfoEnti
      * <p>@Author www </p>
      * <p>@Date 2023/3/19 19:08 </p>
      * @param userId 用户ID
+     * @param shopId 店铺ID 为空则查询用户下所有店铺订单，不为空则查询指定店铺下订单
      * @return 最大的日期
      */
     @Override
-    public String getMaxOrderDate(String userId) {
-        return orderInfoMapper.getMaxOrderDate(userId);
+    public Date getMaxOrderDate(String userId, Long shopId) {
+        return orderInfoMapper.getMaxOrderDate(userId,shopId);
     }
     /**
      * <p>@Description 统计店铺日销售额 </p>

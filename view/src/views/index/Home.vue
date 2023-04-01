@@ -16,7 +16,7 @@ export default {
     vHeader
   },
   setup() {
-    //向子组件传值
+    //向Header子组件传值
     provide("isAdmin",false);
     return {};
   },

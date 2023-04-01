@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.response.Result;
 import com.www.common.utils.DateUtils;
-import com.www.common.utils.MoneyUtils;
+import com.www.common.utils.BigDecimalUtils;
 import com.www.ledger.data.dto.YearDTO;
 import com.www.ledger.data.entity.YearSalesEntity;
 import com.www.ledger.data.dao.IMonthSalesDAO;
@@ -97,9 +97,9 @@ public class YearServiceImpl implements IYearService {
                 yearEntity.setTotalOrder(v.getTotalOrder() == null ? 0L : v.getTotalOrder())
                         .setSucceedOrder(v.getSucceedOrder() == null ? 0L : v.getSucceedOrder())
                         .setFailedOrder(v.getFailedOrder() == null ? 0L : v.getFailedOrder())
-                        .setSaleAmount(MoneyUtils.nullToZero(v.getSaleAmount())).setCostAmount(MoneyUtils.nullToZero(v.getCostAmount()))
-                        .setAdvertAmount(MoneyUtils.nullToZero(v.getAdvertAmount())).setServiceAmount(MoneyUtils.nullToZero(v.getServiceAmount()))
-                        .setVirtualAmount(MoneyUtils.nullToZero(v.getVirtualAmount()));
+                        .setSaleAmount(BigDecimalUtils.nullToZero(v.getSaleAmount())).setCostAmount(BigDecimalUtils.nullToZero(v.getCostAmount()))
+                        .setAdvertAmount(BigDecimalUtils.nullToZero(v.getAdvertAmount())).setServiceAmount(BigDecimalUtils.nullToZero(v.getServiceAmount()))
+                        .setVirtualAmount(BigDecimalUtils.nullToZero(v.getVirtualAmount()));
                 //计算月销售额数据
                 this.computeYearData(yearEntity);
                 updateList.add(yearEntity);
@@ -109,9 +109,9 @@ public class YearServiceImpl implements IYearService {
                         .setTotalOrder(v.getTotalOrder() == null ? 0L : v.getTotalOrder())
                         .setSucceedOrder(v.getSucceedOrder() == null ? 0L : v.getSucceedOrder())
                         .setFailedOrder(v.getFailedOrder() == null ? 0L : v.getFailedOrder())
-                        .setSaleAmount(MoneyUtils.nullToZero(v.getSaleAmount())).setCostAmount(MoneyUtils.nullToZero(v.getCostAmount()))
-                        .setAdvertAmount(MoneyUtils.nullToZero(v.getAdvertAmount())).setServiceAmount(MoneyUtils.nullToZero(v.getServiceAmount()))
-                        .setVirtualAmount(MoneyUtils.nullToZero(v.getVirtualAmount()));
+                        .setSaleAmount(BigDecimalUtils.nullToZero(v.getSaleAmount())).setCostAmount(BigDecimalUtils.nullToZero(v.getCostAmount()))
+                        .setAdvertAmount(BigDecimalUtils.nullToZero(v.getAdvertAmount())).setServiceAmount(BigDecimalUtils.nullToZero(v.getServiceAmount()))
+                        .setVirtualAmount(BigDecimalUtils.nullToZero(v.getVirtualAmount()));
                 //计算年销售额数据
                 this.computeYearData(yearEntity);
                 insertList.add(yearEntity);

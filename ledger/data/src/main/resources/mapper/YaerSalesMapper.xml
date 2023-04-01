@@ -23,6 +23,36 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
+    <!--    查询近10年年销售额数据-->
+    <select id="findLastYearData" resultType="com.www.ledger.data.dto.YearDTO">
+        SELECT  M.YEAR year,
+                DATE_FORMAT(M.YEAR,'%Y年') yearStr,
+                M.RETAINED_PROFITS retainedProfits,
+                M.GROSS_PROFIT grossProfit,
+                M.TOTAL_ORDER totalOrder,
+                M.SUCCEED_ORDER succeedOrder,
+                M.FAILED_ORDER failedOrder,
+                M.SALE_AMOUNT saleAmount,
+                M.COST_AMOUNT costAmount,
+                M.ADVERT_AMOUNT advertAmount,
+                M.SERVICE_AMOUNT serviceAmount,
+                M.VIRTUAL_AMOUNT virtualAmount,
+                M.TOTAL_COST totalCost
+        FROM year_sales M
+        WHERE M.USER_ID = #{userId}
+        <choose>
+            <when test="shopId != null">
+                AND EXISTS(SELECT 1 FROM USER_SHOP S WHERE S.USER_ID = #{userId}
+                    AND S.SHOP_ID = M.SHOP_ID AND S.SHOP_STATE = '1' AND S.SHOP_ID = #{shopId})
+            </when>
+            <otherwise>
+                AND M.SHOP_ID IS NULL
+            </otherwise>
+        </choose>
+        AND M.YEAR <![CDATA[ <= ]]> STR_TO_DATE(#{date},'%Y-%m-%d')
+        AND M.YEAR <![CDATA[ >= ]]> DATE_SUB(STR_TO_DATE(#{date},'%Y-%m-%d'),INTERVAL 9 YEAR)
+        ORDER BY M.YEAR ASC
+    </select>
     <!-- 查询用户店铺的年销售数据-->
     <select id="findShopYearSalesList" resultMap="BaseResultMap">
         SELECT C.*

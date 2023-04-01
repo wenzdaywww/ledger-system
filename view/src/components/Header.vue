@@ -48,6 +48,7 @@ import Password from "../views/user/info/Password.vue";
 export default {
   name: "Header",
   components: {Password},
+  inject:['hidenChart'],
   mounted() {
     //定义可被同级页面调用的方法
     window['loginSuccess'] = () => {
@@ -115,7 +116,9 @@ export default {
           ElMessage.success("退出成功");
           clearUserRouter();
           isLogin.value = false;
-          router.push("/index");
+          router.push("/");
+          //调用同级页面的Index方法hidenChart
+          window.parent.hidenChart('Index');
         }).catch(function (res) {
           ElMessage.error("退出失败");
         });

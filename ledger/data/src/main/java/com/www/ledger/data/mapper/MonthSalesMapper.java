@@ -38,14 +38,15 @@ public interface MonthSalesMapper extends BaseMapper<MonthSalesEntity> {
     @RowLimitInterceptor
     List<MonthSalesEntity> findTotalMonthSalesList(@Param("userId") String userId);
     /**
-     * <p>@Description 查询用户最近一年所有店铺销售额趋势图 </p>
+     * <p>@Description 查询近一年月销售额数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 21:40 </p>
      * @param userId 用户ID
-     * @param date 统计的最近日期
-     * @return
+     * @param shopId 店铺ID 为空则查询用户店铺汇总日销售额，不为空则查询指定店铺日销售额
+     * @param date 月销售额数据
+     * @return 月销售额数据
      */
-    List<MonthDTO> findLastYearSales(@Param("userId") String userId,@Param("date") String date);
+    List<MonthDTO> findLastMonthData(@Param("userId") String userId, @Param("shopId") Long shopId, @Param("date") String date);
     /**
      * <p>@Description 统计店铺的年销售额 </p>
      * <p>@Author www </p>

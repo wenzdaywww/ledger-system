@@ -27,10 +27,6 @@ export default {
     bookInfo: "api/book/info",
     //统计用户账簿信息
     bookCount: "api/book/tal",
-    //最近一年销售趋势图查询
-    bookYear: "api/book/year",
-    //近10天销售额前3名店铺销售额趋势图
-    bookDay: "api/book/day",
 
     //查询我的店铺列表
     shopList: "api/shop/list",
@@ -92,5 +88,19 @@ export default {
     delGoods: "api/goods/dlt/",
     //查询商品列表
     goodsList: "api/goods/list",
+
+    //图表查询
+    //查询日销售利润图表数据
+    daySales: "api/chart/daySales",
+    //查询日订单量图表数据
+    dayOrder: "api/chart/dayOrder",
+    //查询月销售图表数据
+    monthSales: "api/chart/monthSales",
+    //查询月订单量图表数据
+    monthOrder: "api/chart/monthOrder",
+    //查询年销售图表数据
+    yearSales: "api/chart/yearSales",
+    //查询年订单量图表数据
+    yearOrder: "api/chart/yearOrder",
 
 }

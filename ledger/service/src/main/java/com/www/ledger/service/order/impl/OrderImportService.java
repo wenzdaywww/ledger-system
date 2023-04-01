@@ -5,7 +5,7 @@ import com.www.common.config.exception.BusinessException;
 import com.www.common.data.constant.CharConstant;
 import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.utils.DateUtils;
-import com.www.common.utils.MoneyUtils;
+import com.www.common.utils.BigDecimalUtils;
 import com.www.ledger.data.dto.HeadDataDTO;
 import com.www.ledger.data.dto.OrderDTO;
 import com.www.ledger.data.dto.OrderRowDTO;
@@ -72,8 +72,8 @@ public abstract class OrderImportService implements IOrderImportService {
         orderDTO.setGoodsId(this.getCellData(rowList,headMap,GOODS_ID));
         orderDTO.setGoodsName(StringUtils.substring(this.getCellData(rowList,headMap,GOODS_NAME),0,60));
         orderDTO.setOrderState(this.getStateCode(this.getCellData(rowList,headMap,ORDER_STATE)));
-        orderDTO.setSaleAmount(MoneyUtils.strToAmt(this.getCellData(rowList,headMap,SALE_AMOUNT)));
-        orderDTO.setPaymentAmount(MoneyUtils.strToAmt(this.getCellData(rowList,headMap,PAYMENT_AMOUNT)));
+        orderDTO.setSaleAmount(BigDecimalUtils.strToAmt(this.getCellData(rowList,headMap,SALE_AMOUNT)));
+        orderDTO.setPaymentAmount(BigDecimalUtils.strToAmt(this.getCellData(rowList,headMap,PAYMENT_AMOUNT)));
         orderDTO.setCostAmount(BigDecimal.ZERO);
         //商家备注存的是1688订单、和其他备注信息，格式如：3243663938570794151#10.8#这是备注内容
         String remark = this.getCellData(rowList,headMap,REMARK);
@@ -105,7 +105,7 @@ public abstract class OrderImportService implements IOrderImportService {
         }else {
             orderDTO.setSupplyId(StringUtils.replace(arr[0],CharConstant.SINGLE_QUOTATION_MARK,CharConstant.EMPTY));
         }
-        orderDTO.setCostAmount(MoneyUtils.strToAmt(arr[1]));
+        orderDTO.setCostAmount(BigDecimalUtils.strToAmt(arr[1]));
     }
     /**
      * <p>@Description 订单数据校验 </p>

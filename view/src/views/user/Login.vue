@@ -70,7 +70,7 @@ export default {
           axios.$http.post(request.login, form).then(function (res) {
             ElMessage.success("登入成功");
             router.push("/");
-            //调用同级页面的方法loginSuccess
+            //调用同级页面的Header方法loginSuccess
             window.parent.loginSuccess('Header');
           });
         } else {

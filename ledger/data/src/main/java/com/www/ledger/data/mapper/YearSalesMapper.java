@@ -20,6 +20,16 @@ import java.util.List;
 @Mapper
 public interface YearSalesMapper extends BaseMapper<YearSalesEntity> {
     /**
+     * <p>@Description 查询近10年年销售额数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/18 21:40 </p>
+     * @param userId 用户ID
+     * @param shopId 店铺ID 为空则查询用户店铺汇总年销售额，不为空则查询指定店铺年销售额
+     * @param date   年销售额数据
+     * @return 年销售额数据
+     */
+    List<YearDTO> findLastYearData(@Param("userId") String userId, @Param("shopId") Long shopId, @Param("date") String date);
+    /**
      * <p>@Description 查询用户店铺的年销售数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/20 20:23 </p>

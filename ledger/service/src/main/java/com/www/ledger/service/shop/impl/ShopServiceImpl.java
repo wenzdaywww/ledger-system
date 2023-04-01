@@ -8,7 +8,7 @@ import com.www.common.config.exception.BusinessException;
 import com.www.common.config.security.entity.SysUserEntity;
 import com.www.common.data.response.Result;
 import com.www.common.utils.DateUtils;
-import com.www.common.utils.MoneyUtils;
+import com.www.common.utils.BigDecimalUtils;
 import com.www.common.utils.UidGeneratorUtils;
 import com.www.ledger.data.dao.IShopSalesDAO;
 import com.www.ledger.data.dao.IUserShopDAO;
@@ -81,11 +81,11 @@ public class ShopServiceImpl implements IShopService {
                 entity.setTotalOrder(shopDTO.getTotalOrder() == null ? 0L : shopDTO.getTotalOrder())
                         .setSucceedOrder(shopDTO.getSucceedOrder() == null ? 0L : shopDTO.getSucceedOrder())
                         .setFailedOrder(shopDTO.getFailedOrder() == null ? 0L : shopDTO.getFailedOrder())
-                        .setSaleAmount(MoneyUtils.nullToZero(shopDTO.getSaleAmount()))
-                        .setCostAmount(MoneyUtils.nullToZero(shopDTO.getCostAmount()))
-                        .setAdvertAmount(MoneyUtils.nullToZero(shopDTO.getAdvertAmount()))
-                        .setServiceAmount(MoneyUtils.nullToZero(shopDTO.getServiceAmount()))
-                        .setVirtualAmount(MoneyUtils.nullToZero(shopDTO.getVirtualAmount()));
+                        .setSaleAmount(BigDecimalUtils.nullToZero(shopDTO.getSaleAmount()))
+                        .setCostAmount(BigDecimalUtils.nullToZero(shopDTO.getCostAmount()))
+                        .setAdvertAmount(BigDecimalUtils.nullToZero(shopDTO.getAdvertAmount()))
+                        .setServiceAmount(BigDecimalUtils.nullToZero(shopDTO.getServiceAmount()))
+                        .setVirtualAmount(BigDecimalUtils.nullToZero(shopDTO.getVirtualAmount()));
             }else {//如果查下的店销售额(shopList)在统计出的店销售额(dtoMap)中没有数据，则对应数据字段设置为0
                 entity.setTotalOrder(0L).setSucceedOrder(0L).setFailedOrder(0L).setSaleAmount(BigDecimal.ZERO)
                       .setCostAmount(BigDecimal.ZERO).setAdvertAmount(BigDecimal.ZERO)

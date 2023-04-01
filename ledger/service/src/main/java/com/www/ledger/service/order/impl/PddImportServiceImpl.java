@@ -125,6 +125,7 @@ public class PddImportServiceImpl extends OrderImportService {
             stateMap.put("已取消",CodeDict.getValue(CodeTypeEnum.OrderState_Unpaid.getType(), CodeTypeEnum.OrderState_Unpaid.getKey()));//未支付，交易关闭
             stateMap.put("待支付",CodeDict.getValue(CodeTypeEnum.OrderState_Paidding.getType(), CodeTypeEnum.OrderState_Paidding.getKey()));//待支付
             stateMap.put("待发货",CodeDict.getValue(CodeTypeEnum.OrderState_Sending.getType(), CodeTypeEnum.OrderState_Sending.getKey()));//待发货
+            stateMap.put("已发货，退款成功",CodeDict.getValue(CodeTypeEnum.OrderState_Return.getType(), CodeTypeEnum.OrderState_Return.getKey()));//退货退款
         }
         String code = stateMap.get(stateName.trim());
         //code为空，则赋值为【待确认】

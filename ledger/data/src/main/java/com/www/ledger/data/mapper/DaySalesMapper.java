@@ -20,15 +20,16 @@ import java.util.List;
 @Mapper
 public interface DaySalesMapper extends BaseMapper<DaySalesEntity> {
     /**
-     * <p>@Description 查询日期区间的店铺汇总日销售额 </p>
+     * <p>@Description 查询日期区间的日销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/28 21:46 </p>
      * @param userId 用户ID
+     * @param shopId 店铺ID 为空则查询用户店铺汇总日销售额，不为空则查询指定店铺日销售额
      * @param startData 起始日期
      * @param endDate 截止日期
-     * @return 店铺汇总日销售额
+     * @return 日销售额
      */
-    List<DayDTO> findLastDaySales(@Param("userId") String userId,@Param("startData") String startData,@Param("endDate") String endDate);
+    List<DayDTO> findLastDaySales(@Param("userId") String userId,@Param("shopId") Long shopId,@Param("startData") String startData,@Param("endDate") String endDate);
     /**
      * <p>@Description 统计店铺月销售额 </p>
      * <p>@Author www </p>

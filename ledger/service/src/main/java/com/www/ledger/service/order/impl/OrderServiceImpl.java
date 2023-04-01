@@ -14,7 +14,7 @@ import com.www.common.utils.CsvUtils;
 import com.www.common.utils.DateUtils;
 import com.www.common.utils.ExcelUtils;
 import com.www.common.utils.FileUtils;
-import com.www.common.utils.MoneyUtils;
+import com.www.common.utils.BigDecimalUtils;
 import com.www.common.utils.UidGeneratorUtils;
 import com.www.ledger.data.dao.IOrderInfoDAO;
 import com.www.ledger.data.dao.IUserShopDAO;
@@ -247,10 +247,10 @@ public class OrderServiceImpl implements IOrderService {
                 //订单状态为空，则设置为【待确认】
                 .setOrderState(StringUtils.isNotBlank(orderDTO.getOrderState()) ? orderDTO.getOrderState()
                         : CodeDict.getValue(CodeTypeEnum.OrderState_Unconfirme.getType(),CodeTypeEnum.OrderState_Unconfirme.getKey()))
-                .setSaleAmount(MoneyUtils.nullToZero(orderDTO.getSaleAmount()))
-                .setPaymentAmount(MoneyUtils.nullToZero(orderDTO.getPaymentAmount()))
-                .setCostAmount(MoneyUtils.nullToZero(orderDTO.getCostAmount()))
-                .setPayoutAmount(MoneyUtils.nullToZero(orderDTO.getPayoutAmount()))
+                .setSaleAmount(BigDecimalUtils.nullToZero(orderDTO.getSaleAmount()))
+                .setPaymentAmount(BigDecimalUtils.nullToZero(orderDTO.getPaymentAmount()))
+                .setCostAmount(BigDecimalUtils.nullToZero(orderDTO.getCostAmount()))
+                .setPayoutAmount(BigDecimalUtils.nullToZero(orderDTO.getPayoutAmount()))
                 .setRemark(orderDTO.getRemark())
                 .setUpdateTime(DateUtils.getCurrentDateTime())
                 .setCreateTime(orderEntity.getOiId() == null ? DateUtils.getCurrentDateTime() : orderEntity.getCreateTime());
@@ -273,7 +273,7 @@ public class OrderServiceImpl implements IOrderService {
      */
     private void computeOrderData(OrderInfoEntity orderEntity){
         //总成本计算
-        orderEntity.setTotalCost(MoneyUtils.nullToZero(orderEntity.getCostAmount()).add(MoneyUtils.nullToZero(orderEntity.getPayoutAmount())));
+        orderEntity.setTotalCost(BigDecimalUtils.nullToZero(orderEntity.getCostAmount()).add(BigDecimalUtils.nullToZero(orderEntity.getPayoutAmount())));
         //订单状态=已发货，待签收、交易成功才计算
         if(StringUtils.equalsAny(orderEntity.getOrderState(),
                 CodeDict.getValue(CodeTypeEnum.OrderState_Success.getType(), CodeTypeEnum.OrderState_Success.getKey()),

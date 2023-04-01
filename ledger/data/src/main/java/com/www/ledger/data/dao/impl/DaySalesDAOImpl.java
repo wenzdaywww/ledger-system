@@ -26,17 +26,18 @@ public class DaySalesDAOImpl extends ServiceImpl<DaySalesMapper, DaySalesEntity>
     private DaySalesMapper daySalesMapper;
 
     /**
-     * <p>@Description 查询日期区间的店铺汇总日销售额 </p>
+     * <p>@Description 查询日期区间的日销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/28 21:46 </p>
-     * @param userId     用户ID
-     * @param startData    起始日期
+     * @param userId 用户ID
+     * @param shopId 店铺ID 为空则查询用户店铺汇总日销售额，不为空则查询指定店铺日销售额
+     * @param startData 起始日期
      * @param endDate 截止日期
-     * @return 店铺汇总日销售额
+     * @return 日销售额
      */
     @Override
-    public List<DayDTO> findLastDaySales(String userId, String startData, String endDate) {
-        return daySalesMapper.findLastDaySales(userId,startData,endDate);
+    public List<DayDTO> findLastDaySales(String userId,Long shopId, String startData, String endDate) {
+        return daySalesMapper.findLastDaySales(userId,shopId,startData,endDate);
     }
     /**
      * <p>@Description 统计店铺月销售额 </p>
