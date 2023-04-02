@@ -2,10 +2,12 @@ package com.www.ledger.data.dao;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.dto.PayDTO;
 import com.www.ledger.data.entity.PayInfoEntity;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * <p>@Description 支出信息Service接口 </p>
@@ -14,6 +16,14 @@ import java.math.BigDecimal;
  * <p>@Date 2023/3/13 20:45 </p>
  */
 public interface IPayInfoDAO extends IService<PayInfoEntity> {
+    /**
+     * <p>@Description 统计月支出费用 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/2 09:44 </p>
+     * @param userId 用户ID
+     * @return 月支出费用
+     */
+    List<MonthDTO> countMonthPayInfo(String userId);
     /**
      * <p>@Description 查询店铺保证金 </p>
      * <p>@Author www </p>

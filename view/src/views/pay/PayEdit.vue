@@ -6,7 +6,7 @@
         <el-form-item label="支出日期" prop="payDat">
           <div class="block" style="float: left; margin-right: 10px;">
             <el-date-picker style="width:250px;" v-model="payInfo.payDat" type="date"
-                            format="YYYY年M月DD日" value-format="YYYY-MM-DD" placeholder="选择日期"></el-date-picker>
+                            format="YYYY年M月D日" value-format="YYYY-MM-DD" placeholder="选择日期"></el-date-picker>
           </div>
         </el-form-item>
         <el-form-item label="店铺名称" prop="shopId">

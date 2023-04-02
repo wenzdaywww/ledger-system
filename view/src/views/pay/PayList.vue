@@ -178,6 +178,13 @@ export default {
 .btn-save{
   text-align: center;
 }
+.ellipsis-line1{
+  display: -webkit-box;/*作为弹性伸缩盒子模型显示*/
+  -webkit-line-clamp: 1; /*显示的行数；如果要设置2行加...则设置为2*/
+  overflow: hidden; /*超出的文本隐藏*/
+  text-overflow: ellipsis; /* 溢出用省略号*/
+  -webkit-box-orient: vertical;/*伸缩盒子的子元素排列：从上到下*/
+}
 .handle-box {
   margin-bottom: 20px;
 }

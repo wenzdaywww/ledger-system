@@ -13,6 +13,22 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
+    <!--    统计月支出费用-->
+    <select id="countMonthPayInfo" resultType="com.www.ledger.data.dto.MonthDTO">
+        SELECT  PP.SHOP_ID shopId,
+                STR_TO_DATE(PP.MONTH_DATE,'%Y-%m-%d') monthDate,
+                PP.MONTH_DATE monthDateStr,
+                SUM(IF(PP.PAY_TYPE='1', PP.PAY_AMOUNT,0)) advertAmount,
+                SUM(IF(PP.PAY_TYPE='2', PP.PAY_AMOUNT,0)) serviceAmount
+        FROM ( SELECT P.SHOP_ID,
+                      CONCAT(DATE_FORMAT(P.PAY_DATE,'%Y-%m'),'-01') MONTH_DATE,
+                      P.PAY_TYPE,
+                      P.PAY_AMOUNT
+               FROM PAY_INFO P,USER_SHOP S
+               WHERE P.USER_ID = #{userId} AND P.PAY_TYPE IN ('1','2')
+                AND S.USER_ID = #{userId} AND S.SHOP_ID=P.SHOP_ID AND S.SHOP_STATE = '1' ) PP
+        GROUP BY PP.MONTH_DATE,PP.SHOP_ID
+    </select>
     <!-- 查询店铺保证金-->
     <select id="findShopGuarantee" resultType="java.math.BigDecimal">
         SELECT SUM(IFNULL(P.PAY_AMOUNT,0)) amount

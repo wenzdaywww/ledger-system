@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.www.common.config.exception.BusinessException;
 import com.www.ledger.data.dao.IPayInfoDAO;
+import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.dto.PayDTO;
 import com.www.ledger.data.entity.PayInfoEntity;
 import com.www.ledger.data.mapper.PayInfoMapper;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * <p>@Description 支出信息DAO实现类 </p>
@@ -25,6 +27,17 @@ public class PayInfoDAOImpl extends ServiceImpl<PayInfoMapper, PayInfoEntity> im
     @Autowired
     private PayInfoMapper payInfoMapper;
 
+    /**
+     * <p>@Description 统计月支出费用 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/2 09:44 </p>
+     * @param userId 用户ID
+     * @return 月支出费用
+     */
+    @Override
+    public List<MonthDTO> countMonthPayInfo(String userId) {
+        return payInfoMapper.countMonthPayInfo(userId);
+    }
     /**
      * <p>@Description 查询店铺保证金 </p>
      * <p>@Author www </p>

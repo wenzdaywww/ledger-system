@@ -151,7 +151,7 @@ public class ChartServiceImpl implements IChartService {
         List<MonthDTO> monthList = new ArrayList<>();
         for (int i = -11; i <= 0; i++){
             //获取前i个月日期
-            Date monthDate = DateUtils.stepMonth(DateUtils.getCurrentDateTime(),i);
+            Date monthDate = DateUtils.stepMonth(maxDate,i);
             //获取前i个月月份
             String monthStr = DateUtils.format(monthDate, DateFormatEnum.YYYYMM3);
             if(dtoMap.containsKey(monthStr)){

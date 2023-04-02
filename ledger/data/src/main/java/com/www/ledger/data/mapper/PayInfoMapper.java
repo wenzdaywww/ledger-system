@@ -2,12 +2,15 @@ package com.www.ledger.data.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.www.common.config.mybatis.annotation.RowLimitInterceptor;
+import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.dto.PayDTO;
 import com.www.ledger.data.entity.PayInfoEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * <p>@Description 支出信息Mapper </p>
@@ -17,6 +20,15 @@ import java.math.BigDecimal;
  */
 @Mapper
 public interface PayInfoMapper extends BaseMapper<PayInfoEntity> {
+    /**
+     * <p>@Description 统计月支出费用 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/2 09:44 </p>
+     * @param userId 用户ID
+     * @return 月支出费用
+     */
+    @RowLimitInterceptor
+    List<MonthDTO> countMonthPayInfo(@Param("userId") String userId);
     /**
      * <p>@Description 查询店铺保证金 </p>
      * <p>@Author www </p>

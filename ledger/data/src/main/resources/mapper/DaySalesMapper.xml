@@ -24,27 +24,27 @@
     <!--    查询日期区间的日销售额-->
     <select id="findLastDaySales" resultType="com.www.ledger.data.dto.DayDTO">
         SELECT  A.DAY_DATE dayDate,
-                DATE_FORMAT(A.DAY_DATE,'%Y.%c.%e') dayDateStr,
-                A.RETAINED_PROFITS retainedProfits,
-                A.GROSS_PROFIT grossProfit,
-                A.TOTAL_ORDER totalOrder,
-                A.SUCCEED_ORDER succeedOrder,
-                A.FAILED_ORDER failedOrder,
-                A.SALE_AMOUNT saleAmount,
-                A.COST_AMOUNT costAmount,
-                A.VIRTUAL_AMOUNT virtualAmount,
-                A.TOTAL_COST totalCost
+        DATE_FORMAT(A.DAY_DATE,'%Y.%c.%e') dayDateStr,
+        A.RETAINED_PROFITS retainedProfits,
+        A.GROSS_PROFIT grossProfit,
+        A.TOTAL_ORDER totalOrder,
+        A.SUCCEED_ORDER succeedOrder,
+        A.FAILED_ORDER failedOrder,
+        A.SALE_AMOUNT saleAmount,
+        A.COST_AMOUNT costAmount,
+        A.VIRTUAL_AMOUNT virtualAmount,
+        A.TOTAL_COST totalCost
         FROM DAY_SALES A
         WHERE A.USER_ID = #{userId}
-            <choose>
-                <when test="shopId != null">
-                    AND EXISTS(SELECT 1 FROM USER_SHOP S WHERE S.USER_ID = #{userId}
-                        AND S.SHOP_ID = A.SHOP_ID AND S.SHOP_STATE = '1' AND S.SHOP_ID = #{shopId})
-                </when>
-                <otherwise>
-                    AND A.SHOP_ID IS NULL
-                </otherwise>
-            </choose>
+        <choose>
+            <when test="shopId != null">
+                AND EXISTS(SELECT 1 FROM USER_SHOP S WHERE S.USER_ID = #{userId}
+                AND S.SHOP_ID = A.SHOP_ID AND S.SHOP_STATE = '1' AND S.SHOP_ID = #{shopId})
+            </when>
+            <otherwise>
+                AND A.SHOP_ID IS NULL
+            </otherwise>
+        </choose>
         AND A.DAY_DATE <![CDATA[ >= ]]> STR_TO_DATE(#{startData},'%Y-%m-%d')
         AND A.DAY_DATE <![CDATA[ <= ]]> STR_TO_DATE(#{endDate},'%Y-%m-%d')
     </select>
@@ -52,7 +52,7 @@
     <select id="findShopDaySalesList" resultMap="BaseResultMap">
         SELECT D.* from DAY_SALES D,USER_SHOP S
         WHERE S.USER_ID = #{userId}  AND D.USER_ID = #{userId}
-        AND S.SHOP_STATE='1' AND S.SHOP_ID = D.SHOP_ID
+          AND S.SHOP_STATE='1' AND S.SHOP_ID = D.SHOP_ID
     </select>
     <!-- 根据用户ID查询用户店铺汇总日销售额数据-->
     <select id="findTotalDaySalesList" resultMap="BaseResultMap">
@@ -73,64 +73,44 @@
     </select>
     <!--  统计月销售额-->
     <select id="countShopMonthSale" resultType="com.www.ledger.data.dto.MonthDTO">
-        select M.SHOP_ID shopId,
-               M.SHOP_NAME shopName,
-               M.MONTH_DATE monthDateStr,
-               M.TOTAL_ORDER totalOrder,
-               M.SUCCEED_ORDER succeedOrder,
-               M.FAILED_ORDER failedOrder,
-               M.SALE_AMOUNT saleAmount,
-               M.COST_AMOUNT costAmount,
-               IFNULL(PI.advert_Amount,0) advertAmount,
-               IFNULL(PI.service_Amount,0) serviceAmount,
-               M.VIRTUAL_AMOUNT virtualAmount
-        FROM (SELECT A.SHOP_ID ,
-                     S.SHOP_NAME ,
-                     A.MONTH_DATE ,
-                     SUM(A.TOTAL_ORDER) TOTAL_ORDER,
-                     SUM(A.SUCCEED_ORDER) SUCCEED_ORDER,
-                     SUM(A.FAILED_ORDER) FAILED_ORDER,
-                     SUM(A.SALE_AMOUNT) SALE_AMOUNT,
-                     SUM(A.COST_AMOUNT) COST_AMOUNT,
-                     SUM(A.VIRTUAL_AMOUNT) VIRTUAL_AMOUNT
-                 FROM(SELECT C.SHOP_ID,
-                             CONCAT(DATE_FORMAT(C.DAY_DATE,'%Y-%m'),'-01') MONTH_DATE,
-                             C.TOTAL_ORDER,
-                             C.SUCCEED_ORDER,
-                             C.FAILED_ORDER,
-                             C.SALE_AMOUNT,
-                             C.COST_AMOUNT,
-                             C.VIRTUAL_AMOUNT
-                      FROM DAY_SALES C WHERE C.USER_ID = #{userId} ) A,USER_SHOP S
-                      WHERE S.SHOP_ID = A.SHOP_ID AND S.SHOP_STATE='1' GROUP BY A.MONTH_DATE,A.SHOP_ID ) M
-                        LEFT JOIN (SELECT  PP.SHOP_ID,
-                                           PP.MONTH_DATE,
-                                           SUM(IF(PP.PAY_TYPE='1', PP.PAY_AMOUNT,0)) ADVERT_AMOUNT,
-                                           SUM(IF(PP.PAY_TYPE='2', PP.PAY_AMOUNT,0)) SERVICE_AMOUNT
-                                   FROM ( SELECT P.SHOP_ID,
-                                                 CONCAT(DATE_FORMAT(P.PAY_DATE,'%Y-%m'),'-01') MONTH_DATE,
-                                                 P.PAY_TYPE,
-                                                 P.PAY_AMOUNT
-                                          FROM pay_info P WHERE P.USER_ID = #{userId} ) pp
-                                   GROUP BY PP.MONTH_DATE,PP.SHOP_ID) PI ON PI.SHOP_ID = M.SHOP_ID AND PI.MONTH_DATE = M.MONTH_DATE
+        SELECT A.SHOP_ID shopId,
+               S.SHOP_NAME shopName,
+               A.MONTH_DATE monthDateStr,
+               STR_TO_DATE(A.MONTH_DATE,'%Y-%m-%d') monthDate,
+               SUM(A.TOTAL_ORDER) totalOrder,
+               SUM(A.SUCCEED_ORDER) succeedOrder,
+               SUM(A.FAILED_ORDER) failedOrder,
+               SUM(A.SALE_AMOUNT) saleAmount,
+               SUM(A.COST_AMOUNT) costAmount,
+               SUM(A.VIRTUAL_AMOUNT) virtualAmount
+        FROM(SELECT C.SHOP_ID,
+                    CONCAT(DATE_FORMAT(C.DAY_DATE,'%Y-%m'),'-01') MONTH_DATE,
+                    C.TOTAL_ORDER,
+                    C.SUCCEED_ORDER,
+                    C.FAILED_ORDER,
+                    C.SALE_AMOUNT,
+                    C.COST_AMOUNT,
+                    C.VIRTUAL_AMOUNT
+             FROM DAY_SALES C WHERE C.USER_ID = #{userId} ) A,USER_SHOP S
+        WHERE S.SHOP_ID = A.SHOP_ID AND S.SHOP_STATE = '1' GROUP BY A.MONTH_DATE,A.SHOP_ID
     </select>
     <!--  查询日销售额列表信息-->
     <select id="findDayList" resultType="com.www.ledger.data.dto.DayDTO">
         SELECT  D.DS_ID dsId,
-                DATE_FORMAT(D.DAY_DATE,'%Y-%m-%d') dayDateStr,
-                D.SHOP_ID shopId,
-                S.SHOP_NAME shopName,
-                D.RETAINED_PROFITS retainedProfits,
-                D.RETAINED_PROFITS_RATE retainedProfitsRate,
-                D.GROSS_PROFIT grossProfit,
-                D.GROSS_PROFIT_RATE grossProfitRate,
-                D.TOTAL_ORDER totalOrder,
-                D.SUCCEED_ORDER succeedOrder,
-                D.FAILED_ORDER failedOrder,
-                D.SALE_AMOUNT saleAmount,
-                D.COST_AMOUNT costAmount,
-                D.VIRTUAL_AMOUNT virtualAmount,
-                D.TOTAL_COST totalCost
+        DATE_FORMAT(D.DAY_DATE,'%Y-%m-%d') dayDateStr,
+        D.SHOP_ID shopId,
+        S.SHOP_NAME shopName,
+        D.RETAINED_PROFITS retainedProfits,
+        D.RETAINED_PROFITS_RATE retainedProfitsRate,
+        D.GROSS_PROFIT grossProfit,
+        D.GROSS_PROFIT_RATE grossProfitRate,
+        D.TOTAL_ORDER totalOrder,
+        D.SUCCEED_ORDER succeedOrder,
+        D.FAILED_ORDER failedOrder,
+        D.SALE_AMOUNT saleAmount,
+        D.COST_AMOUNT costAmount,
+        D.VIRTUAL_AMOUNT virtualAmount,
+        D.TOTAL_COST totalCost
         FROM DAY_SALES D
         LEFT JOIN USER_SHOP S ON S.USER_ID = #{obj.userId} AND S.SHOP_STATE='1' AND S.SHOP_ID = D.SHOP_ID
         WHERE D.USER_ID = #{obj.userId}
