@@ -28,6 +28,11 @@ com:
 #服务器配置
 server:
   port: 8080
+#日志配置
+logging:
+  config: classpath:logback-ledger.xml
+  file:
+    path: D:/home/ap/logs/${spring.application.name}/  #日志路径
 #spring配置
 spring:
   servlet:
