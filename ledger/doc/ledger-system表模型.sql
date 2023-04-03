@@ -179,7 +179,27 @@ ALTER TABLE     PAY_INFO            COMMENT '支出信息';
 CREATE INDEX    INDEX_SHOP_ID       ON  PAY_INFO (SHOP_ID);
 CREATE INDEX    INDEX_USER_ID       ON  PAY_INFO (USER_ID);
 CREATE INDEX    INDEX_PAY_DATE      ON  PAY_INFO (PAY_DATE);
-
+-- 9、文档信息
+CREATE TABLE IF NOT EXISTS DOC_INFO (
+    DOC_ID                    INT                   PRIMARY KEY AUTO_INCREMENT    COMMENT '文档主键ID',
+    USER_ID                   VARCHAR(40)                                         COMMENT '用户名',
+    DOC_NAME                  VARCHAR(100)                                        COMMENT '文档名称',
+    EXTENSION                 VARCHAR(10)                                         COMMENT '文档扩展名',
+    DOC_TYPE                  VARCHAR(2)                                          COMMENT '文档类型(code=DocType)',
+    DOC_STATE                 VARCHAR(2)                                          COMMENT '文档状态(code=DocState)',
+    DOC_URL                   VARCHAR(256)                                        COMMENT '文档URL路径',
+    OVERDUE_TIME              DATETIME                                            COMMENT '文档过期时间',
+    REMARK                    VARCHAR(256)                                        COMMENT '备注',
+    UPDATE_TIME               DATETIME              DEFAULT NOW()                 COMMENT '更新时间',
+    CREATE_TIME               DATETIME              DEFAULT NOW()                 COMMENT '创建时间'
+);
+ALTER TABLE     DOC_INFO            COMMENT '文档信息';
+CREATE INDEX    INDEX_USER_ID       ON  DOC_INFO (USER_ID);
+CREATE INDEX    INDEX_DOC_NAME      ON  DOC_INFO (DOC_NAME);
+CREATE INDEX    INDEX_EXTENSION     ON  DOC_INFO (EXTENSION);
+CREATE INDEX    INDEX_DOC_TYPE      ON  DOC_INFO (DOC_TYPE);
+CREATE INDEX    INDEX_DOC_STATE     ON  DOC_INFO (DOC_STATE);
+CREATE INDEX    INDEX_OVERDUE_TIME  ON  DOC_INFO (OVERDUE_TIME);
 
 
 

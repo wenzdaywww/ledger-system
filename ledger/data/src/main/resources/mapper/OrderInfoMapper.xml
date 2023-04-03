@@ -23,6 +23,32 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
+    <!--  导出订单信息-->
+    <select id="exportOrderData" resultType="com.www.ledger.data.dto.OrderDTO">
+        SELECT O.OI_ID oiId,
+                O.ORDER_ID orderId,
+                O.SHOP_ID shopId,
+                S.SHOP_NAME shopName,
+                DATE_FORMAT(O.ORDER_DATE,'%Y-%m-%d') orderDateStr,
+                O.SUPPLY_ID supplyId,
+                O.GOODS_ID goodsId,
+                O.GOODS_NAME goodsName,
+                O.ORDER_STATE orderState,
+                C.VALUE_NAME orderStateName,
+                O.SALE_AMOUNT saleAmount,
+                O.PAYMENT_AMOUNT paymentAmount,
+                O.COST_AMOUNT costAmount,
+                O.PAYOUT_AMOUNT payoutAmount,
+                O.TOTAL_COST totalCost,
+                O.GROSS_PROFIT grossProfit,
+                O.GROSS_PROFIT_RATE grossProfitRate,
+                O.REMARK remark
+        FROM USER_SHOP S,ORDER_INFO O
+            LEFT JOIN CODE_DATA C ON C.CODE_TYPE = 'OrderState' AND C.CODE_VALUE = O.ORDER_STATE
+        WHERE O.SHOP_ID = S.SHOP_ID AND S.SHOP_STATE = '1'
+        AND O.USER_ID = #{userId} AND S.USER_ID = #{userId}
+        ORDER BY O.ORDER_DATE ASC, O.SHOP_ID ASC
+    </select>
     <!-- 获取订单中最大的日期-->
     <select id="getMaxOrderDate" resultType="java.util.Date">
         SELECT MAX(R.ORDER_DATE) ORDER_DATE

@@ -25,6 +25,19 @@ public class DaySalesDAOImpl extends ServiceImpl<DaySalesMapper, DaySalesEntity>
     @Autowired
     private DaySalesMapper daySalesMapper;
 
+
+    /**
+     * <p>@Description 导出店铺日销售额 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/18 15:19 </p>
+     * @param userId 用户ID
+     * @param isShop true查询店铺的日销售额，false查询店铺汇总的日销售额
+     * @return 店铺月销售额
+     */
+    @Override
+    public List<DayDTO> exportDaySaleData(String userId, boolean isShop) {
+        return daySalesMapper.exportDaySaleData(userId, isShop);
+    }
     /**
      * <p>@Description 查询日期区间的日销售额 </p>
      * <p>@Author www </p>

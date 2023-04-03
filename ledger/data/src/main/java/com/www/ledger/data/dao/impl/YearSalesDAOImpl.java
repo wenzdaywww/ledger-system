@@ -26,6 +26,18 @@ public class YearSalesDAOImpl extends ServiceImpl<YearSalesMapper, YearSalesEnti
     private YearSalesMapper yearSalesMapper;
 
     /**
+     * <p>@Description 查询导出年销售额数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/2 22:06 </p>
+     * @param userId 用户ID
+     * @param isShop true查询店铺年销售额数据，false查询店铺汇总年销售额数据
+     * @return 年销售额数据
+     */
+    @Override
+    public List<YearDTO> exportYearSalesData(String userId, boolean isShop) {
+        return yearSalesMapper.exportYearSalesData(userId,isShop);
+    }
+    /**
      * <p>@Description 查询近10年年销售额数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 21:40 </p>

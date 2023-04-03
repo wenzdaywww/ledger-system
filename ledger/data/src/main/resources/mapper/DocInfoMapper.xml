@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.www.ledger.data.mapper.DocInfoMapper">
+    <resultMap id="BaseResultMap" type="com.www.ledger.data.entity.DocInfoEntity">
+        <!--@Table DOC_INFO-->
+        <id column="DOC_ID" property="docId" />
+        <result column="USER_ID" property="userId" />
+        <result column="DOC_NAME" property="docName" />
+        <result column="EXTENSION" property="extension" />
+        <result column="DOC_TYPE" property="docType" />
+        <result column="DOC_STATE" property="docState" />
+        <result column="DOC_URL" property="docUrl" />
+        <result column="OVERDUE_TIME" property="overdueTime" />
+        <result column="REMARK" property="remark" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="CREATE_TIME" property="createTime" />
+    </resultMap>
+    <!--    查询用户的报表文档-->
+    <select id="findDocReport" resultType="com.www.ledger.data.dto.DocDTO">
+        SELECT D.DOC_NAME docName,
+               D.DOC_STATE docState,
+               C.VALUE_NAME docStateStr,
+               D.DOC_URL docUrl,
+               D.REMARK remark,
+               DATE_FORMAT(D.CREATE_TIME,'%Y-%m-%d %H:%i:%s') createTimeStr
+        FROM DOC_INFO D
+            LEFT JOIN CODE_DATA C ON C.CODE_TYPE='DocState' AND C.CODE_VALUE = D.DOC_STATE
+        WHERE D.USER_ID = #{userId}
+            AND D.DOC_TYPE='1'
+            AND D.DOC_STATE IN ('1','2')
+            AND D.OVERDUE_TIME >= SYSDATE()
+        ORDER BY D.CREATE_TIME DESC
+    </select>
+</mapper>

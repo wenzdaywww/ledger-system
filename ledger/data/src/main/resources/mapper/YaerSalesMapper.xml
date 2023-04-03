@@ -23,6 +23,37 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
+    <!--  查询导出年销售额数据-->
+    <select id="exportYearSalesData" resultType="com.www.ledger.data.dto.YearDTO">
+        SELECT  DATE_FORMAT(Y.YEAR,'%Y') yearStr,
+                Y.SHOP_ID shopId,
+                S.SHOP_NAME shopName,
+                Y.RETAINED_PROFITS retainedProfits,
+                Y.RETAINED_PROFITS_RATE retainedProfitsRate,
+                Y.GROSS_PROFIT grossProfit,
+                Y.GROSS_PROFIT_RATE grossProfitRate,
+                Y.TOTAL_ORDER totalOrder,
+                Y.SUCCEED_ORDER succeedOrder,
+                Y.FAILED_ORDER failedOrder,
+                Y.SALE_AMOUNT saleAmount,
+                Y.COST_AMOUNT costAmount,
+                Y.ADVERT_AMOUNT advertAmount,
+                Y.SERVICE_AMOUNT serviceAmount,
+                Y.VIRTUAL_AMOUNT virtualAmount,
+                Y.TOTAL_COST totalCost
+        FROM YEAR_SALES Y
+        LEFT JOIN USER_SHOP S ON S.SHOP_ID = Y.SHOP_ID AND  S.SHOP_STATE = '1' AND S.USER_ID = #{userId}
+        WHERE  Y.USER_ID = #{userId}
+        <choose>
+            <when test="isShop == true">
+                AND Y.SHOP_ID IS NOT NULL
+            </when>
+            <otherwise>
+                AND Y.SHOP_ID IS NULL
+            </otherwise>
+        </choose>
+        ORDER BY Y.YEAR ASC
+    </select>
     <!--    查询近10年年销售额数据-->
     <select id="findLastYearData" resultType="com.www.ledger.data.dto.YearDTO">
         SELECT  M.YEAR year,

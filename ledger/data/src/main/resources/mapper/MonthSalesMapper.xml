@@ -23,6 +23,38 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
+    <!--  查询用户的月销售数据-->
+    <select id="exportMonthSalesData" resultType="com.www.ledger.data.dto.MonthDTO">
+        SELECT  M.MS_ID msId,
+                DATE_FORMAT(M.MONTH_DATE,'%Y-%m') monthDateStr,
+                M.SHOP_ID shopId,
+                S.SHOP_NAME shopName,
+                M.RETAINED_PROFITS retainedProfits,
+                M.RETAINED_PROFITS_RATE retainedProfitsRate,
+                M.GROSS_PROFIT grossProfit,
+                M.GROSS_PROFIT_RATE grossProfitRate,
+                M.TOTAL_ORDER totalOrder,
+                M.SUCCEED_ORDER succeedOrder,
+                M.FAILED_ORDER failedOrder,
+                M.SALE_AMOUNT saleAmount,
+                M.COST_AMOUNT costAmount,
+                M.ADVERT_AMOUNT advertAmount,
+                M.SERVICE_AMOUNT serviceAmount,
+                M.VIRTUAL_AMOUNT virtualAmount,
+                M.TOTAL_COST totalCost
+        FROM MONTH_SALES M
+        LEFT JOIN USER_SHOP S ON  S.USER_ID = #{userId} AND S.SHOP_STATE = '1' AND S.SHOP_ID = M.SHOP_ID
+        WHERE M.USER_ID = #{userId}
+        <choose>
+            <when test="isShop == true">
+                AND M.SHOP_ID IS NOT NULL
+            </when>
+            <otherwise>
+                AND M.SHOP_ID IS  NULL
+            </otherwise>
+        </choose>
+        ORDER BY M.MONTH_DATE ASC
+    </select>
     <!-- 查询用户店铺的月销售数据-->
     <select id="findShopMonthSalesList" resultMap="BaseResultMap">
         SELECT M.* FROM MONTH_SALES M,USER_SHOP S
@@ -105,22 +137,22 @@
     <!--  查询月销售额列表信息-->
     <select id="findMonthList" resultType="com.www.ledger.data.dto.MonthDTO">
         SELECT  M.MS_ID msId,
-        DATE_FORMAT(M.MONTH_DATE,'%Y-%m') monthDateStr,
-        M.SHOP_ID shopId,
-        S.SHOP_NAME shopName,
-        M.RETAINED_PROFITS retainedProfits,
-        M.RETAINED_PROFITS_RATE retainedProfitsRate,
-        M.GROSS_PROFIT grossProfit,
-        M.GROSS_PROFIT_RATE grossProfitRate,
-        M.TOTAL_ORDER totalOrder,
-        M.SUCCEED_ORDER succeedOrder,
-        M.FAILED_ORDER failedOrder,
-        M.SALE_AMOUNT saleAmount,
-        M.COST_AMOUNT costAmount,
-        M.ADVERT_AMOUNT advertAmount,
-        M.SERVICE_AMOUNT serviceAmount,
-        M.VIRTUAL_AMOUNT virtualAmount,
-        M.TOTAL_COST totalCost
+                DATE_FORMAT(M.MONTH_DATE,'%Y-%m') monthDateStr,
+                M.SHOP_ID shopId,
+                S.SHOP_NAME shopName,
+                M.RETAINED_PROFITS retainedProfits,
+                M.RETAINED_PROFITS_RATE retainedProfitsRate,
+                M.GROSS_PROFIT grossProfit,
+                M.GROSS_PROFIT_RATE grossProfitRate,
+                M.TOTAL_ORDER totalOrder,
+                M.SUCCEED_ORDER succeedOrder,
+                M.FAILED_ORDER failedOrder,
+                M.SALE_AMOUNT saleAmount,
+                M.COST_AMOUNT costAmount,
+                M.ADVERT_AMOUNT advertAmount,
+                M.SERVICE_AMOUNT serviceAmount,
+                M.VIRTUAL_AMOUNT virtualAmount,
+                M.TOTAL_COST totalCost
         FROM MONTH_SALES M
         LEFT JOIN USER_SHOP S ON  S.USER_ID = #{obj.userId} AND S.SHOP_STATE='1' AND S.SHOP_ID = M.SHOP_ID
         WHERE M.USER_ID = #{obj.userId}

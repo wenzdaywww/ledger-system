@@ -21,6 +21,15 @@ import java.util.List;
 @Mapper
 public interface PayInfoMapper extends BaseMapper<PayInfoEntity> {
     /**
+     * <p>@Description 导出支出信息 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/2 22:32 </p>
+     * @param userId 用户ID
+     * @return 支出信息
+     */
+    @RowLimitInterceptor
+    List<PayDTO> exportPayInfoData(@Param("userId") String userId);
+    /**
      * <p>@Description 统计月支出费用 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/4/2 09:44 </p>

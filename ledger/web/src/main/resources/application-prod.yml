@@ -7,6 +7,7 @@ com:
       router-expire-hour: 48
       shopid-redis-key: ledger:app:shop_id:generator
       import-path: import
+      export-path: export
     common:
       file:
         enable: true #开启上传文件配置

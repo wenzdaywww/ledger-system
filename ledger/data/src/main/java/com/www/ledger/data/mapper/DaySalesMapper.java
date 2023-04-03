@@ -20,6 +20,16 @@ import java.util.List;
 @Mapper
 public interface DaySalesMapper extends BaseMapper<DaySalesEntity> {
     /**
+     * <p>@Description 导出店铺日销售额 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/18 15:19 </p>
+     * @param userId 用户ID
+     * @param isShop true查询店铺的日销售额，false查询店铺汇总的日销售额
+     * @return 店铺月销售额
+     */
+    @RowLimitInterceptor
+    List<DayDTO> exportDaySaleData(@Param("userId") String userId, @Param("isShop") boolean isShop);
+    /**
      * <p>@Description 查询日期区间的日销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/28 21:46 </p>

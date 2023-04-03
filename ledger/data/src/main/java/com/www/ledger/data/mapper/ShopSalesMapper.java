@@ -2,6 +2,7 @@ package com.www.ledger.data.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.www.common.config.mybatis.annotation.RowLimitInterceptor;
 import com.www.ledger.data.dto.BookDTO;
 import com.www.ledger.data.dto.ShopDTO;
 import com.www.ledger.data.entity.ShopSalesEntity;
@@ -18,6 +19,15 @@ import java.util.List;
  */
 @Mapper
 public interface ShopSalesMapper extends BaseMapper<ShopSalesEntity> {
+    /**
+     * <p>@Description 查询导出店铺销售额数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/2 21:58 </p>
+     * @param userId 用户ID
+     * @return 店铺销售额数据
+     */
+    @RowLimitInterceptor
+    List<ShopDTO> exportShopSalesData(@Param("userId") String userId);
     /**
      * <p>@Description 查询用户的店销售数据 </p>
      * <p>@Author www </p>

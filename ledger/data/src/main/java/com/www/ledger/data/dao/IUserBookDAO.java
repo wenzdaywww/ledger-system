@@ -15,16 +15,8 @@ public interface IUserBookDAO extends IService<UserBookEntity> {
      * <p>@Author www </p>
      * <p>@Date 2023/3/20 20:13 </p>
      * @param userId 用户ID
-     * @param ubId 用户账簿主键ID,可为空
+     * @param isThrow 查不到数据是否抛出业务异常，true抛出，false不抛出
      * @return 用户的账簿信息
      */
-    UserBookEntity findUserBook(String userId,Long ubId);
-    /**
-     * <p>@Description 查询用户的账簿信息 </p>
-     * <p>@Author www </p>
-     * <p>@Date 2023/3/20 20:13 </p>
-     * @param userId 用户ID
-     * @return 用户的账簿信息
-     */
-    UserBookEntity findUserBook(String userId);
+    UserBookEntity findUserBook(String userId,boolean isThrow);
 }

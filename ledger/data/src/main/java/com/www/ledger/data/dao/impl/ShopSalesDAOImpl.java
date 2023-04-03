@@ -26,6 +26,17 @@ public class ShopSalesDAOImpl extends ServiceImpl<ShopSalesMapper, ShopSalesEnti
     private ShopSalesMapper shopSalesMapper;
 
     /**
+     * <p>@Description 查询导出店铺销售额数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/2 21:58 </p>
+     * @param userId 用户ID
+     * @return 店铺销售额数据
+     */
+    @Override
+    public List<ShopDTO> exportShopSalesData(String userId) {
+        return shopSalesMapper.exportShopSalesData(userId);
+    }
+    /**
      * <p>@Description 查询用户的店销售数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/20 20:56 </p>

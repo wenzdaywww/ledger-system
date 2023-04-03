@@ -16,6 +16,15 @@ import java.util.List;
  */
 public interface IMonthSalesDAO extends IService<MonthSalesEntity> {
     /**
+     * <p>@Description 查询用户的月销售数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/2 22:14 </p>
+     * @param userId 用户ID
+     * @param isShop true查询店铺的月销售额，false查询店铺汇总的月销售额
+     * @return 月销售数据
+     */
+    List<MonthDTO> exportMonthSalesData(String userId,boolean isShop);
+    /**
      * <p>@Description 删除用户的月销售数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/20 20:26 </p>

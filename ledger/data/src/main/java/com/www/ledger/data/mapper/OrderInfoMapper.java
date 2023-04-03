@@ -21,6 +21,15 @@ import java.util.List;
 @Mapper
 public interface OrderInfoMapper extends BaseMapper<OrderInfoEntity> {
     /**
+     * <p>@Description 导出订单信息 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/2 22:27 </p>
+     * @param userId 用户ID
+     * @return 订单信息
+     */
+    @RowLimitInterceptor
+    List<OrderDTO> exportOrderData(@Param("userId") String userId);
+    /**
      * <p>@Description 获取订单中最大的日期 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/19 19:08 </p>

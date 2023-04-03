@@ -26,6 +26,10 @@ public class LedgerProperties {
     private long routerExpireHour;
     /** 文件导入上传的相对路径 **/
     private String importPath;
+    /** 文件导出保存的相对路径 **/
+    private String exportPath;
+    /** 文件导出的模板文件名称 **/
+    private String exportTemplate;
     /** 文件行数限制 **/
     private int rowLimit = 1000;
     /** 拼多多订单文件数据要读取的列表头名称集合,Map<列标题名称,数据库字段名> **/

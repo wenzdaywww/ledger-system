@@ -27,6 +27,10 @@ export default {
     bookInfo: "api/book/info",
     //统计用户账簿信息
     bookCount: "api/book/tal",
+    //生成报表
+    createReport: "api/book/exp",
+    //查询报表
+    docList: "api/book/doc",
 
     //查询我的店铺列表
     shopList: "api/shop/list",

@@ -23,7 +23,8 @@ public interface IBookService {
      * <p>@Author www </p>
      * <p>@Date 2023/3/19 00:29 </p>
      * @param userId 用户ID
-     * @return
+     * @param isThrow 查不到数据是否抛出业务异常，true抛出，false不抛出
+     * @return 用户账簿信息
      */
-    Result<BookDTO> findBookData(String userId);
+    BookDTO findBookData(String userId,boolean isThrow);
 }

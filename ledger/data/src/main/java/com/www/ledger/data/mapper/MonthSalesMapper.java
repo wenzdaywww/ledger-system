@@ -20,6 +20,16 @@ import java.util.List;
 @Mapper
 public interface MonthSalesMapper extends BaseMapper<MonthSalesEntity> {
     /**
+     * <p>@Description 查询用户的月销售数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/2 22:14 </p>
+     * @param userId 用户ID
+     * @param isShop true查询店铺的月销售额，false查询所有店铺的月销售额
+     * @return 月销售数据
+     */
+    @RowLimitInterceptor
+    List<MonthDTO> exportMonthSalesData(@Param("userId") String userId,@Param("isShop") boolean isShop);
+    /**
      * <p>@Description 查询用户店铺的月销售数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/20 20:40 </p>

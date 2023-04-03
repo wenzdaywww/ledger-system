@@ -3,12 +3,15 @@ package com.www.ledger;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
+
 /**
  * <p>@Description 启动类 </p>
  * <p>@Version 1.0 </p>
  * <p>@Author www </p>
  * <p>@Date 2023/3/9 21:37 </p>
  */
+@EnableAsync
 @SpringBootApplication
 @MapperScan(basePackages = {"com.www.common.config.code","com.www.common.config.security","com.www.ledger.data.mapper"})
 public class LedgerApplication {

@@ -6,7 +6,6 @@ import com.www.ledger.data.dto.DayDTO;
 import com.www.ledger.data.dto.MonthDTO;
 import com.www.ledger.data.entity.DaySalesEntity;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -16,6 +15,15 @@ import java.util.List;
  * <p>@Date 2023/3/13 20:45 </p>
  */
 public interface IDaySalesDAO extends IService<DaySalesEntity> {
+    /**
+     * <p>@Description 导出店铺日销售额 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/18 15:19 </p>
+     * @param userId 用户ID
+     * @param isShop true查询店铺的日销售额，false查询店铺汇总的日销售额
+     * @return 店铺月销售额
+     */
+    List<DayDTO> exportDaySaleData(String userId, boolean isShop);
     /**
      * <p>@Description 查询日期区间的日销售额 </p>
      * <p>@Author www </p>

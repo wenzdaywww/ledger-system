@@ -17,6 +17,14 @@ import java.util.List;
  */
 public interface IOrderInfoDAO extends IService<OrderInfoEntity> {
     /**
+     * <p>@Description 导出订单信息 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/2 22:27 </p>
+     * @param userId 用户ID
+     * @return 订单信息
+     */
+    List<OrderDTO> exportOrderData(String userId);
+    /**
      * <p>@Description 删除用户的订单信息 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/20 21:00 </p>

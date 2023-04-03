@@ -17,6 +17,14 @@ import java.util.List;
  */
 public interface IPayInfoDAO extends IService<PayInfoEntity> {
     /**
+     * <p>@Description 导出支出信息 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/2 22:32 </p>
+     * @param userId 用户ID
+     * @return 支出信息
+     */
+    List<PayDTO> exportPayInfoData(String userId);
+    /**
      * <p>@Description 统计月支出费用 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/4/2 09:44 </p>

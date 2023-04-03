@@ -82,7 +82,7 @@ public class BookServiceImpl implements IBookService {
             return;
         }
         //查询用户账簿销售额
-        UserBookEntity bookEntity = userBookDAO.findUserBook(userId);
+        UserBookEntity bookEntity = userBookDAO.findUserBook(userId,true);
         bookEntity.setTotalOrder(bookDTO.getTotalOrder() == null ? 0L : bookDTO.getTotalOrder())
                 .setSucceedOrder(bookDTO.getSucceedOrder() == null ? 0L : bookDTO.getSucceedOrder())
                 .setFailedOrder(bookDTO.getFailedOrder() == null ? 0L : bookDTO.getFailedOrder())
@@ -110,22 +110,23 @@ public class BookServiceImpl implements IBookService {
      * <p>@Author www </p>
      * <p>@Date 2023/3/19 00:29 </p>
      * @param userId 用户ID
-     * @return
+     * @param isThrow 查不到数据是否抛出业务异常，true抛出，false不抛出
+     * @return 用户账簿信息
      */
     @Override
-    public Result<BookDTO> findBookData(String userId) {
-        UserBookEntity bookEntity = userBookDAO.findUserBook(userId);
-        if(bookEntity == null){
-            return new Result<>();
+    public BookDTO findBookData(String userId,boolean isThrow) {
+        UserBookEntity bookEntity = userBookDAO.findUserBook(userId,isThrow);
+        BookDTO bookDTO = null;
+        if(bookEntity != null){
+            bookDTO = new BookDTO();
+            BeanUtils.copyProperties(bookEntity,bookDTO);
+            BigDecimal succeedNum = new BigDecimal(bookDTO.getSucceedOrder());
+            BigDecimal totalNum = new BigDecimal(bookDTO.getTotalOrder());
+            bookDTO.setSucceedOrderRate(totalNum.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
+                    : (succeedNum.divide(totalNum,4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"))).setScale(2, RoundingMode.HALF_UP));
+            //查询店铺数量
+            bookDTO.setGuarantee(payInfoDAO.findShopGuarantee(userId));
         }
-        BookDTO bookDTO = new BookDTO();
-        BeanUtils.copyProperties(bookEntity,bookDTO);
-        BigDecimal succeedNum = new BigDecimal(bookDTO.getSucceedOrder());
-        BigDecimal totalNum = new BigDecimal(bookDTO.getTotalOrder());
-        bookDTO.setSucceedOrderRate(totalNum.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO
-                : (succeedNum.divide(totalNum,4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"))).setScale(2, RoundingMode.HALF_UP));
-        //查询店铺数量
-        bookDTO.setGuarantee(payInfoDAO.findShopGuarantee(userId));
-        return new Result<>(bookDTO);
+        return bookDTO;
     }
 }

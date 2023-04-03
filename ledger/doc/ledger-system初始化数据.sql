@@ -1,15 +1,20 @@
 -- 数据字典数据
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('Sex', '性别', 'K1', '1', '男', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('Sex', '性别', 'K0', '0', '女', '1');
+
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('UserState', '用户状态', 'K1', '1', '有效', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('UserState', '用户状态', 'K2', '2', '注销', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('UserState', '用户状态', 'K3', '3', '封号', '1');
+
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('YesOrNo', '是否', 'K1', '1', '是', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('YesOrNo', '是否', 'K0', '0', '否', '1');
+
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('ShopPlatform', '店铺平台', 'K1', '1', '拼多多', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('ShopPlatform', '店铺平台', 'K2', '2', '淘宝', '1');
+
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('ShopState', '店铺状态', 'K1', '1', '有效', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('ShopState', '店铺状态', 'K0', '0', '注销', '1');
+
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('OrderState', '订单状态', 'K0', '0', '待确认', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('OrderState', '订单状态', 'K1', '1', '未支付，交易关闭', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('OrderState', '订单状态', 'K2', '2', '未发货，退款成功', '1');
@@ -21,9 +26,17 @@ INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VA
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('OrderState', '订单状态', 'K8', '8', '待发货', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('OrderState', '订单状态', 'K9', '9', '待申请退款', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('OrderState', '订单状态', 'K10', '10', '待支付', '1');
+
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('PayType', '支出类型', 'K1', '1', '推广费', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('PayType', '支出类型', 'K2', '2', '服务费', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('PayType', '支出类型', 'K3', '3', '店铺保证金', '1');
+
+INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('DocType', '文档类型', 'K1', '1', '报表文件', '1');
+
+INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('DocState', '文档状态', 'K0', '0', '删除', '1');
+INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('DocState', '文档状态', 'K1', '1', '生成中', '1');
+INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('DocState', '文档状态', 'K2', '2', '生成完成', '1');
+INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('DocState', '文档状态', 'K3', '3', '生成失败', '1');
 -- 角色信息
 INSERT INTO `SYS_ROLE` (`ROLE_CODE`, `ROLE_NAME`, `UPDATE_TIME`, `CREATE_TIME`) VALUES ('ROLE_USER', '普通用户', now(), now());
 -- 角色访问权限信息

@@ -13,6 +13,22 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
+    <!--    导出支出信息-->
+    <select id="exportPayInfoData" resultType="com.www.ledger.data.dto.PayDTO">
+        SELECT P.PAY_ID payId,
+                DATE_FORMAT(P.PAY_DATE,'%Y-%m-%d') payDateStr,
+                S.SHOP_ID shopId,
+                S.SHOP_NAME shopName,
+                P.PAY_TYPE  payType,
+                C.VALUE_NAME payTypeName,
+                P.PAY_AMOUNT payAmount,
+                P.REMARK remark
+        FROM USER_SHOP S,PAY_INFO P
+            LEFT JOIN CODE_DATA C ON C.CODE_TYPE = 'PayType' AND C.CODE_VALUE = P.PAY_TYPE
+        WHERE P.SHOP_ID = S.SHOP_ID AND P.USER_ID = #{userId} AND S.USER_ID = #{userId}
+            AND S.SHOP_STATE = '1'
+        ORDER BY P.PAY_DATE ASC,P.SHOP_ID ASC
+    </select>
     <!--    统计月支出费用-->
     <select id="countMonthPayInfo" resultType="com.www.ledger.data.dto.MonthDTO">
         SELECT  PP.SHOP_ID shopId,

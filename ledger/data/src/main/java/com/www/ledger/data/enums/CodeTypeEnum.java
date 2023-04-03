@@ -11,24 +11,29 @@ public enum CodeTypeEnum {
     YesOrNo_No("YesOrNo","是否","K0","否"),
     /** 是否：是 **/
     YesOrNo_Yes("YesOrNo","是否","K1","是"),
+
     /** 性别：男 **/
     Sex_Boy("Sex","性别","K1","男"),
     /** 性别：女 **/
     Sex_Girl("Sex","性别","K0","女"),
+
     /** 用户状态：有效 **/
     UserState_Valid("UserState","用户状态","K1","有效"),
     /** 用户状态：注销 **/
     UserState_Logout("UserState","用户状态","K2","注销"),
     /** 用户状态：封号 **/
     UserState_Ban("UserState","用户状态","K3","封号"),
+
     /** 店铺平台：拼多多 **/
     ShopPlatform_Pdd("ShopPlatform","店铺平台","K1","拼多多"),
     /** 店铺平台：拼多多 **/
     ShopPlatform_Taobao("ShopPlatform","店铺平台","K2","淘宝"),
+
     /** 店铺状态：有效 **/
     ShopState_Valid("ShopState","店铺状态","K1","有效"),
     /** 店铺状态：注销 **/
     ShopState_Logout("ShopState","店铺状态","K0","注销"),
+
     /** 订单状态：待确认 **/
     OrderState_Unconfirme("OrderState","订单状态","K0","待确认"),
     /** 订单状态：未支付，交易关闭 **/
@@ -51,10 +56,23 @@ public enum CodeTypeEnum {
     OrderState_Refunding("OrderState","订单状态","K9","待申请退款"),
     /** 订单状态：待支付 **/
     OrderState_Paidding("OrderState","订单状态","K10","待支付"),
+
     /** 支出类型：推广费 **/
     PayType_advert("PayType","支出类型","K1","推广费"),
     /** 支出类型：服务费 **/
     PayType_Service("PayType","支出类型","K2","服务费"),
+
+    /** 文档类型：报表文件 **/
+    DocType_Report("DocType","文档类型","K1","报表文件"),
+
+    /** 文档状态：删除 **/
+    DocState_Delete("DocState","文档状态","K0","删除"),
+    /** 文档状态：生成中 **/
+    DocState_Create("DocState","文档状态","K1","生成中"),
+    /** 文档状态：生成完成 **/
+    DocState_Complete("DocState","文档状态","K2","生成完成"),
+    /** 文档状态：生成失败 **/
+    DocState_Failed("DocState","文档状态","K3","生成失败"),
     ;
 
 

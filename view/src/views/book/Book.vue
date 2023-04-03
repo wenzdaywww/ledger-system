@@ -218,15 +218,18 @@
       </el-col>
     </el-row>
   </div>
+  <export-list ref="exportDialog"></export-list>
 </template>
 
 <script>
 import {getCurrentInstance, ref} from "vue";
 import request from "../../utils/request";
 import {ElMessage} from "element-plus";
+import exportList from "./ExportList.vue";
 
 export default {
   name: "Data",
+  components: { exportList },
   setup() {
     // 接口请求
     const axios = getCurrentInstance().appContext.config.globalProperties;
@@ -234,6 +237,8 @@ export default {
     const openEdit = ref(false);
     // 整个页面Loading 加载遮罩层控制
     const pageLoading = ref(false);
+    //报表导出弹出框对象
+    const exportDialog = ref();
     // 用户信息
     const user = ref([]);
     // 账簿数据
@@ -248,7 +253,7 @@ export default {
     const editForm = ref(null);
     // 导出报表
     const handleExport = () => {
-      //TODO 2023/3/28 22:15 待开发
+      exportDialog.value.openExportDialog();
     };
     // 统计年销售
     const handleCount = () => {
@@ -291,7 +296,7 @@ export default {
         }
       });
     };
-    return {openEdit,pageLoading,user,bookData,editRules,editForm,
+    return {openEdit,pageLoading,user,bookData,editRules,editForm,exportDialog,
       handleExport,handleCount,onSubmit};
   }
 }

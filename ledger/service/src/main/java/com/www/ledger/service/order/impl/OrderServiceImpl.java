@@ -161,7 +161,7 @@ public class OrderServiceImpl implements IOrderService {
         }
         //将文件的绝对路径转为url访问路径
         excelPath = fileService.convertToURL(excelPath);
-        return StringUtils.substring(excelPath, 1);
+        return excelPath;
     }
     /**
      * <p>@Description 保存导入的订单数据 </p>

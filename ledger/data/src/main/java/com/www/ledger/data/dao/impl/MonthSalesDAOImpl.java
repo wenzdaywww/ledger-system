@@ -25,6 +25,19 @@ public class MonthSalesDAOImpl extends ServiceImpl<MonthSalesMapper, MonthSalesE
     @Autowired
     private MonthSalesMapper monthSalesMapper;
 
+
+    /**
+     * <p>@Description 查询用户的月销售数据 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/2 22:14 </p>
+     * @param userId 用户ID
+     * @param isShop true查询店铺的月销售额，false查询所有店铺的月销售额
+     * @return 月销售数据
+     */
+    @Override
+    public List<MonthDTO> exportMonthSalesData(String userId, boolean isShop) {
+        return monthSalesMapper.exportMonthSalesData(userId, isShop);
+    }
     /**
      * <p>@Description 查询用户店铺的月销售数据 </p>
      * <p>@Author www </p>

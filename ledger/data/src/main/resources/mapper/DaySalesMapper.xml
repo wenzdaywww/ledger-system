@@ -21,6 +21,36 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
+    <!--  导出店铺日销售额-->
+    <select id="exportDaySaleData" resultType="com.www.ledger.data.dto.DayDTO">
+        SELECT  D.DS_ID dsId,
+                DATE_FORMAT(D.DAY_DATE,'%Y-%m-%d') dayDateStr,
+                D.SHOP_ID shopId,
+                S.SHOP_NAME shopName,
+                D.RETAINED_PROFITS retainedProfits,
+                D.RETAINED_PROFITS_RATE retainedProfitsRate,
+                D.GROSS_PROFIT grossProfit,
+                D.GROSS_PROFIT_RATE grossProfitRate,
+                D.TOTAL_ORDER totalOrder,
+                D.SUCCEED_ORDER succeedOrder,
+                D.FAILED_ORDER failedOrder,
+                D.SALE_AMOUNT saleAmount,
+                D.COST_AMOUNT costAmount,
+                D.VIRTUAL_AMOUNT virtualAmount,
+                D.TOTAL_COST totalCost
+        FROM DAY_SALES D
+        LEFT JOIN USER_SHOP S ON S.USER_ID = #{userId} AND S.SHOP_STATE = '1' AND S.SHOP_ID = D.SHOP_ID
+        WHERE D.USER_ID = #{userId}
+        <choose>
+            <when test="isShop == true">
+                AND D.SHOP_ID IS NOT NULL
+            </when>
+            <otherwise>
+                AND D.SHOP_ID IS NULL
+            </otherwise>
+        </choose>
+        ORDER BY D.DAY_DATE ASC
+    </select>
     <!--    查询日期区间的日销售额-->
     <select id="findLastDaySales" resultType="com.www.ledger.data.dto.DayDTO">
         SELECT  A.DAY_DATE dayDate,
