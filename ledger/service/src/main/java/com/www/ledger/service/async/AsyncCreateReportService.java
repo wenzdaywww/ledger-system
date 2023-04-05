@@ -2,6 +2,7 @@ package com.www.ledger.service.async;
 
 import com.www.common.config.code.CodeDict;
 import com.www.common.config.exception.BusinessException;
+import com.www.common.config.filter.core.TraceIdFilter;
 import com.www.common.config.mvc.MyMvcProperties;
 import com.www.common.config.mvc.upload.IFileService;
 import com.www.common.data.constant.CharConstant;
@@ -31,12 +32,13 @@ import com.www.ledger.service.book.IBookService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
-import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,17 +83,24 @@ public class AsyncCreateReportService {
      * @param docId 文档信息ID
      */
     @Async
-    public void createReport(String userId, List<Integer> sheetList,Long docId){
-        DocInfoEntity docEntity = docInfoDAO.getById(docId);
-        if(docEntity == null){
-            throw new BusinessException("文档记录不存在，创建报表失败");
-        }
-        File file = null;
+    public void createReport(String userId,String traceId, List<Integer> sheetList,Long docId){
+        InputStream inputStream = null;
+        String templateName = null;
         try {
-            file = ResourceUtils.getFile("classpath:"+ledgerProperties.getExportTemplate());
+            MDC.put(TraceIdFilter.TRACE_ID, traceId);//添加跟踪号
+            //TODO 2023/4/5 15:39 打包成jar无法读取resource下模板文件，待处理
+            ClassPathResource resource = new ClassPathResource(ledgerProperties.getExportTemplate());
+            inputStream = resource.getInputStream();
+            templateName = resource.getFilename();
         } catch (Exception e) {
             log.error("读取模板文件失败，异常：",e);
-            //生成失败
+        }
+        DocInfoEntity docEntity = docInfoDAO.getById(docId);
+        if(docEntity == null){
+            throw new BusinessException("文档ID:" + docId + "不存在，创建报表失败");
+        }
+        //读取模板文件失败
+        if(inputStream == null){
             docEntity.setDocState(CodeDict.getValue(CodeTypeEnum.DocState_Failed.getType(), CodeTypeEnum.DocState_Failed.getKey()));
             docInfoDAO.updateById(docEntity);
             return;
@@ -103,7 +112,7 @@ public class AsyncCreateReportService {
         exportNameSB.append(myMvcProperties.getSavePath()).append(ledgerProperties.getExportPath())
                 .append(CharConstant.LEFT_SLASH).append(docEntity.getDocName());
         //根据模板文件配置的字段映射关系插入数据
-        String exportPath = ExcelUtils.writeTemplateExcel(file.getAbsolutePath(),exportNameSB.toString(),exportDTO);
+        String exportPath = ExcelUtils.writeTemplateExcel(inputStream,templateName,exportNameSB.toString(),exportDTO);
         if(StringUtils.isBlank(exportPath)){
             log.error("报表模板写入数据失败");
             //生成失败

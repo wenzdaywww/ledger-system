@@ -109,6 +109,8 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <finalName>${name}-${project-version}</finalName>
+                    <classifier>exec</classifier>
                     <mainClass>com.www.ledger.LedgerApplication</mainClass>
                 </configuration>
             </plugin>
