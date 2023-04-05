@@ -12,4 +12,15 @@
 #### 2.1、上传redis.conf配置到/home/www/ap/redis/conf
 #### 2.2、使用docker安装redis
 ##### docker run -d -p 6379:6379 --restart always --name redis -v /home/www/ap/redis/conf/redis.conf:/etc/redis/redis.conf -v /home/www/ap/redis/data:/data redis:6.2.4 redis-server /etc/redis/redis.conf
-### 3、
+### 3、构建ledger-system的docker镜像
+#### 3.1、将doc文件夹中的Dockerfile文件和ledger-system的jar上传到服务器的/home/www/ap/ledger-system
+#### 3.2、cd进入3.1步骤上传文件的文件夹中，执行以下命令构建镜像
+##### docker build -f Dockerfile -t ledger-system .
+#### 3.3、执行以下命令创建容器
+##### docker run -d -p 8090:8090 --name ledger-system --restart always -e EUREKA_INSTANCE_IP-ADDRESS=192.168.1.140 -v /etc/localtime:/etc/localtime:ro -v /home/www/ap/ledger-system/logs/:/home/www/ap/ledger-system/logs/ -v /home/www/ap/ledger-system/doc/:/home/www/ap/ledger-system/doc/ ledger-system
+### 4、部署前端应用
+#### 4.1、上传view.conf到/home/www/ap/nginx/conf/conf.d
+#### 4.2、上传nginx.conf到/home/www/ap/nginx/conf
+#### 4.3、创建nginx容器，执行以下命令
+##### docker run -d --name nginx --restart always -p 80:80 -v /etc/localtime:/etc/localtime:ro -v /home/www/ap/nginx/root:/usr/share/nginx/html -v /home/www/ap/nginx/conf/nginx.conf:/etc/nginx/nginx.conf -v /home/www/ap/nginx/conf/conf.d/:/etc/nginx/conf.d/ docker.io/nginx
+#### 4.5、view项目执行npm run build-prod 后得到dist文件夹，将dist文件夹上传到/home/www/ap/nginx/root后重启nginx或者重新加载nginx

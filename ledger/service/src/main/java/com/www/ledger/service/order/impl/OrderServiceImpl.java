@@ -10,11 +10,11 @@ import com.www.common.data.constant.FileTypeConstant;
 import com.www.common.data.dto.excel.CellDTO;
 import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.response.Result;
+import com.www.common.utils.BigDecimalUtils;
 import com.www.common.utils.CsvUtils;
 import com.www.common.utils.DateUtils;
 import com.www.common.utils.ExcelUtils;
 import com.www.common.utils.FileUtils;
-import com.www.common.utils.BigDecimalUtils;
 import com.www.common.utils.UidGeneratorUtils;
 import com.www.ledger.data.dao.IOrderInfoDAO;
 import com.www.ledger.data.dao.IUserShopDAO;
@@ -24,7 +24,6 @@ import com.www.ledger.data.entity.OrderInfoEntity;
 import com.www.ledger.data.entity.UserShopEntity;
 import com.www.ledger.data.enums.CodeTypeEnum;
 import com.www.ledger.data.properties.LedgerProperties;
-import com.www.ledger.service.order.IOrderCheckService;
 import com.www.ledger.service.order.IOrderImportService;
 import com.www.ledger.service.order.IOrderService;
 import com.www.ledger.service.order.OrderImportFactory;
@@ -39,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,8 +59,6 @@ public class OrderServiceImpl implements IOrderService {
     private IOrderInfoDAO orderInfoDAO;
     @Autowired
     private IUserShopDAO userShopDAO;
-    @Autowired
-    private IOrderCheckService orderCheckService;
     @Autowired
     private LedgerProperties ledgerProperties;
 
@@ -233,10 +231,26 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public Result<String> saveOrderInfo(OrderDTO orderDTO) {
         //保存订单信息前校验
-        OrderInfoEntity orderEntity = orderCheckService.checkBeforeSaveOrderInfo(orderDTO);
-        if(orderEntity == null){
-            throw new BusinessException("保存失败");
+        //校验订单状态值
+        if(CodeDict.isIllegalValue(CodeTypeEnum.OrderState_Sended.getType(), orderDTO.getOrderState())){
+            throw new BusinessException("订单状态不合法");
         }
+        Date orderDate = DateUtils.parse(orderDTO.getOrderDateStr(), DateFormatEnum.YYYYMMDD1);
+        if(orderDate == null){
+            throw new BusinessException("订单日期错误");
+        }
+        orderDTO.setOrderDate(orderDate);
+        //判断用户店铺是否存在且有效
+        userShopDAO.findUserShop(orderDTO.getUserId(),orderDTO.getShopId());
+        //订单ID不为空，判断该订单是否属于该用户
+        OrderInfoEntity orderEntity = new OrderInfoEntity();
+        if(orderDTO.getOiId() != null){
+            orderEntity = orderInfoDAO.findOrderInfo(orderDTO.getUserId(),orderDTO.getOiId());
+            if(orderEntity == null){
+                throw new BusinessException("订单信息不存在");
+            }
+        }
+        //订单信息赋值
         orderEntity.setOrderId(orderDTO.getOrderId())
                 .setShopId(orderDTO.getShopId())
                 .setUserId(orderDTO.getUserId())
@@ -274,7 +288,7 @@ public class OrderServiceImpl implements IOrderService {
     private void computeOrderData(OrderInfoEntity orderEntity){
         //总成本计算
         orderEntity.setTotalCost(BigDecimalUtils.nullToZero(orderEntity.getCostAmount()).add(BigDecimalUtils.nullToZero(orderEntity.getPayoutAmount())));
-        //订单状态=已发货，待签收、交易成功才计算
+        //订单状态=已发货，待签收、已签收 才计算
         if(StringUtils.equalsAny(orderEntity.getOrderState(),
                 CodeDict.getValue(CodeTypeEnum.OrderState_Success.getType(), CodeTypeEnum.OrderState_Success.getKey()),
                 CodeDict.getValue(CodeTypeEnum.OrderState_Sended.getType(), CodeTypeEnum.OrderState_Sended.getKey()))){
@@ -327,10 +341,6 @@ public class OrderServiceImpl implements IOrderService {
                 d.setOrderStateName(CodeDict.getCodeValueName(CodeTypeEnum.OrderState_Success.getType(), d.getOrderState()));
             });
         }
-        Result<List<OrderDTO>> result = new Result<>(shopList);
-        result.setPageNum(pageNum);
-        result.setPageSize(pageSize);
-        result.setTotalNum(page.getTotal());
-        return result;
+        return new Result<>(pageNum,pageSize,page.getTotal(),shopList);
     }
 }

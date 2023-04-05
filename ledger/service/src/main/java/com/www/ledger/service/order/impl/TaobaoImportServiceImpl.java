@@ -87,7 +87,7 @@ public class TaobaoImportServiceImpl extends OrderImportService {
             stateMap = new HashMap<>();
             stateMap.put("", CodeDict.getValue(CodeTypeEnum.OrderState_Unconfirme.getType(), CodeTypeEnum.OrderState_Unconfirme.getKey()));//待确认
             stateMap.put(null,CodeDict.getValue(CodeTypeEnum.OrderState_Unconfirme.getType(), CodeTypeEnum.OrderState_Unconfirme.getKey()));//待确认
-            stateMap.put("交易成功",CodeDict.getValue(CodeTypeEnum.OrderState_Success.getType(), CodeTypeEnum.OrderState_Success.getKey()));//交易成功
+            stateMap.put("交易成功",CodeDict.getValue(CodeTypeEnum.OrderState_Success.getType(), CodeTypeEnum.OrderState_Success.getKey()));//已签收
             stateMap.put("已发货，待签收",CodeDict.getValue(CodeTypeEnum.OrderState_Sended.getType(), CodeTypeEnum.OrderState_Sended.getKey()));//已发货，待签收
             stateMap.put("交易关闭",CodeDict.getValue(CodeTypeEnum.OrderState_Unpaid.getType(), CodeTypeEnum.OrderState_Unpaid.getKey()));//未支付，交易关闭
             stateMap.put("已取消",CodeDict.getValue(CodeTypeEnum.OrderState_Unpaid.getType(), CodeTypeEnum.OrderState_Unpaid.getKey()));//未支付，交易关闭

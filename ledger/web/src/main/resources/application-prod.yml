@@ -9,10 +9,16 @@ com:
       import-path: import
       export-path: export
     common:
+      code:
+        write-enable: true
+        write-scheduled: "0 0 21 * * ?"
+        code-redis-key: ledger:code:code_data:code_type
       file:
         enable: true #开启上传文件配置
         url-path: /doc/**
-        save-path: /home/www/upload/${spring.application.name}/doc/
+        save-path: /home/www/ap/${spring.application.name}/doc/
+      request:
+        enable: true #开启controller的AOP日志拦截
       securuty:
         enable: true
         secret-key: wenzday
@@ -29,7 +35,7 @@ server:
 logging:
   config: classpath:logback-ledger.xml
   file:
-    path: /home/ap/logs/${spring.application.name}/  #日志路径
+    path: /home/www/ap/${spring.application.name}/logs/  #日志路径
 #spring配置
 spring:
   servlet:
@@ -39,7 +45,8 @@ spring:
       max-request-size: 10MB
   #redis配置
   redis:
-    url: 192.168.1.140:6379
+    host: 192.168.1.140
+    port: 6379
     password: www362412
   datasource:
     url: jdbc:mysql://192.168.1.140:3306/ledger?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8

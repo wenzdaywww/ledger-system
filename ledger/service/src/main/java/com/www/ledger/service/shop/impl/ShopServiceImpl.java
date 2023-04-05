@@ -118,12 +118,9 @@ public class ShopServiceImpl implements IShopService {
     @Override
     public Result<String> createShop(ShopDTO dto) {
         if(CodeDict.isIllegalValue(CodeTypeEnum.ShopPlatform_Pdd.getType(), dto.getShopType())){
-            throw new BusinessException("店铺平台信息有误，新增失败");
+            throw new BusinessException("店铺平台不合法，新增失败");
         }
         SysUserEntity userEntity = userInfoService.findUserById(dto.getUserId());
-        if(userEntity == null){
-            throw new BusinessException("查询不到该用户信息，新增失败");
-        }
         UserShopEntity shopEntity = new UserShopEntity();
         shopEntity.setShopId(UidGeneratorUtils.getRedisUid(ledgerProperties.getShopidRedisKey(),5))
                 .setShopName(dto.getShopName())

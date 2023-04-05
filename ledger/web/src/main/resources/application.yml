@@ -5,10 +5,6 @@ com:
       pdd-head-map:  {ORDER_ID: 订单号,ORDER_DATE: 订单成交时间,GOODS_ID: 商品id,GOODS_NAME: 商品,ORDER_STATE: 订单状态,SALE_AMOUNT: 商品总价(元),PAYMENT_AMOUNT: 商家实收金额(元),REMARK: 商家备注}
       taobao-head-map: {ORDER_ID: 订单编号,ORDER_DATE: 订单创建时间,GOODS_NAME: 宝贝标题,ORDER_STATE: 订单状态,SALE_AMOUNT: 总金额,PAYMENT_AMOUNT: 买家实际支付金额,REMARK: 订单备注}
       export-template: excel/export-template.xlsx
-    common:
-      code:
-        write-enable: true
-        code-redis-key: ledger:code:code_data:code_type
 #服务器配置
 server:
   servlet:

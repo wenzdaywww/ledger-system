@@ -4,6 +4,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * <p>@Description 启动类 </p>
@@ -12,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
  * <p>@Date 2023/3/9 21:37 </p>
  */
 @EnableAsync
+@EnableScheduling
 @SpringBootApplication
 @MapperScan(basePackages = {"com.www.common.config.code","com.www.common.config.security","com.www.ledger.data.mapper"})
 public class LedgerApplication {

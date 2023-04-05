@@ -90,7 +90,7 @@
           <el-table-column prop="sucOrd" label="日成交单" align="center">
             <template v-slot:header='scope'>
               <span>日成交单
-                <el-tooltip :aa="scope" class="item" effect="light" content="本日订单状态为【交易成功】、【已发货，待签收】的数量合计" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="本日订单状态为【已签收 】、【已发货，待签收】的数量合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -108,7 +108,7 @@
           <el-table-column prop="salAmt" label="日销售额" align="center">
             <template v-slot:header='scope'>
               <span>日销售额
-                <el-tooltip :aa="scope" class="item" effect="light" content="本日订单状态为【交易成功】、【已发货，待签收】的销售额合计" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="本日订单状态为【已签收 】、【已发货，待签收】的销售额合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
@@ -117,7 +117,7 @@
           <el-table-column prop="cosAmt" label="日成本费" align="center">
             <template v-slot:header='scope'>
               <span>日成本费
-                <el-tooltip :aa="scope" class="item" effect="light" content="本日订单状态为【交易成功】、【已发货，待签收】、【退货退款】、【仅退款】的总成本费合计" placement="top">
+                <el-tooltip :aa="scope" class="item" effect="light" content="本日订单状态为【已签收 】、【已发货，待签收】、【退货退款】、【仅退款】的总成本费合计" placement="top">
                  <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>

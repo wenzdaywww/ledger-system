@@ -50,7 +50,7 @@ public interface IUserInfoService {
      * <p>@Author www </p>
      * <p>@Date 2023/3/12 22:27 </p>
      * @param userId 用户id
-     * @return com.www.common.config.security.entity.SysUserEntity
+     * @return 用户信息
      */
     SysUserEntity findUserById(String userId);
     /**

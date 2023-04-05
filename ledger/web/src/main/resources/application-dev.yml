@@ -3,27 +3,30 @@ com:
   www:
     #本应用开发配置
     ledger:
-      router-redis-key: ledger:app:role_router
+      router-redis-key: ledger_dev:app:role_router
       router-expire-hour: 24
-      shopid-redis-key: ledger:app:shop_id:generator
+      shopid-redis-key: ledger_dev:app:shop_id:generator
       import-path: import
       export-path: export
     common:
+      code:
+        write-enable: true
+        code-redis-key: ledger_dev:code:code_data:code_type
       #配置文件路径
       file:
         enable: true #开启上传文件配置
         url-path: /doc/**
-        save-path: D:\WorkSpaces\temp\${spring.application.name}\doc\
+        save-path: D:/WorkSpaces/temp/${spring.application.name}/doc/
       request:
         enable: true #开启controller的AOP日志拦截
       securuty:
         enable: true
         secret-key: wenzday
-        token-prefix: ledger:securuty:user_token:userid
+        token-prefix: ledger_dev:securuty:user_token:userid
         token-expire-hour: 24
-        user-prefix: ledger:securuty:user_role:userid
+        user-prefix: ledger_dev:securuty:user_role:userid
         user-expire-hour: 24
-        auth-redis-key: ledger:securuty:authority_role
+        auth-redis-key: ledger_dev:securuty:authority_role
         auth-expire-hour: 24
 #服务器配置
 server:

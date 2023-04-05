@@ -32,3 +32,4 @@ build/
 
 # Project exclude paths
 /view/node_modules/
+/view/dist/

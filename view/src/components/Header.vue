@@ -70,7 +70,7 @@ export default {
     const collapse = computed(() => store.state.collapse);
     // 表单数据
     let form = reactive({
-      photo : "static/img/img.jpg"
+      photo : "/static/img/img.jpg"
     });
     //用户注册弹窗对象
     const passwordDialog = ref();

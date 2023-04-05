@@ -42,8 +42,8 @@ public enum CodeTypeEnum {
     OrderState_Nosend("OrderState","订单状态","K2","未发货，退款成功"),
     /** 订单状态：已发货，待签收 **/
     OrderState_Sended("OrderState","订单状态","K3","已发货，待签收"),
-    /** 订单状态：交易成功 **/
-    OrderState_Success("OrderState","订单状态","K4","交易成功"),
+    /** 订单状态：已签收  **/
+    OrderState_Success("OrderState","订单状态","K4","已签收 "),
     /** 订单状态：退货退款 **/
     OrderState_Return("OrderState","订单状态","K5","退货退款"),
     /** 订单状态：仅退款 **/

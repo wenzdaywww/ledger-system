@@ -46,6 +46,9 @@ public class PayServiceImpl implements IPayService {
         if(payDate == null){
             throw new BusinessException("支出日期格式错误");
         }
+        if(CodeDict.isIllegalValue(CodeTypeEnum.PayType_advert.getType(), payDTO.getPayType())){
+            throw new BusinessException("支出类型不合法");
+        }
         PayInfoEntity entity = null;
         if(payDTO.getPayId() != null){
             entity = payInfoDAO.findPayInfoEntity(payDTO.getUserId(), payDTO.getPayId());

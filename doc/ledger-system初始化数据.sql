@@ -19,7 +19,7 @@ INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VA
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('OrderState', '订单状态', 'K1', '1', '未支付，交易关闭', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('OrderState', '订单状态', 'K2', '2', '未发货，退款成功', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('OrderState', '订单状态', 'K3', '3', '已发货，待签收', '1');
-INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('OrderState', '订单状态', 'K4', '4', '交易成功', '1');
+INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('OrderState', '订单状态', 'K4', '4', '已签收 ', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('OrderState', '订单状态', 'K5', '5', '退货退款', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('OrderState', '订单状态', 'K6', '6', '仅退款', '1');
 INSERT INTO `CODE_DATA` (`CODE_TYPE`, `CODE_NAME`, `CODE_KEY`, `CODE_VALUE`, `VALUE_NAME`, `IS_VALID`) VALUES ('OrderState', '订单状态', 'K7', '7', '刷单', '1');

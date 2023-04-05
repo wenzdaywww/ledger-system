@@ -10,6 +10,7 @@ import com.www.common.config.security.entity.SysRoleEntity;
 import com.www.common.config.security.entity.SysUserEntity;
 import com.www.common.config.security.entity.SysUserRoleEntity;
 import com.www.common.config.security.mapper.AuthorityRoleMapper;
+import com.www.common.config.security.mapper.SysRoleMapper;
 import com.www.common.config.security.mapper.SysUserMapper;
 import com.www.common.config.security.mapper.SysUserRoleMapper;
 import com.www.common.data.constant.CharConstant;
@@ -19,7 +20,6 @@ import com.www.ledger.data.dao.IUserBookDAO;
 import com.www.ledger.data.dto.UserDTO;
 import com.www.ledger.data.entity.UserBookEntity;
 import com.www.ledger.data.properties.LedgerProperties;
-import com.www.ledger.service.user.IUserInfoCheckService;
 import com.www.ledger.service.user.IUserInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -56,7 +56,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
     @Autowired
     private MySecurityProperties mySecurityProperties;
     @Autowired
-    private IUserInfoCheckService userInfoCheckService;
+    private SysRoleMapper sysRoleMapper;
 
     /**
      * <p>@Description 查询用户信息 </p>
@@ -67,7 +67,6 @@ public class UserInfoServiceImpl implements IUserInfoService {
      */
     @Override
     public Result<UserDTO> findUser(String userId) {
-        Result<UserDTO> result = new Result<>();
         if(StringUtils.isBlank(userId)){
             return new Result<>();
         }
@@ -94,7 +93,14 @@ public class UserInfoServiceImpl implements IUserInfoService {
     @Override
     public Result<String> createUser(UserDTO user) {
         //创建用户信息前校验
-        SysRoleEntity roleEntity = userInfoCheckService.checkBeforeCreateUser(user);
+        SysUserEntity existEntity = this.findUserById(user.getUserId());
+        if(existEntity != null){
+            throw new BusinessException("用户ID已存在，请修改");
+        }
+        //创建用户信息前校验
+        QueryWrapper<SysRoleEntity> roleWrapper = new QueryWrapper<>();
+        roleWrapper.lambda().eq(SysRoleEntity::getRoleCode,"ROLE_USER");
+        SysRoleEntity roleEntity = sysRoleMapper.selectOne(roleWrapper);
         if(roleEntity == null){
             throw new BusinessException("创建用户失败");
         }
@@ -129,11 +135,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
      */
     @Override
     public Result<String> updateUserPwd(UserDTO user) {
-        Result<String> result = new Result<>();
         SysUserEntity userEntity = this.findUserById(user.getUserId());
-        if(userEntity == null){
-            throw new BusinessException("查询不到该用户");
-        }
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         //有输入密码则校验密码
         if(!encoder.matches(user.getPassword(),userEntity.getPassword())){
@@ -161,9 +163,6 @@ public class UserInfoServiceImpl implements IUserInfoService {
     public Result<String> updateUserInfo(UserDTO user) {
         //更新用户信息前校验
         SysUserEntity userEntity = this.findUserById(user.getUserId());
-        if(userEntity == null){
-            throw new BusinessException("查询不到该用户");
-        }
         //更新用户信息
         UpdateWrapper<SysUserEntity> userWrapper = new UpdateWrapper<>();
         userWrapper.lambda().eq(SysUserEntity::getUserId,user.getUserId());
@@ -250,7 +249,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
      * <p>@Author www </p>
      * <p>@Date 2023/3/12 22:27 </p>
      * @param userId 用户id
-     * @return com.www.common.config.security.entity.SysUserEntity
+     * @return 用户信息
      */
     @Override
     public SysUserEntity findUserById(String userId){

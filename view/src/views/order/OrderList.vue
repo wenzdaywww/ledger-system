@@ -170,7 +170,7 @@ export default {
     const orderState = ref([]);
     // 查询
     const addRowClass = ({row,rowIndex}) => {
-      //【交易成功】、【已发货，待签收】设置红色
+      //【已签收 】、【已发货，待签收】设置红色
       if (['4','3'].indexOf(row.ordSta) != -1) {
         return 'tr-success';
       }//【刷单】设置绿色
@@ -305,7 +305,7 @@ body {
   text-overflow: ellipsis; /* 溢出用省略号*/
   -webkit-box-orient: vertical;/*伸缩盒子的子元素排列：从上到下*/
 }
-/* 交易成功颜色 */
+/* 已签收 颜色 */
 .el-table .tr-success {
   color: red ;
 }
