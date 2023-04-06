@@ -18,9 +18,9 @@ public interface IExportService {
      * <p>@Date 2023/4/2 19:54 </p>
      * @param userId 用户ID
      * @param sheetList 要导出的数据选项
-     * @return 创建结果信息
+     * @return 文档ID
      */
-    Result<String> createDocumentData(String userId, List<Integer> sheetList);
+    Long createDocumentData(String userId, List<Integer> sheetList);
     /**
      * <p>@Description 查询报表文档信息列表 </p>
      * <p>@Author www </p>

@@ -1,5 +1,6 @@
 package com.www.ledger.controller.book;
 
+import com.www.common.config.filter.core.TraceIdFilter;
 import com.www.common.config.security.meta.JwtAuthorizationTokenFilter;
 import com.www.common.data.response.Result;
 import com.www.ledger.data.dto.BookDTO;
@@ -8,9 +9,11 @@ import com.www.ledger.data.vo.book.BookDocInVO;
 import com.www.ledger.data.vo.book.BookDocOutVO;
 import com.www.ledger.data.vo.book.BookExpInVO;
 import com.www.ledger.data.vo.book.BookInfoOutVO;
+import com.www.ledger.service.async.AsyncCreateReportService;
 import com.www.ledger.service.book.IBookService;
 import com.www.ledger.service.export.IExportService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +38,8 @@ public class BookController {
     private IBookService bookService;
     @Autowired
     private IExportService exportService;
+    @Autowired
+    private AsyncCreateReportService asyncCreateReportService;
 
     /**
      * <p>@Description 生成报表文件 </p>
@@ -45,7 +50,12 @@ public class BookController {
      */
     @PostMapping("exp")
     public Result<String> createReport(@Validated BookExpInVO inVO){
-        return exportService.createDocumentData(JwtAuthorizationTokenFilter.getUserId(),inVO.getSheets());
+        Long docId = exportService.createDocumentData(JwtAuthorizationTokenFilter.getUserId(),inVO.getSheets());
+        if(docId != null){
+            //异步创建报表文件
+            asyncCreateReportService.createReport(JwtAuthorizationTokenFilter.getUserId(), MDC.get(TraceIdFilter.TRACE_ID),inVO.getSheets(),docId);
+        }
+        return new Result<>("报表生成中，请稍等。。。");
     }
     /**
      * <p>@Description 统计用户账簿信息 </p>

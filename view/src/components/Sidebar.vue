@@ -36,36 +36,38 @@
 import { computed, watch } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import {ElMessage} from "element-plus";
 export default {
   setup() {
+    //TODO 2023/4/5 17:56 菜单点击有时会出现空白页，待处理
     const items = [
       {
         icon: "el-icon-notebook-1",
-        index: "/book",
+        index: "book",
         title: "我的账簿",
       },{
         icon: "el-icon-s-shop",
-        index: "/shop",
+        index: "shop",
         title: "我的店铺",
       },{
         icon: "el-icon-data-analysis",
-        index: "/year",
+        index: "year",
         title: "年销售额",
       },{
         icon: "el-icon-data-line",
-        index: "/month",
+        index: "month",
         title: "月销售额",
       },{
         icon: "el-icon-date",
-        index: "/day",
+        index: "day",
         title: "日销售额",
       },{
         icon: "el-icon-shopping-cart-full",
-        index: "/order",
+        index: "order",
         title: "订单信息",
       },{
         icon: "el-icon-bank-card",
-        index: "/pay",
+        index: "pay",
         title: "支出管理",
       }
     ];

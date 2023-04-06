@@ -88,7 +88,6 @@ public class AsyncCreateReportService {
         String templateName = null;
         try {
             MDC.put(TraceIdFilter.TRACE_ID, traceId);//添加跟踪号
-            //TODO 2023/4/5 15:39 打包成jar无法读取resource下模板文件，待处理
             ClassPathResource resource = new ClassPathResource(ledgerProperties.getExportTemplate());
             inputStream = resource.getInputStream();
             templateName = resource.getFilename();
@@ -110,9 +109,9 @@ public class AsyncCreateReportService {
         //导出的报表文件名称,格式：导出保存文件夹路径/用户ID-export-导出年月日时分秒
         StringBuilder exportNameSB = new StringBuilder();
         exportNameSB.append(myMvcProperties.getSavePath()).append(ledgerProperties.getExportPath())
-                .append(CharConstant.LEFT_SLASH).append(docEntity.getDocName());
+                .append(CharConstant.LEFT_SLASH).append(docEntity.getDocName()).append(FileUtils.getFileType(templateName));
         //根据模板文件配置的字段映射关系插入数据
-        String exportPath = ExcelUtils.writeTemplateExcel(inputStream,templateName,exportNameSB.toString(),exportDTO);
+        String exportPath = ExcelUtils.writeTemplateExcel(inputStream,exportNameSB.toString(),exportDTO);
         if(StringUtils.isBlank(exportPath)){
             log.error("报表模板写入数据失败");
             //生成失败
