@@ -217,8 +217,8 @@
         </el-tooltip>
       </el-col>
     </el-row>
+    <export-list ref="exportDialog"></export-list>
   </div>
-  <export-list ref="exportDialog"></export-list>
 </template>
 
 <script>
@@ -228,7 +228,7 @@ import {ElMessage} from "element-plus";
 import exportList from "./ExportList.vue";
 
 export default {
-  name: "Data",
+  name: "Book",
   components: { exportList },
   setup() {
     // 接口请求
@@ -262,8 +262,6 @@ export default {
         pageLoading.value = false;
         ElMessage.success(res.data);
         getBookInfoData();
-        getLastYeatData();
-        getLast10DayData();
       }).catch(err => {pageLoading.value = false;});
     };
     // 获取用户数据

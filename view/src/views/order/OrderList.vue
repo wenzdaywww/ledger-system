@@ -241,6 +241,9 @@ export default {
       if (datRange.value){
         query.strDat = datRange.value[0];
         query.endDat = datRange.value[1];
+      }else {
+        query.strDat = "";
+        query.endDat = "";
       }
       axios.$http.get(request.orderList,query).then(function (res) {
         pageLoading.value = false;

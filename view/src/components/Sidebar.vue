@@ -39,7 +39,6 @@ import {useRoute, useRouter} from "vue-router";
 
 export default {
   setup() {
-    //TODO 2023/4/5 17:56 左侧 导航栏第一次点击会出现空白页，待处理
     const items = [
       {
         icon: "el-icon-notebook-1",

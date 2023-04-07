@@ -1,16 +1,14 @@
 # 项目简介
-## 博客UI
+## 账簿系统UI
 ### 项目设置
 ```
 npm install
 ```
-### 项目编译
-```
-npm run serve
-```
-### 项目启动
+### 项目本地启动
 ```
 npm run dev
 ```
-
-# 延伸阅读
+### 项目prod环境编译
+```
+npm run build-prod
+```

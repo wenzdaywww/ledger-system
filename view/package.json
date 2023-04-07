@@ -1,10 +1,9 @@
 {
-  "name": "my-blog",
+  "name": "ledger",
   "version": "5.1.0",
   "private": true,
   "scripts": {
     "dev": "vite --port 80 --mode development",
-    "build-test": "vite build --mode test",
     "build-prod": "vite build --mode production",
     "serve": "vite preview"
   },
