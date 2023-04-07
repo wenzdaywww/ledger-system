@@ -1,3 +1,4 @@
+
 export default [
     {
         path: "/",
@@ -32,37 +33,37 @@ export default [
         component: () => import ("../views/Home.vue"),
         children: [
             {
-                path: "book",
+                path: "/book",
                 name: "book",
                 meta: { title: '我的账簿' },
                 component: () => import ("../views/book/Book.vue")
             },{
-                path: "shop",
+                path: "/shop",
                 name: "shop",
                 meta: { title: '我的店铺' },
                 component: () => import ("../views/shop/ShopList.vue")
             },{
-                path: "year",
+                path: "/year",
                 name: "year",
                 meta: { title: '年销售额' },
                 component: () => import ("../views/year/YearList.vue")
             },{
-                path: "month",
+                path: "/month",
                 name: "month",
                 meta: { title: '月销售额' },
                 component: () => import ("../views/month/MonthList.vue")
             },{
-                path: "day",
+                path: "/day",
                 name: "day",
                 meta: { title: '日销售额' },
                 component: () => import ("../views/day/DayList.vue")
             },{
-                path: "order",
+                path: "/order",
                 name: "order",
                 meta: { title: '订单信息' },
                 component: () => import ("../views/order/OrderList.vue")
             },{
-                path: "pay",
+                path: "/pay",
                 name: "pay",
                 meta: { title: '支出管理' },
                 component: () => import ("../views/pay/PayList.vue")

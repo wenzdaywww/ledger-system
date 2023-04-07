@@ -9,6 +9,8 @@ com:
       import-path: import
       export-path: export
     common:
+      transaction:
+        enable: true
       code:
         write-enable: true
         write-scheduled: "0 0 21 * * ?"
