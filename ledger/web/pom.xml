@@ -14,7 +14,7 @@
     <artifactId>web</artifactId>
     <version>${project-version}</version>
     <packaging>jar</packaging>
-    <name>ledger-system</name>
+    <name>web</name>
     <description>web配置</description>
     <!--配置依赖-->
     <dependencies>

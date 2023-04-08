@@ -24,6 +24,7 @@
     </modules>
     <!-- properties -->
     <properties>
+        <project-name>ledger</project-name>
         <project-version>1.0.0</project-version>
         <java.version>1.8</java.version>
     </properties>
@@ -109,9 +110,52 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <finalName>${name}-${project-version}</finalName>
+                    <finalName>${project-name}-${project-version}</finalName>
+                    <!--  必须加上，否则请求会404 -->
                     <classifier>exec</classifier>
                     <mainClass>com.www.ledger.LedgerApplication</mainClass>
+                </configuration>
+            </plugin>
+            <!--  docker配置-->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <!-- 有问题，注释掉，使用手动build -->
+                <!--将插件绑定在某个phase执行-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>build-image</id>-->
+<!--                        &lt;!&ndash;将插件绑定在package这个phase上。也就是说，用户只需执行mvn package ，就会自动执行mvn docker:build&ndash;&gt;-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>build</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+                <configuration>
+                    <!--指定生成的镜像名-->
+                    <imageName>${name}</imageName>
+                    <!--指定标签-->
+                    <imageTags>
+                        <imageTag>${project-version}</imageTag>
+                    </imageTags>
+                    <!-- 在生成映像之前，所有资源都将复制到此目录。-->
+                    <buildDirectory>${project.basedir}/web/target</buildDirectory>
+                    <!-- 指定 Dockerfile 路径-->
+                    <dockerDirectory>${project.basedir}/web/src/main/docker</dockerDirectory>
+                    <!--指定远程 docker api地址-->
+                    <dockerHost>http://192.168.1.140:2375</dockerHost>
+                    <!-- 这里是复制 jar 包到 docker 容器指定目录配置 -->
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <!--jar 包所在的路径  此处配置的 即对应 target 目录-->
+                            <directory>${project.basedir}/web/target</directory>
+                            <!-- 需要包含的 jar包 ，这里对应的是 Dockerfile中添加的文件名　-->
+                            <include>${project-name}-${project-version}-exec.jar</include>
+                        </resource>
+                    </resources>
                 </configuration>
             </plugin>
         </plugins>

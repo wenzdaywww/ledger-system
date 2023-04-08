@@ -15,7 +15,7 @@ spring:
     #配置环境文件
     active: @profileActive@
   application:
-    name: ledger-system
+    name: ledger
   # 返回报文json配置
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss #配置返回日期格式
