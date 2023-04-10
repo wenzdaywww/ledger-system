@@ -25,3 +25,5 @@
 #### 4.3、创建nginx容器，执行以下命令
 ##### docker run -d --name nginx --restart always -p 80:80 -v /etc/localtime:/etc/localtime:ro -v /home/www/ap/nginx/root:/usr/share/nginx/html -v /home/www/ap/nginx/conf/nginx.conf:/etc/nginx/nginx.conf -v /home/www/ap/nginx/conf/conf.d/:/etc/nginx/conf.d/ docker.io/nginx
 #### 4.5、view项目执行npm run build-prod 后得到dist文件夹，将dist文件夹上传到/home/www/ap/nginx/root后重启nginx或者重新加载nginx
+### 5、安装内网穿透软件
+#### 参考 <https://www.cpolar.com/blog/linux-system-installation-cpolar>
