@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.www.common.config.code.CodeDict;
 import com.www.common.config.exception.BusinessException;
-import com.www.common.config.mvc.upload.IFileService;
+import com.www.common.config.file.upload.IFileService;
 import com.www.common.data.constant.CharConstant;
 import com.www.common.data.constant.FileTypeConstant;
 import com.www.common.data.dto.excel.CellDTO;

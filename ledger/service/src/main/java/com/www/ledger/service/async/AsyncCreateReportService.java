@@ -2,9 +2,9 @@ package com.www.ledger.service.async;
 
 import com.www.common.config.code.CodeDict;
 import com.www.common.config.exception.BusinessException;
+import com.www.common.config.file.FileProperties;
+import com.www.common.config.file.upload.IFileService;
 import com.www.common.config.filter.core.TraceIdFilter;
-import com.www.common.config.mvc.MyMvcProperties;
-import com.www.common.config.mvc.upload.IFileService;
 import com.www.common.data.constant.CharConstant;
 import com.www.common.utils.DateUtils;
 import com.www.common.utils.ExcelUtils;
@@ -54,7 +54,7 @@ public class AsyncCreateReportService {
     @Autowired
     private LedgerProperties ledgerProperties;
     @Autowired
-    private MyMvcProperties myMvcProperties;
+    private FileProperties fileProperties;
     @Autowired
     private IBookService bookService;
     @Autowired
@@ -108,7 +108,7 @@ public class AsyncCreateReportService {
         ExportDTO exportDTO = this.buildExportDTO(userId,sheetList);
         //导出的报表文件名称,格式：导出保存文件夹路径/用户ID-export-导出年月日时分秒
         StringBuilder exportNameSB = new StringBuilder();
-        exportNameSB.append(myMvcProperties.getSavePath()).append(ledgerProperties.getExportPath())
+        exportNameSB.append(fileProperties.getSavePath()).append(ledgerProperties.getExportPath())
                 .append(CharConstant.LEFT_SLASH).append(docEntity.getDocName()).append(FileUtils.getFileType(templateName));
         //根据模板文件配置的字段映射关系插入数据
         String exportPath = ExcelUtils.writeTemplateExcel(inputStream,exportNameSB.toString(),exportDTO);

@@ -1,10 +1,8 @@
 package com.www.ledger;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * <p>@Description 启动类 </p>
@@ -13,9 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * <p>@Date 2023/3/9 21:37 </p>
  */
 @EnableAsync
-@EnableScheduling
 @SpringBootApplication
-@MapperScan(basePackages = {"com.www.common.config.code","com.www.common.config.security","com.www.ledger.data.mapper"})
 public class LedgerApplication {
     /**
      * <p>@Description 启动方法 </p>
@@ -25,6 +21,9 @@ public class LedgerApplication {
      * @return void
      */
     public static void main(String[] args) {
+        //配置application加密的密钥
+        System.setProperty("jasypt.encryptor.password","wenzday");
+        //TODO 2023/4/11 23:03 无法使用common-spring-boot-starter包中的多数据源配置
         SpringApplication.run(LedgerApplication.class, args);
     }
 }

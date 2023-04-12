@@ -49,12 +49,12 @@ spring:
   redis:
     host: 192.168.1.140
     port: 6379
-    password: www362412
+    password: ENC(FYI+VwCCxFQJmU7EeLCgw7CewV+hznTf)
   datasource:
     url: jdbc:mysql://192.168.1.140:3306/ledger?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ledger_ap
-    password: www362412
+    password: ENC(FYI+VwCCxFQJmU7EeLCgw7CewV+hznTf)
     initial-size: 5 #启动程序时，在连接池中初始化多少个连接
     min-idle: 5 #最小连接池数量
     max-active: 20 #连接池中最多支持多少个活动会话
