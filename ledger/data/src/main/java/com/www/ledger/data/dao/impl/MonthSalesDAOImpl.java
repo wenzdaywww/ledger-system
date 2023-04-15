@@ -83,17 +83,18 @@ public class MonthSalesDAOImpl extends ServiceImpl<MonthSalesMapper, MonthSalesE
         return monthSalesMapper.delete(wrapper) != 0;
     }
     /**
-     * <p>@Description 查询近一年月销售额数据 </p>
+     * <p>@Description 查询月销售额数据，最大范围12个月 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 21:40 </p>
      * @param userId 用户ID
      * @param shopId 店铺ID 为空则查询用户店铺汇总日销售额，不为空则查询指定店铺日销售额
-     * @param date 月销售额数据
+     * @param startDate 起始日期
+     * @param endDate 截止日期
      * @return 月销售额数据
      */
     @Override
-    public List<MonthDTO> findLastMonthData(String userId, Long shopId, String date) {
-        return monthSalesMapper.findLastMonthData(userId,shopId,date);
+    public List<MonthDTO> findLastMonthData(String userId, Long shopId,String startDate, String endDate) {
+        return monthSalesMapper.findLastMonthData(userId,shopId,startDate,endDate);
     }
     /**
      * <p>@Description 统计店铺的年销售额 </p>

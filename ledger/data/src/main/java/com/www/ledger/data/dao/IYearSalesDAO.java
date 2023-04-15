@@ -25,15 +25,16 @@ public interface IYearSalesDAO extends IService<YearSalesEntity> {
      */
     List<YearDTO> exportYearSalesData(String userId,boolean isShop);
     /**
-     * <p>@Description 查询近10年年销售额数据 </p>
+     * <p>@Description 查询年利润图表数据，最大范围10年  </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 21:40 </p>
      * @param userId 用户ID
      * @param shopId 店铺ID 为空则查询用户店铺汇总年销售额，不为空则查询指定店铺年销售额
-     * @param date 年销售额数据
+     * @param startDate 起始日期
+     * @param endDate 截止日期
      * @return 年销售额数据
      */
-    List<YearDTO> findLastYearData(String userId, Long shopId, String date);
+    List<YearDTO> findLastYearData(String userId, Long shopId, String startDate, String endDate);
     /**
      * <p>@Description 根据所有店铺的年销售额汇总每年所有店铺销售额 </p>
      * <p>@Author www </p>

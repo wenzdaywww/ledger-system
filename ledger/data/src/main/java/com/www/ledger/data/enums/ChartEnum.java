@@ -11,9 +11,9 @@ import java.util.List;
  */
 public enum ChartEnum {
     /** 日净利润 **/
-    DAY_PROFIT("日净利润"),
+    DAY_PROFIT("日净利润(元)"),
     /** 日毛利润 **/
-    DAY_GROSS("日毛利润"),
+    DAY_GROSS("日毛利润(元)"),
     /** 日订单量 **/
     DAY_TOTAL("日订单量"),
     /** 日成交单 **/
@@ -21,18 +21,18 @@ public enum ChartEnum {
     /** 日流失单 **/
     DAY_FAILED("日流失单"),
     /** 日销售额 **/
-    DAY_SALE("日销售额"),
+    DAY_SALE("日销售额(元)"),
     /** 日成本费 **/
-    DAY_COST("日成本费"),
+    DAY_COST("日成本费(元)"),
     /** 日刷单费 **/
-    DAY_VIRTUAL("日刷单费"),
+    DAY_VIRTUAL("日刷单费(元)"),
     /** 日支出费 **/
-    DAY_PAYOUT("日支出费"),
+    DAY_PAYOUT("日支出费(元)"),
 
     /** 月净利润 **/
-    MONTH_PROFIT("月净利润"),
+    MONTH_PROFIT("月净利润(元)"),
     /** 月毛利润 **/
-    MONTH_GROSS("月毛利润"),
+    MONTH_GROSS("月毛利润(元)"),
     /** 月订单量 **/
     MONTH_TOTAL("月订单量"),
     /** 月成交单 **/
@@ -40,22 +40,22 @@ public enum ChartEnum {
     /** 月流失单 **/
     MONTH_FAILED("月流失单"),
     /** 月销售额 **/
-    MONTH_SALE("月销售额"),
+    MONTH_SALE("月销售额(元)"),
     /** 月成本费 **/
-    MONTH_COST("月成本费"),
+    MONTH_COST("月成本费(元)"),
     /** 月推广费 **/
-    MONTH_ADVERT("月推广费"),
+    MONTH_ADVERT("月推广费(元)"),
     /** 月服务费 **/
-    MONTH_SERVICE("月服务费"),
+    MONTH_SERVICE("月服务费(元)"),
     /** 月刷单费 **/
-    MONTH_VIRTUAL("月刷单费"),
+    MONTH_VIRTUAL("月刷单费(元)"),
     /** 月支出费 **/
-    MONTH_PAYOUT("月支出费"),
+    MONTH_PAYOUT("月支出费(元)"),
 
     /** 年净利润 **/
-    YEAR_PROFIT("年净利润"),
+    YEAR_PROFIT("年净利润(元)"),
     /** 年毛利润 **/
-    YEAR_GROSS("年毛利润"),
+    YEAR_GROSS("年毛利润(元)"),
     /** 年订单量 **/
     YEAR_TOTAL("年订单量"),
     /** 年成交单 **/
@@ -63,22 +63,22 @@ public enum ChartEnum {
     /** 年流失单 **/
     YEAR_FAILED("年流失单"),
     /** 年销售额 **/
-    YEAR_SALE("年销售额"),
+    YEAR_SALE("年销售额(元)"),
     /** 年成本费 **/
-    YEAR_COST("年成本费"),
+    YEAR_COST("年成本费(元)"),
     /** 年推广费 **/
-    YEAR_ADVERT("年推广费"),
+    YEAR_ADVERT("年推广费(元)"),
     /** 年服务费 **/
-    YEAR_SERVICE("年服务费"),
+    YEAR_SERVICE("年服务费(元)"),
     /** 年刷单费 **/
-    YEAR_VIRTUAL("年刷单费"),
+    YEAR_VIRTUAL("年刷单费(元)"),
     /** 年支出费 **/
-    YEAR_PAYOUT("年支出费"),
+    YEAR_PAYOUT("年支出费(元)"),
 
     /** 店净利润 **/
-    SHOP_PROFIT("店净利润"),
+    SHOP_PROFIT("店净利润(元)"),
     /** 店毛利润 **/
-    SHOP_GROSS("店毛利润"),
+    SHOP_GROSS("店毛利润(元)"),
     /** 店订单量 **/
     SHOP_TOTAL("店订单量"),
     /** 店成交单 **/
@@ -86,17 +86,17 @@ public enum ChartEnum {
     /** 店流失单 **/
     SHOP_FAILED("店流失单"),
     /** 店销售额 **/
-    SHOP_SALE("店销售额"),
+    SHOP_SALE("店销售额(元)"),
     /** 店成本费 **/
-    SHOP_COST("店成本费"),
+    SHOP_COST("店成本费(元)"),
     /** 店推广费 **/
-    SHOP_ADVERT("店推广费"),
+    SHOP_ADVERT("店推广费(元)"),
     /** 店服务费 **/
-    SHOP_SERVICE("店服务费"),
+    SHOP_SERVICE("店服务费(元)"),
     /** 店刷单费 **/
-    SHOP_VIRTUAL("店刷单费"),
+    SHOP_VIRTUAL("店刷单费(元)"),
     /** 店支出费 **/
-    SHOP_PAYOUT("店支出费"),
+    SHOP_PAYOUT("店支出费(元)"),
     ;
     /** 图表数据名称 **/
     private String name;

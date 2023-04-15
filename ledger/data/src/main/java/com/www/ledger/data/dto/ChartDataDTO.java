@@ -16,9 +16,9 @@ import java.util.List;
 @Accessors(chain = true)
 public class ChartDataDTO {
     /** 图表x坐标名称集合 **/
-    private List<String> labels;
+    private List<String> xaxis;
     /** 图表数据 **/
-    private List<Datasets> datasets;
+    private List<Series> series;
     /**
      * <p>@Description 图表数据 </p>
      * <p>@Version 1.0 </p>
@@ -27,9 +27,9 @@ public class ChartDataDTO {
      */
     @Data
     @Accessors(chain = true)
-    public static class Datasets  {
+    public static class Series {
         /** 数据名称 **/
-        private String label;
+        private String name;
         /** 数据数值 **/
         private List<BigDecimal> data;
     }

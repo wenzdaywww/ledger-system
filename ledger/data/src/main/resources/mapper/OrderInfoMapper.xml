@@ -23,6 +23,23 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
+    <!-- 查询日期范围内订单状态饼状图表数据 -->
+    <select id="findDayOrderState" resultType="com.www.ledger.data.dto.OrderDTO">
+        SELECT  C1.VALUE_NAME orderStateName,
+                COUNT(C1.ORDER_DATE) totalOrder
+        FROM(SELECT C.ORDER_DATE,
+                    D.VALUE_NAME
+            FROM USER_SHOP S,ORDER_INFO C,CODE_DATA D
+            WHERE C.USER_ID = #{userId} AND S.USER_ID = #{userId}
+                <if test="shopId != null and shopId != ''">
+                    AND C.SHOP_ID = #{shopId} AND S.SHOP_ID = #{shopId}
+                </if>
+                AND C.SHOP_ID = S.SHOP_ID AND S.SHOP_STATE = '1'
+                AND D.CODE_TYPE='OrderState' AND D.CODE_VALUE=C.ORDER_STATE
+                AND C.ORDER_DATE <![CDATA[ >= ]]> STR_TO_DATE(#{startDate},'%Y-%m-%d')
+                AND C.ORDER_DATE <![CDATA[ <= ]]> STR_TO_DATE(#{endDate},'%Y-%m-%d')
+        ) C1 GROUP BY C1.VALUE_NAME
+    </select>
     <!--  导出订单信息-->
     <select id="exportOrderData" resultType="com.www.ledger.data.dto.OrderDTO">
         SELECT O.OI_ID oiId,
@@ -49,9 +66,10 @@
         AND O.USER_ID = #{userId} AND S.USER_ID = #{userId}
         ORDER BY O.ORDER_DATE ASC, O.SHOP_ID ASC
     </select>
-    <!-- 获取订单中最大的日期-->
-    <select id="getMaxOrderDate" resultType="java.util.Date">
-        SELECT MAX(R.ORDER_DATE) ORDER_DATE
+    <!-- 获取订单中最小的日期和最大的日期-->
+    <select id="getMinMaxOrderDate" resultType="java.util.Map">
+        SELECT  MIN(R.ORDER_DATE) MIN_DATE,
+                MAX(R.ORDER_DATE) MAX_DATE
         FROM ORDER_INFO R,USER_SHOP S
         WHERE R.USER_ID = #{userId}  AND S.USER_ID = #{userId}
             AND S.SHOP_STATE = '1' AND S.SHOP_ID = R.SHOP_ID

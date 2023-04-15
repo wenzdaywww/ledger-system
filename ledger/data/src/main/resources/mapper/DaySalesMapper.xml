@@ -54,16 +54,16 @@
     <!--    查询日期区间的日销售额-->
     <select id="findLastDaySales" resultType="com.www.ledger.data.dto.DayDTO">
         SELECT  A.DAY_DATE dayDate,
-        DATE_FORMAT(A.DAY_DATE,'%Y.%c.%e') dayDateStr,
-        A.RETAINED_PROFITS retainedProfits,
-        A.GROSS_PROFIT grossProfit,
-        A.TOTAL_ORDER totalOrder,
-        A.SUCCEED_ORDER succeedOrder,
-        A.FAILED_ORDER failedOrder,
-        A.SALE_AMOUNT saleAmount,
-        A.COST_AMOUNT costAmount,
-        A.VIRTUAL_AMOUNT virtualAmount,
-        A.TOTAL_COST totalCost
+                DATE_FORMAT(A.DAY_DATE,'%Y.%c.%e') dayDateStr,
+                A.RETAINED_PROFITS retainedProfits,
+                A.GROSS_PROFIT grossProfit,
+                A.TOTAL_ORDER totalOrder,
+                A.SUCCEED_ORDER succeedOrder,
+                A.FAILED_ORDER failedOrder,
+                A.SALE_AMOUNT saleAmount,
+                A.COST_AMOUNT costAmount,
+                A.VIRTUAL_AMOUNT virtualAmount,
+                A.TOTAL_COST totalCost
         FROM DAY_SALES A
         WHERE A.USER_ID = #{userId}
         <choose>
@@ -77,6 +77,7 @@
         </choose>
         AND A.DAY_DATE <![CDATA[ >= ]]> STR_TO_DATE(#{startData},'%Y-%m-%d')
         AND A.DAY_DATE <![CDATA[ <= ]]> STR_TO_DATE(#{endDate},'%Y-%m-%d')
+        LIMIT 30
     </select>
     <!-- 根据用户ID查询用户店铺日销售额数据-->
     <select id="findShopDaySalesList" resultMap="BaseResultMap">

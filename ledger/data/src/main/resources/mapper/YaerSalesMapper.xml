@@ -54,7 +54,7 @@
         </choose>
         ORDER BY Y.YEAR ASC
     </select>
-    <!--    查询近10年年销售额数据-->
+    <!--    查询年利润图表数据，最大范围10年-->
     <select id="findLastYearData" resultType="com.www.ledger.data.dto.YearDTO">
         SELECT  M.YEAR year,
                 DATE_FORMAT(M.YEAR,'%Y年') yearStr,
@@ -80,9 +80,10 @@
                 AND M.SHOP_ID IS NULL
             </otherwise>
         </choose>
-        AND M.YEAR <![CDATA[ <= ]]> STR_TO_DATE(#{date},'%Y-%m-%d')
-        AND M.YEAR <![CDATA[ >= ]]> DATE_SUB(STR_TO_DATE(#{date},'%Y-%m-%d'),INTERVAL 9 YEAR)
+        AND M.YEAR <![CDATA[ <= ]]> STR_TO_DATE(#{endDate},'%Y-%m-%d')
+        AND M.YEAR <![CDATA[ >= ]]> STR_TO_DATE(#{startDate},'%Y-%m-%d')
         ORDER BY M.YEAR ASC
+        LIMIT 10
     </select>
     <!-- 查询用户店铺的年销售数据-->
     <select id="findShopYearSalesList" resultMap="BaseResultMap">

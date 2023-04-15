@@ -67,4 +67,6 @@ public class OrderDTO implements Serializable {
     private int rowNum;
     /** 错误信息 **/
     private String message;
+    /** 日订单数 **/
+    private Long totalOrder;
 }

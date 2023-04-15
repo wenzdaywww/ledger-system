@@ -98,13 +98,18 @@ export default {
     daySales: "api/chart/daySales",
     //查询日订单量图表数据
     dayOrder: "api/chart/dayOrder",
+    //查询日订单状态量图表数据
+    dayState: "api/chart/dayState",
     //查询月销售图表数据
     monthSales: "api/chart/monthSales",
     //查询月订单量图表数据
     monthOrder: "api/chart/monthOrder",
+    //查询月订单状态量图表数据
+    monthState: "api/chart/monthState",
     //查询年销售图表数据
     yearSales: "api/chart/yearSales",
     //查询年订单量图表数据
     yearOrder: "api/chart/yearOrder",
-
+    //查询年订单状态量图表数据
+    yearState: "api/chart/yearState"
 }
