@@ -2,7 +2,7 @@
 <template>
   <div style="height: 100%;">
     <v-header />
-    <div class="main-div">
+    <div class="index-div">
       <div>
         <el-row>
           <el-col :span="3">
@@ -48,12 +48,8 @@ export default {
   },
 };
 </script>
-<style>
-body {
-  height: 100%;
-  background-color: #f3f5f5;
-}
-.main-div{
+<style scoped>
+.index-div{
   height: calc(100% - 70px);
   overflow-y: auto; /* 设置纵向滚动条 */
 }

@@ -2,7 +2,7 @@
 <template>
   <v-header />
   <div class="control-box main-div">
-    <div class="content content-div">
+    <div class="content content-div" style="background-image: url('/static/img/pm.jpg')">
       <router-view v-slot="{ Component }"></router-view>
     </div>
   </div>
@@ -23,13 +23,10 @@ export default {
 };
 </script>
 <style scoped>
-  .content {
-    background-image: url("/static/img/pm.jpg");
-  }
-  .main-div {
-    height: 100%;
-  }
-  .content-div {
-    overflow-y:hidden;
-  }
+.main-div {
+  height: 100%;
+}
+.content-div {
+  overflow-y:hidden;
+}
 </style>

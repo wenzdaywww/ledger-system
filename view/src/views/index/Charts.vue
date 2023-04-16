@@ -146,8 +146,9 @@ export default {
     }
     //需要子组件加载完后定时执行的代码
     setTimeout(() => {
+      //TODO 2023/4/16 09:24 从其他页面跳转到首页不能加载图表数据，待处理
       shopChange("");
-    }, 500)
+    }, 500);
     return {query,daySalesChartObj,dayOrderChartObj,dayStateChartObj,monthSalesChartObj,
       monthOrderChartObj,monthStateChartObj,yearSalesChartObj,yearOrderChartObj,yearStateChartObj,userShop,
       shopChange

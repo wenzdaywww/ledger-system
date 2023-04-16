@@ -1,10 +1,10 @@
 <template>
-  <div class="loginbody">
-    <div class="logindata">
-      <div class="logintext">
+  <div class="login-div">
+    <div class="login-main-div">
+      <div class="login-title-div">
         <h2>Welcome</h2>
       </div>
-      <div class="formdata">
+      <div >
         <el-form ref="loginForm" :model="form" :rules="rules">
           <el-form-item prop="id">
             <el-input v-model="form.id" placeholder="请输入账号" ></el-input>
@@ -14,10 +14,10 @@
           </el-form-item>
         </el-form>
       </div>
-      <div class="butt">
+      <div class="btn-div">
         <el-button type="primary" @click="saveToLogin" round>登录</el-button>
       </div>
-      <div class="butt">
+      <div class="btn-div">
         <span class="back_home" @click="backHome">返回首页</span>
       </div>
     </div>
@@ -88,59 +88,58 @@ export default {
 </script>
 
 <style scoped>
-  .loginbody {
-    width: 100%;
-    height: 100%;
-    min-width: 1000px;
-    background-image: url("../../static/img/pm.jpg");
-    background-size: 100% 100%;
-    background-position: center center;
-    overflow: auto;
-    background-repeat: no-repeat;
-    position: fixed;
-    line-height: 100%;
-    padding-top: 150px;
-  }
-  .logintext {
-    margin-bottom: 20px;
-    line-height: 50px;
-    text-align: center;
-    font-size: 30px;
-    font-weight: bolder;
-    color: white;
-    text-shadow: 2px 2px 4px #000000;
-  }
-  .logindata {
-    width: 400px;
-    height: 300px;
-    transform: translate(-50%);
-    margin-left: 50%;
-  }
-  .tool {
-    display: flex;
-    justify-content: space-between;
-    color: #606266;
-  }
-  .butt {
-    margin-top: 10px;
-    text-align: center;
-  }
-  .shou {
-    cursor: pointer;
-    color: #606266;
-  }
-  .back_home:hover{
-    color: #1778f1;
-    font-size: 14px;
-    text-decoration: underline;
-    padding-bottom: 1px;
-    cursor:default;
-  }
-  .back_home{
-    color: #383e44;
-    font-size: 14px;
-    text-decoration: underline;
-    padding-bottom: 1px;
-    cursor:default;
-  }
+.login-div {
+  width: 100%;
+  height: 100%;
+  min-width: 1000px;
+  background-size: 100% 100%;
+  background-position: center center;
+  overflow: auto;
+  background-repeat: no-repeat;
+  position: fixed;
+  line-height: 100%;
+  padding-top: 150px;
+}
+.login-title-div {
+  margin-bottom: 20px;
+  line-height: 50px;
+  text-align: center;
+  font-size: 30px;
+  font-weight: bolder;
+  color: white;
+  text-shadow: 2px 2px 4px #000000;
+}
+.login-main-div {
+  width: 400px;
+  height: 300px;
+  transform: translate(-50%);
+  margin-left: 50%;
+}
+.tool {
+  display: flex;
+  justify-content: space-between;
+  color: #606266;
+}
+.btn-div {
+  margin-top: 10px;
+  text-align: center;
+}
+.shou {
+  cursor: pointer;
+  color: #606266;
+}
+.back_home:hover{
+  color: #1778f1;
+  font-size: 14px;
+  text-decoration: underline;
+  padding-bottom: 1px;
+  cursor:default;
+}
+.back_home{
+  color: #383e44;
+  font-size: 14px;
+  text-decoration: underline;
+  padding-bottom: 1px;
+  cursor:default;
+}
 </style>
