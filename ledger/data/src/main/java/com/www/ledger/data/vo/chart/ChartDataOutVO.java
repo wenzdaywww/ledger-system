@@ -15,6 +15,10 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 public class ChartDataOutVO {
+    /** 起始日期 **/
+    private String startDate;
+    /** 截止日期 **/
+    private String endDate;
     /** 图表x坐标名称集合 **/
     private List<String> xaxis;
     /** 图表数据 **/

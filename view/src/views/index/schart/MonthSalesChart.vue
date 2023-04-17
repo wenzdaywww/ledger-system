@@ -55,7 +55,9 @@ export default {
       endDate: ""
     });
     //报表标题
-    const chartTitle = "{0}个月销售数据图";
+    const chartTitle = "{0} 至 {1} 销售额趋势图";
+    //报表标题
+    const noDataTitle = "查询不到 {0} 至 {1} 销售额数据";
     //月销售数据月份范围选择器
     const monthSalesRange = ref([]);
     //月销售数据
@@ -72,7 +74,7 @@ export default {
         data: [] //x坐标数据
       },
       legend: {
-        top: 25,
+        top: 21,
         data: [] //图例数据
       },
       yAxis:{},
@@ -94,9 +96,9 @@ export default {
       }
       axios.$http.get(request.monthSales,query).then(function (res) {
         let monthSalesChart = getInstanceByDom(document.getElementById("month-sales-bar"));
-        if (res.data){
+        if (res.data && res.data.xaxis){
           let option = {
-            title:{text:  chartTitle.replace("{0}",res.data.xaxis.length)},
+            title:{text: chartTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate)},
             legend:{data:[]},
             xAxis:{data:res.data.xaxis},
             series:[]
@@ -116,7 +118,7 @@ export default {
         }else {
           let oldOption = monthSalesChart.getOption();
           let option = {
-            title: {text:"查询不到月销售数据"},
+            title: {text:noDataTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate)},
             legend: {data:[]},
             xAxis: {data:[]},
             series: []
@@ -155,7 +157,7 @@ export default {
   line-height: 50px;
   margin: 10px 0;
   font-size: 22px;
-  color: red;
+  color: #66b1ff;
   text-align: center;
   width: 100%;
 }

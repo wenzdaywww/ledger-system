@@ -44,7 +44,7 @@ public class ChartController {
         List<ChartEnum> chartList = new ArrayList<>();
         chartList.add(ChartEnum.DAY_SALE);
         chartList.add(ChartEnum.DAY_COST);
-        chartList.add(ChartEnum.DAY_PROFIT);
+        chartList.add(ChartEnum.DAY_GROSS);
         Result<ChartDataDTO> resultDTO = chartService.findDayData(JwtAuthorizationTokenFilter.getUserId(),inVO.getShopId(),inVO.getStartDate(),inVO.getEndDate(),chartList);
         return new Result<>(this.buildChartDataOutVO(resultDTO.getData()));
     }
@@ -232,7 +232,7 @@ public class ChartController {
         ChartDataOutVO outVO = Optional.ofNullable(dataDTO).map(dto -> {
             ChartDataOutVO tempVO = new ChartDataOutVO();
             List<ChartDataOutVO.Series> dataVOList = new ArrayList<>();
-            tempVO.setXaxis(dto.getXaxis());
+            tempVO.setStartDate(dto.getStartDate()).setEndDate(dto.getEndDate()).setXaxis(dto.getXaxis());
             if(CollectionUtils.isNotEmpty(dto.getSeries())){
                 dto.getSeries().forEach(series -> {
                     ChartDataOutVO.Series datasetsVO = new ChartDataOutVO.Series();

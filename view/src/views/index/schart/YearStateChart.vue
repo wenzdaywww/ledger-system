@@ -66,7 +66,9 @@ export default {
       endDate: ""
     });
     //报表标题
-    const chartTitle = "{0} 至 {1} 年订单交易状态数量比例图";
+    const chartTitle = "{0} 至 {1} 订单交易状态数量比例图";
+    //报表标题
+    const noDataTitle = "查询不到 {0} 至 {1} 订单交易状态数量数据";
     //年订单交易状态数量数据
     const yearStateOption = ref({
       title: {
@@ -124,7 +126,7 @@ export default {
           yearStateChart.setOption(option);
         }else {
           let option = {
-            title: {text:"查询不到月订单状态数量"},
+            title: {text:noDataTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate)},
             graphic:[{
               style:{
                 text: "总数：0"
@@ -166,7 +168,7 @@ export default {
   line-height: 50px;
   margin: 10px 0;
   font-size: 22px;
-  color: red;
+  color: #66b1ff;
   text-align: center;
   width: 100%;
 }

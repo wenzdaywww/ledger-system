@@ -54,7 +54,9 @@ export default {
       endDate: ""
     });
     //报表标题
-    const chartTitle = "{0}天日订单量趋势图";
+    const chartTitle = "{0} 至 {1} 订单量趋势图";
+    //报表标题
+    const noDataTitle = "查询不到 {0} 至 {1} 订单量数据";
     //日订单数据日期范围选择器
     const dayOrderRange = ref([]);
     //日订单数据
@@ -71,7 +73,7 @@ export default {
         data: [] //x坐标数据
       },
       legend: {
-        top: 25,
+        top: 21,
         data: [] //图例数据
       },
       yAxis:{},
@@ -93,9 +95,9 @@ export default {
       }
       axios.$http.get(request.dayOrder,query).then(function (res) {
         let dayOrderChart = getInstanceByDom(document.getElementById("day-order-line"));
-        if (res.data){
+        if (res.data && res.data.xaxis){
           let option = {
-            title:{text: chartTitle.replace("{0}",res.data.xaxis.length)},
+            title:{text: chartTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate)},
             legend:{data:[]},
             xAxis:{data:res.data.xaxis},
             series:[]
@@ -115,7 +117,7 @@ export default {
         }else {
           let oldOption = dayOrderChart.getOption();
           let option = {
-            title: {text:"查询不到日订单量数据"},
+            title: {text:noDataTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate)},
             legend: {data:[]},
             xAxis: {data:[]},
             series: []
@@ -154,7 +156,7 @@ export default {
   line-height: 50px;
   margin: 10px 0;
   font-size: 22px;
-  color: red;
+  color: #66b1ff;
   text-align: center;
   width: 100%;
 }

@@ -4,6 +4,7 @@ import com.www.common.data.enums.DateFormatEnum;
 import com.www.common.data.response.Result;
 import com.www.common.utils.BigDecimalUtils;
 import com.www.common.utils.DateUtils;
+import com.www.ledger.data.constant.BizConstant;
 import com.www.ledger.data.dao.IDaySalesDAO;
 import com.www.ledger.data.dao.IMonthSalesDAO;
 import com.www.ledger.data.dao.IOrderInfoDAO;
@@ -17,7 +18,6 @@ import com.www.ledger.data.dto.YearDTO;
 import com.www.ledger.data.enums.ChartEnum;
 import com.www.ledger.service.chart.IChartService;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>@Description 图表数据业务处理接口实现类 </p>
@@ -44,37 +46,36 @@ public class ChartServiceImpl implements IChartService {
     @Autowired
     private IYearSalesDAO yearSalesDAO;
 
+
     /**
      * <p>@Description 查询日期范围内日销售图表数据，最大范围30天 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/4/1 00:28 </p>
      * @param userId 用户ID
      * @param shopId 店铺ID
-     * @param startDate 起始日期
-     * @param endDate 截止日期
+     * @param startDateStr 起始日期
+     * @param endDateStr 截止日期
      * @param chartList 图表数据枚举值集合
      * @return 日销售图表数据
      */
     @Override
-    public Result<ChartDataDTO> findDayData(String userId, Long shopId, String startDate, String endDate, List<ChartEnum> chartList) {
-        //日期有为空，则取现有订单中最大日期
-        if (StringUtils.isAnyBlank(startDate,endDate)){
-            //获取订单中最大的日期
-            Date maxDate = orderInfoDAO.getMaxOrderDate(userId,shopId);
-            if(maxDate == null){
-                return new Result<>();
-            }
-            endDate = StringUtils.isBlank(endDate) ? DateUtils.format(maxDate,DateFormatEnum.YYYYMMDD1) : endDate;
-            //截止日期为订单中最大的日期的前30天日期
-            startDate = StringUtils.isBlank(startDate) ? DateUtils.format(DateUtils.stepDay(maxDate,-29),DateFormatEnum.YYYYMMDD1) : startDate;
-        }
-        //查询日期区间的店铺汇总日销售额
-        List<DayDTO> dayList = daySalesDAO.findLastDaySales(userId,shopId,startDate,endDate);
-        if(CollectionUtils.isEmpty(dayList)){
+    public Result<ChartDataDTO> findDayData(String userId, Long shopId, String startDateStr, String endDateStr, List<ChartEnum> chartList) {
+        //获取查询的起始日期和截止日期
+        Map<String,Date> dateMap = this.getDateRange(userId,shopId, startDateStr, endDateStr,Calendar.DATE,30);
+        if(dateMap == null){
             return new Result<>();
         }
+        startDateStr = DateUtils.format(dateMap.get(BizConstant.MIN_DATE),DateFormatEnum.YYYYMMDD1);
+        endDateStr = DateUtils.format(dateMap.get(BizConstant.MAX_DATE),DateFormatEnum.YYYYMMDD1);
+        //查询日期区间的店铺汇总日销售额
+        List<DayDTO> dayList = daySalesDAO.findLastDaySales(userId,shopId,startDateStr,endDateStr);
         //组装图表数据
         ChartDataDTO chartDTO = new ChartDataDTO();
+        chartDTO.setStartDate(DateUtils.format(dateMap.get(BizConstant.MIN_DATE),DateFormatEnum.YYYYMD3))
+                .setEndDate(DateUtils.format(dateMap.get(BizConstant.MAX_DATE),DateFormatEnum.YYYYMD3));
+        if(CollectionUtils.isEmpty(dayList)){
+            return new Result<>(chartDTO);
+        }
         List<String> labels = new ArrayList<>();//图表x坐标名称集合
         List<ChartDataDTO.Series> datasetsList = new ArrayList<>();//图表数据
         //遍历需要组装的图表数据
@@ -118,67 +119,57 @@ public class ChartServiceImpl implements IChartService {
     }
 
     /**
-     * <p>@Description 查询日期范围内订单状态饼状图表数据，最大范围30天 </p>
+     * <p>@Description 查询日期范围内订单状态饼状图表数据，最大范围60天 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/4/1 00:28 </p>
      * @param userId    用户ID
      * @param shopId    店铺ID
-     * @param startDate 起始日期
-     * @param endDate   截止日期
+     * @param startDateStr 起始日期
+     * @param endDateStr   截止日期
      * @return 日订单状态饼状图表数据
      */
     @Override
-    public Result<ChartPieDTO> findDayOrderState(String userId, Long shopId, String startDate, String endDate) {
-        //日期有为空，则取现有订单中最大日期
-        if (StringUtils.isAnyBlank(startDate,endDate)){
-            //获取订单中最大的日期
-            Date maxDate = orderInfoDAO.getMaxOrderDate(userId,shopId);
-            if(maxDate == null){
-                return new Result<>();
-            }
-            endDate = StringUtils.isBlank(endDate) ? DateUtils.format(maxDate,DateFormatEnum.YYYYMMDD1) : endDate;
-            //截止日期为订单中最大的日期的前60天日期
-            startDate = StringUtils.isBlank(startDate) ? DateUtils.format(DateUtils.stepDay(maxDate,-59),DateFormatEnum.YYYYMMDD1) : startDate;
+    public Result<ChartPieDTO> findDayOrderState(String userId, Long shopId, String startDateStr, String endDateStr) {
+        //获取查询的起始日期和截止日期
+        Map<String,Date> dateMap = this.getDateRange(userId,shopId, startDateStr, endDateStr,Calendar.DATE,60);
+        if(dateMap == null){
+            return new Result<>();
         }
+        startDateStr = DateUtils.format(dateMap.get(BizConstant.MIN_DATE),DateFormatEnum.YYYYMMDD1);
+        endDateStr = DateUtils.format(dateMap.get(BizConstant.MAX_DATE),DateFormatEnum.YYYYMMDD1);
         //查询日期范围内订单状态饼状图表数据
-        Result<ChartPieDTO> dtoResult = this.findOrderState(userId, shopId, startDate, endDate);
-        if(dtoResult != null && dtoResult.getData() != null){
-            dtoResult.getData().setStartDate(startDate).setEndDate(endDate);
-        }
+        Result<ChartPieDTO> dtoResult = this.findOrderState(userId, shopId, startDateStr, endDateStr);
+        dtoResult.getData().setStartDate(DateUtils.format(dateMap.get(BizConstant.MIN_DATE),DateFormatEnum.YYYYMD3))
+                .setEndDate(DateUtils.format(dateMap.get(BizConstant.MAX_DATE),DateFormatEnum.YYYYMD3));
         return dtoResult;
     }
+
     /**
      * <p>@Description 查询月销售图表数据，最大范围12个月 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/4/1 00:28 </p>
      * @param userId    用户ID
      * @param shopId    店铺ID
-     * @param startDate 起始日期
-     * @param endDate 截止日期
+     * @param startDateStr 起始日期
+     * @param endDateStr 截止日期
      * @param chartList 图表数据枚举值集合
      * @return 月销售图表数据
      */
     @Override
-    public Result<ChartDataDTO> findMonthData(String userId, Long shopId, String startDate, String endDate,List<ChartEnum> chartList) {
-        //日期有为空，则取现有订单中最大日期
-        if (StringUtils.isAnyBlank(startDate,endDate)){
-            //获取订单中最大的日期
-            Date maxDate = orderInfoDAO.getMaxOrderDate(userId,shopId);
-            if(maxDate == null){
-                return new Result<>();
-            }
-            endDate = StringUtils.isBlank(endDate) ? DateUtils.monthFirstDay(maxDate,DateFormatEnum.YYYYMMDD1) : endDate;
-            //截止日期为订单中最大的日期的前12个月
-            startDate = StringUtils.isBlank(startDate) ?
-                    DateUtils.monthFirstDay(DateUtils.stepMonth(DateUtils.monthFirstDay(maxDate),-11),DateFormatEnum.YYYYMMDD1) : startDate;
-        }
+    public Result<ChartDataDTO> findMonthData(String userId, Long shopId, String startDateStr, String endDateStr, List<ChartEnum> chartList) {
+        //获取查询的起始日期和截止日期
+        Map<String,Date> dateMap = this.getDateRange(userId,shopId, startDateStr, endDateStr,Calendar.MONTH,12);
+        startDateStr = DateUtils.format(dateMap.get(BizConstant.MIN_DATE),DateFormatEnum.YYYYMMDD1);
+        endDateStr = DateUtils.format(dateMap.get(BizConstant.MAX_DATE),DateFormatEnum.YYYYMMDD1);
         //查询近一年的销售额
-        List<MonthDTO> monthList = monthSalesDAO.findLastMonthData(userId,shopId,startDate,endDate);
-        if(CollectionUtils.isEmpty(monthList)){
-            return new Result<>();
-        }
+        List<MonthDTO> monthList = monthSalesDAO.findLastMonthData(userId,shopId, startDateStr, endDateStr);
         //组装图表数据
         ChartDataDTO chartDTO = new ChartDataDTO();
+        chartDTO.setStartDate(DateUtils.format(dateMap.get(BizConstant.MIN_DATE),DateFormatEnum.YYYYM3))
+                .setEndDate(DateUtils.format(dateMap.get(BizConstant.MAX_DATE),DateFormatEnum.YYYYM3));
+        if(CollectionUtils.isEmpty(monthList)){
+            return new Result<>(chartDTO);
+        }
         List<String> labels = new ArrayList<>();//图表x坐标名称集合
         List<ChartDataDTO.Series> datasetsList = new ArrayList<>();//图表数据
         //遍历需要组装的图表数据
@@ -236,25 +227,14 @@ public class ChartServiceImpl implements IChartService {
      */
     @Override
     public Result<ChartPieDTO> findMonthOrderState(String userId, Long shopId, String startDateStr, String endDateStr) {
-        Date startDate = DateUtils.monthFirstDay(DateUtils.parse(startDateStr,DateFormatEnum.YYYYMMDD1));
-        Date endDate = DateUtils.monthLastDay(DateUtils.parse(endDateStr,DateFormatEnum.YYYYMMDD1));
-        //日期有为空，则取现有订单中最大日期
-        if (StringUtils.isAnyBlank(startDateStr,endDateStr)){
-            //获取订单中最大的日期
-            Date maxDate = orderInfoDAO.getMaxOrderDate(userId,shopId);
-            if(maxDate == null){
-                return new Result<>();
-            }
-            endDate = StringUtils.isBlank(endDateStr) ? DateUtils.monthLastDay(maxDate) : endDate;
-            //截止日期为订单中最大的日期的前12个月日期
-            startDate = StringUtils.isBlank(startDateStr) ? DateUtils.monthFirstDay(DateUtils.stepMonth(endDate,-11)) : startDate;
-        }
+        //获取查询的起始日期和截止日期
+        Map<String,Date> dateMap = this.getDateRange(userId,shopId, startDateStr, endDateStr,Calendar.MONTH,12);
+        startDateStr = DateUtils.format(dateMap.get(BizConstant.MIN_DATE),DateFormatEnum.YYYYMMDD1);
+        endDateStr = DateUtils.format(dateMap.get(BizConstant.MAX_DATE),DateFormatEnum.YYYYMMDD1);
         //查询日期范围内订单状态饼状图表数据
-        Result<ChartPieDTO> dtoResult = this.findOrderState(userId, shopId, DateUtils.format(startDate,DateFormatEnum.YYYYMMDD1),DateUtils.format(endDate,DateFormatEnum.YYYYMMDD1));
-        if(dtoResult != null && dtoResult.getData() != null){
-            dtoResult.getData().setStartDate(DateUtils.format(startDate,DateFormatEnum.YYYYMM1))
-                    .setEndDate(DateUtils.format(endDate,DateFormatEnum.YYYYMM1));
-        }
+        Result<ChartPieDTO> dtoResult = this.findOrderState(userId, shopId, startDateStr,endDateStr);
+        dtoResult.getData().setStartDate(DateUtils.format(dateMap.get(BizConstant.MIN_DATE),DateFormatEnum.YYYYM3))
+                .setEndDate(DateUtils.format(dateMap.get(BizConstant.MAX_DATE),DateFormatEnum.YYYYM3));
         return dtoResult;
     }
     /**
@@ -263,31 +243,26 @@ public class ChartServiceImpl implements IChartService {
      * <p>@Date 2023/4/1 00:28 </p>
      * @param userId 用户ID
      * @param shopId 店铺ID
-     * @param startDate 起始日期
-     * @param endDate 截止日期
+     * @param startDateStr 起始日期
+     * @param endDateStr 截止日期
      * @param chartList 图表数据枚举值集合
      * @return 年利润图表数据
      */
     @Override
-    public Result<ChartDataDTO> findYearData(String userId, Long shopId, String startDate, String endDate,List<ChartEnum> chartList) {
-        //日期有为空，则取现有订单中最大日期
-        if (StringUtils.isAnyBlank(startDate,endDate)){
-            //获取订单中最大的日期
-            Date maxDate = orderInfoDAO.getMaxOrderDate(userId,shopId);
-            if(maxDate == null){
-                return new Result<>();
-            }
-            endDate = StringUtils.isBlank(endDate) ? DateUtils.yearFirstDay(maxDate,DateFormatEnum.YYYYMMDD1) : endDate;
-            //截止日期为订单中最大的日期的前10年的日期
-            startDate = StringUtils.isBlank(startDate) ? DateUtils.yearFirstDay(DateUtils.stepMonth(maxDate,-9),DateFormatEnum.YYYYMMDD1) : startDate;
-        }
+    public Result<ChartDataDTO> findYearData(String userId, Long shopId, String startDateStr, String endDateStr, List<ChartEnum> chartList) {
+        //获取查询的起始日期和截止日期
+        Map<String,Date> dateMap = this.getDateRange(userId,shopId, startDateStr, endDateStr,Calendar.YEAR,10);
+        startDateStr = DateUtils.format(dateMap.get(BizConstant.MIN_DATE),DateFormatEnum.YYYYMMDD1);
+        endDateStr = DateUtils.format(dateMap.get(BizConstant.MAX_DATE),DateFormatEnum.YYYYMMDD1);
         //查询近一年的销售额
-        List<YearDTO> yearList = yearSalesDAO.findLastYearData(userId,shopId,startDate,endDate);
-        if(CollectionUtils.isEmpty(yearList)){
-            return new Result<>();
-        }
+        List<YearDTO> yearList = yearSalesDAO.findLastYearData(userId,shopId, startDateStr, endDateStr);
         //组装图表数据
         ChartDataDTO chartDTO = new ChartDataDTO();
+        chartDTO.setStartDate(DateUtils.format(dateMap.get(BizConstant.MIN_DATE),DateFormatEnum.YYYY2))
+                .setEndDate(DateUtils.format(dateMap.get(BizConstant.MAX_DATE),DateFormatEnum.YYYY2));
+        if(CollectionUtils.isEmpty(yearList)){
+            return new Result<>(chartDTO);
+        }
         List<String> labels = new ArrayList<>();//图表x坐标名称集合
         List<ChartDataDTO.Series> datasetsList = new ArrayList<>();//图表数据
         //遍历需要组装的图表数据
@@ -345,25 +320,14 @@ public class ChartServiceImpl implements IChartService {
      */
     @Override
     public Result<ChartPieDTO> findYearOrderState(String userId, Long shopId, String startDateStr, String endDateStr) {
-        Date startDate = DateUtils.yearFirstDay(DateUtils.parse(startDateStr,DateFormatEnum.YYYYMMDD1));
-        Date endDate = DateUtils.yearLastDay(DateUtils.parse(endDateStr,DateFormatEnum.YYYYMMDD1));
-        //日期有为空，则取现有订单中最大日期
-        if (StringUtils.isAnyBlank(startDateStr, endDateStr)){
-            //获取订单中最大的日期
-            Date maxDate = orderInfoDAO.getMaxOrderDate(userId,shopId);
-            if(maxDate == null){
-                return new Result<>();
-            }
-            endDate = StringUtils.isBlank(endDateStr) ? DateUtils.yearLastDay(maxDate) : endDate;
-            //截止日期为订单中最大的日期的前10年日期
-            startDate = StringUtils.isBlank(startDateStr) ? DateUtils.yearFirstDay(DateUtils.stepDate(endDate, Calendar.YEAR, -9)) : startDate;
-        }
+        //获取查询的起始日期和截止日期
+        Map<String,Date> dateMap = this.getDateRange(userId,shopId, startDateStr, endDateStr,Calendar.YEAR,10);
+        startDateStr = DateUtils.format(dateMap.get(BizConstant.MIN_DATE),DateFormatEnum.YYYYMMDD1);
+        endDateStr = DateUtils.format(dateMap.get(BizConstant.MAX_DATE),DateFormatEnum.YYYYMMDD1);
         //查询日期范围内订单状态饼状图表数据
-        Result<ChartPieDTO> dtoResult = this.findOrderState(userId, shopId, DateUtils.format(startDate,DateFormatEnum.YYYYMMDD1),DateUtils.format(endDate,DateFormatEnum.YYYYMMDD1));
-        if(dtoResult != null && dtoResult.getData() != null){
-            dtoResult.getData().setStartDate( DateUtils.format(startDate,DateFormatEnum.YYYY2))
-                    .setEndDate(DateUtils.format(endDate,DateFormatEnum.YYYY2));
-        }
+        Result<ChartPieDTO> dtoResult = this.findOrderState(userId, shopId, startDateStr,endDateStr);
+        dtoResult.getData().setStartDate(DateUtils.format(dateMap.get(BizConstant.MIN_DATE),DateFormatEnum.YYYY2))
+                .setEndDate(DateUtils.format(dateMap.get(BizConstant.MAX_DATE),DateFormatEnum.YYYY2));
         return dtoResult;
     }
     /**
@@ -378,10 +342,10 @@ public class ChartServiceImpl implements IChartService {
      */
     private Result<ChartPieDTO> findOrderState(String userId, Long shopId, String startDateStr, String endDateStr){
         List<OrderDTO> dtoList = orderInfoDAO.findDayOrderState(userId,shopId, startDateStr, endDateStr);
-        if(CollectionUtils.isEmpty(dtoList)){
-            return new Result<>();
-        }
         ChartPieDTO dto = new ChartPieDTO();
+        if(CollectionUtils.isEmpty(dtoList)){
+            return new Result<>(dto);
+        }
         Long total = 0L;
         List<ChartPieDTO.Series> seriesList = new ArrayList<>();
         for (int i=0;i < dtoList.size();i++){
@@ -394,5 +358,66 @@ public class ChartServiceImpl implements IChartService {
         BigDecimal totalNum = new BigDecimal(total);
         dto.setTotal(totalNum).setSeries(seriesList);
         return new Result<>(dto);
+    }
+    /**
+     * <p>@Description 获取查询的起始日期和截止日期 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/16 17:07 </p>
+     * @param userId 用户ID
+     * @param shopId 店铺ID
+     * @param startDateStr 起始日期
+     * @param endDateStr 截止日期
+     * @param stepType 日期最大相差类型，使用Calendar类中的常量，只能是YEAR，MONTH，DATE
+     * @param stepNum 日期最大相差数值，如几年、几个月、几天
+     * @return 起始日期和截止日期的Map，MIN_DATE起始日期，MAX_DATE截止日期
+     */
+    private Map<String,Date> getDateRange(String userId, Long shopId, String startDateStr, String endDateStr,int stepType,int stepNum){
+        //获取订单中最大的日期
+        Date maxDate = orderInfoDAO.getMaxOrderDate(userId,shopId);
+        if(maxDate == null){
+            return null;
+        }
+        stepNum = Calendar.YEAR == stepType ? stepNum : stepNum;//日期最大相差类型是年份，需要对日期最大相差数值乘12处理
+        Date startDate = DateUtils.parse(startDateStr,DateFormatEnum.YYYYMMDD1);
+        Date endDate = DateUtils.parse(endDateStr,DateFormatEnum.YYYYMMDD1);
+        if(Calendar.DATE == stepType){
+            endDate = endDate == null ? maxDate : endDate;
+            //起始日期为订单中最大的日期的前stepNum天日期
+            startDate = startDate == null ? DateUtils.stepDay(endDate,-1*(stepNum-1)) : startDate;
+        }else if(Calendar.MONTH == stepType){
+            endDate = endDate == null ? DateUtils.monthLastDay(maxDate) : DateUtils.monthLastDay(endDate);
+            //起始日期为订单中最大的日期的前stepNum个月日期
+            startDate = startDate == null ? DateUtils.stepMonth(DateUtils.monthFirstDay(endDate),-1*(stepNum-1)) : DateUtils.monthFirstDay(startDate);
+        }else if(Calendar.YEAR == stepType){
+            endDate = endDate == null ? DateUtils.yearLastDay(maxDate) : DateUtils.yearLastDay(endDate);
+            //起始日期为订单中最大的日期的前stepNum年日期
+            startDate = startDate == null ? DateUtils.stepDate(DateUtils.yearFirstDay(endDate),Calendar.YEAR,-1*(stepNum-1)) : DateUtils.yearFirstDay(startDate);
+        }
+        //起始日期大于截止日期，则调换下
+        if(startDate.compareTo(endDate) == 1){
+            Date tempDate = startDate;
+            startDate = endDate;
+            endDate = tempDate;
+        }
+        if(Calendar.DATE == stepType){
+            //起始日期和截止日期相差超过stepNum天，则起始日期设置为截止日期的前stepNum天日期
+            if(DateUtils.getAbsDays(startDate,endDate) > stepNum){
+                startDate = DateUtils.stepDay(endDate,-1*(stepNum-1));
+            }
+        }else if(Calendar.MONTH == stepType){
+            //起始日期和截止日期相差超过stepNum个月，则起始日期设置为截止日期的前stepNum个月1日日期
+            if(DateUtils.getAbsMonths(startDate,endDate) > stepNum){
+                startDate = DateUtils.stepMonth(endDate,-1*(stepNum-1));
+            }
+        }else if(Calendar.YEAR == stepType){
+            //起始日期和截止日期相差超过stepNum年，则起始日期设置为截止日期的前stepNum年1月1日日期
+            if(DateUtils.getAbsMonths(startDate,endDate) > stepNum*12){
+                startDate = DateUtils.stepDate(DateUtils.yearFirstDay(endDate),Calendar.YEAR,-1*(stepNum-1));
+            }
+        }
+        Map<String,Date> dateMap = new HashMap<>();
+        dateMap.put(BizConstant.MIN_DATE,startDate);
+        dateMap.put(BizConstant.MAX_DATE,endDate);
+        return dateMap;
     }
 }
