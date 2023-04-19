@@ -36,6 +36,16 @@ public interface IYearSalesDAO extends IService<YearSalesEntity> {
      */
     List<YearDTO> findLastYearData(String userId, Long shopId, String startDate, String endDate);
     /**
+     * <p>@Description 查询年销售数据排行榜 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/28 21:46 </p>
+     * @param userId 用户ID
+     * @param shopId 店铺ID
+     * @param descField 排序的字段
+     * @return 年销售数据排行榜
+     */
+    List<YearDTO> findYearRank(String userId, Long shopId, String descField);
+    /**
      * <p>@Description 根据所有店铺的年销售额汇总每年所有店铺销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/27 20:12 </p>

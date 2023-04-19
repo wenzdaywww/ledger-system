@@ -69,6 +69,8 @@ export default {
     const chartTitle = "{0} 至 {1} 订单交易状态数量比例图";
     //报表标题
     const noDataTitle = "查询不到 {0} 至 {1} 订单交易状态数量数据";
+    //报表标题
+    const noOrderTitle = "没有年订单交易状态数量数据";
     //年订单交易状态数量数据
     const yearStateOption = ref({
       title: {
@@ -109,35 +111,20 @@ export default {
     const findYearState = () => {
       axios.$http.get(request.yearState,query).then(function (res) {
         let yearStateChart = getInstanceByDom(document.getElementById("year-state-pie"));
+        let option = {
+          title: {text: ""},
+          graphic:[{ style:{ text: "总数：0" } }],
+          series:[{ data: [] }]
+        };
         if (res.data && res.data.series){
-          let option = {
-            title: {
-              text: chartTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate)
-            },
-            graphic:[{
-              style:{
-                text: "总数：" + res.data.total
-              }
-            }],
-            series:[{
-              data: res.data.series
-            }]
-          };
-          yearStateChart.setOption(option);
+          option.title.text = chartTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate);
+          option.graphic[0].style.text = "总数：" + res.data.total;
+          option.series[0].data = res.data.series;
         }else {
-          let option = {
-            title: {text:noDataTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate)},
-            graphic:[{
-              style:{
-                text: "总数：0"
-              }
-            }],
-            series:[{
-              data: []
-            }]
-          };
-          yearStateChart.setOption(option);
+          option.title.text = res.data && res.data.startDate && res.data.endDate ?
+              chartTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate) : noOrderTitle;
         }
+        yearStateChart.setOption(option);
       }).catch(err => {});
     }
     //重置年订单交易状态数量数据查询日期

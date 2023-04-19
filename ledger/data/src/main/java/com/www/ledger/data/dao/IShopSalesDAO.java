@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.www.ledger.data.dto.BookDTO;
 import com.www.ledger.data.dto.ShopDTO;
 import com.www.ledger.data.entity.ShopSalesEntity;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -32,6 +31,15 @@ public interface IShopSalesDAO extends IService<ShopSalesEntity> {
      * @return 店销售数据
      */
     List<ShopSalesEntity> findShopSalesList(String userId);
+    /**
+     * <p>@Description 查询店销销售数据排行榜 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/28 21:46 </p>
+     * @param userId 用户ID
+     * @param descField 排序的字段
+     * @return 店销销售数据排行榜
+     */
+    List<ShopDTO> findShopRank(String userId, String descField);
     /**
      * <p>@Description 统计所有店铺销售额 </p>
      * <p>@Author www </p>

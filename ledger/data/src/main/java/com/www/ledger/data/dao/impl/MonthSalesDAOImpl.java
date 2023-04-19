@@ -97,6 +97,19 @@ public class MonthSalesDAOImpl extends ServiceImpl<MonthSalesMapper, MonthSalesE
         return monthSalesMapper.findLastMonthData(userId,shopId,startDate,endDate);
     }
     /**
+     * <p>@Description 查询月销售数据排行榜 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/28 21:46 </p>
+     * @param userId    用户ID
+     * @param shopId    店铺ID
+     * @param descField 排序的字段
+     * @return 月销售数据排行榜
+     */
+    @Override
+    public List<MonthDTO> findMonthRank(String userId, Long shopId, String descField) {
+        return monthSalesMapper.findMonthRank(userId, shopId, descField);
+    }
+    /**
      * <p>@Description 统计店铺的年销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 21:40 </p>

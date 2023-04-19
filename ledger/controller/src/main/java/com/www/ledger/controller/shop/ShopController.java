@@ -44,9 +44,8 @@ public class ShopController {
     @PostMapping("new")
     public Result<String> createShop(@Validated ShopNewInVO newInVO){
         ShopDTO shopDTO = new ShopDTO();
-        shopDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
-                .setShopName(newInVO.getShopNm())
-                .setShopType(newInVO.getShopTp());
+        shopDTO.setShopName(newInVO.getShopNm()).setShopType(newInVO.getShopTp())
+               .setUserId(JwtAuthorizationTokenFilter.getUserId());
         return shopService.createShop(shopDTO);
     }
     /**
@@ -69,10 +68,10 @@ public class ShopController {
     @PostMapping("info")
     public Result<String> updateShop(@Validated ShopInfoInVO infoInVO){
         ShopDTO shopDTO = new ShopDTO();
-        shopDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
-                .setShopId(infoInVO.getShopId())
-                .setShopName(infoInVO.getShopNm())
-                .setShopType(infoInVO.getShopTp());
+        shopDTO.setShopId(infoInVO.getShopId())
+               .setShopName(infoInVO.getShopNm())
+               .setShopType(infoInVO.getShopTp())
+               .setUserId(JwtAuthorizationTokenFilter.getUserId());
         return shopService.updateShop(shopDTO);
     }
     /**
@@ -97,7 +96,7 @@ public class ShopController {
     public Result<List<ShopListOutVO>> findShopList(@Validated ShopListInVO shopInVO){
         ShopDTO shopDTO = new ShopDTO();
         shopDTO.setShopId(shopInVO.getShopId()).setShopName(shopInVO.getShopNm())
-           .setUserId(JwtAuthorizationTokenFilter.getUserId()).setShopType(shopInVO.getShopTp());
+           .setShopType(shopInVO.getShopTp()).setUserId(JwtAuthorizationTokenFilter.getUserId());
         Result<List<ShopDTO>> listResult = shopService.findShopList(shopDTO,shopInVO.getPageNum(),shopInVO.getPageSize());
         List<ShopListOutVO> shopList = Optional.ofNullable(listResult.getData()).filter(e -> CollectionUtils.isNotEmpty(listResult.getData()))
                 .map(list -> {

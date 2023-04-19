@@ -1,76 +1,66 @@
 <template>
   <div>
-    <div class="container">
+    <div class="chart-div">
+      <!-- 日销售数据-->
       <el-row>
-        <div style="margin-left: 20px;">
-          店铺：
-          <el-select v-model="query.shopId" class="handle-select mr10" style="width: 250px;" clearable="true" @change="shopChange">
-            <el-option v-for="item in userShop" :key="item.value" :label="item.name" :value="item.value"></el-option>
-          </el-select>
-        </div>
-      </el-row>
-      <!--  日销售数据-->
-      <el-row>
-        <div class="schart-box">
-            <day-sales-chart ref="daySalesChartObj"></day-sales-chart>
-        </div>
+        <el-col :span="24">
+          <day-sales-chart ref="daySalesChartObj"></day-sales-chart>
+        </el-col>
       </el-row>
       <!-- 日订单数据-->
       <el-row>
-        <div class="schart-box">
-            <day-order-chart ref="dayOrderChartObj"></day-order-chart>
-          <chat-line ></chat-line>
-        </div>
+        <el-col :span="24">
+          <day-order-chart ref="dayOrderChartObj"></day-order-chart>
+        </el-col>
       </el-row>
       <!-- 日订单交易状态数量数据-->
       <el-row>
-        <div class="schart-box">
+        <el-col :span="24">
           <day-state-chart ref="dayStateChartObj"></day-state-chart>
-        </div>
+        </el-col>
       </el-row>
       <!-- 月销售数据-->
       <el-row>
-        <div class="schart-box">
+        <el-col :span="24">
           <month-sales-chart ref="monthSalesChartObj"></month-sales-chart>
-        </div>
+        </el-col>
       </el-row>
       <!-- 月订单数据-->
       <el-row>
-        <div class="schart-box">
+        <el-col :span="24">
           <month-order-chart ref="monthOrderChartObj"></month-order-chart>
-        </div>
+        </el-col>
       </el-row>
       <!-- 月订单交易状态数量数据-->
       <el-row>
-        <div class="schart-box">
+        <el-col :span="24">
           <month-state-chart ref="monthStateChartObj"></month-state-chart>
-        </div>
+        </el-col>
       </el-row>
       <!-- 年销售数据-->
       <el-row>
-        <div class="schart-box">
+        <el-col :span="24">
           <year-sales-chart ref="yearSalesChartObj"></year-sales-chart>
-        </div>
+        </el-col>
       </el-row>
       <!-- 年订单数据-->
       <el-row>
-        <div class="schart-box">
+        <el-col :span="24">
           <year-order-chart ref="yearOrderChartObj"></year-order-chart>
-        </div>
+        </el-col>
       </el-row>
       <!-- 年订单交易状态数量数据-->
       <el-row>
-        <div class="schart-box">
+        <el-col :span="24">
           <year-state-chart ref="yearStateChartObj"></year-state-chart>
-        </div>
+        </el-col>
       </el-row>
     </div>
   </div>
 </template>
 
 <script>
-import {getCurrentInstance, reactive, ref} from "vue";
-import request from "../../utils/request";
+import {ref} from "vue";
 import daySalesChart from "./schart/DaySalesChart.vue"
 import dayOrderChart from "./schart/DayOrderChart.vue"
 import dayStateChart from "./schart/DayStateChart.vue"
@@ -89,14 +79,6 @@ export default {
     yearSalesChart,yearOrderChart,yearStateChart
   },
   setup() {
-    // 接口请求
-    const axios = getCurrentInstance().appContext.config.globalProperties;
-    // 查询条件
-    const query = reactive({
-      shopId: ""
-    });
-    // 用户的所有店铺信息
-    const userShop = ref([]);
     //日销售数据图表对象
     const daySalesChartObj = ref();
     //日订单数据图表对象
@@ -115,15 +97,7 @@ export default {
     const yearOrderChartObj = ref();
     //年订单交易状态数量数据图表对象
     const yearStateChartObj = ref();
-    // 查询用户的所有店铺信息
-    const getUserShopArr = () => {
-      axios.$http.get(request.userShop, null).then(function (res) {
-        userShop.value = res.data;
-        userShop.value.push({value: "",name: "所有店铺汇总数据"});
-      });
-    };
-    getUserShopArr();
-    // 查询日利润数据
+    // 店铺变动重新查询
     const shopChange = (item) => {
       //查询日销售数据
       daySalesChartObj.value.changeShopId(item);
@@ -144,13 +118,8 @@ export default {
       //查询年订单交易状态数量数据
       yearStateChartObj.value.changeShopId(item);
     }
-    //需要子组件加载完后定时执行的代码
-    setTimeout(() => {
-      //TODO 2023/4/16 09:24 从其他页面跳转到首页不能加载图表数据，待处理
-      shopChange("");
-    }, 500);
-    return {query,daySalesChartObj,dayOrderChartObj,dayStateChartObj,monthSalesChartObj,
-      monthOrderChartObj,monthStateChartObj,yearSalesChartObj,yearOrderChartObj,yearStateChartObj,userShop,
+    return {daySalesChartObj,dayOrderChartObj,dayStateChartObj,monthSalesChartObj,
+      monthOrderChartObj,monthStateChartObj,yearSalesChartObj,yearOrderChartObj,yearStateChartObj,
       shopChange
     };
   },
@@ -158,8 +127,10 @@ export default {
 </script>
 
 <style scoped>
-.schart-box {
-  display: inline-block;
-  width: 100%;
+.chart-div{
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
 </style>

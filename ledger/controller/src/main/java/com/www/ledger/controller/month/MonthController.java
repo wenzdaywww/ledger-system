@@ -52,8 +52,9 @@ public class MonthController {
     @GetMapping("list")
     public Result<List<MonthListOutVO>> findMonthList(@Validated MonthListInVO monthInVO){
         MonthDTO monthDTO = new MonthDTO();
-        monthDTO.setUserId(JwtAuthorizationTokenFilter.getUserId()).setAllShop(monthInVO.getAll())
-                .setMonthDateStr(monthInVO.getMonth()).setShopId(monthInVO.getShopId());
+        monthDTO.setAllShop(monthInVO.getAll())
+                .setMonthDateStr(monthInVO.getMonth()).setShopId(monthInVO.getShopId())
+                .setUserId(JwtAuthorizationTokenFilter.getUserId());
         monthDTO.setMonthDateStr(StringUtils.isNotBlank(monthDTO.getMonthDateStr()) ? monthDTO.getMonthDateStr() + "-01" : null);//月份设置每月第一天
         Result<List<MonthDTO>> listResult = monthService.findMonthList(monthDTO,monthInVO.getPageNum(),monthInVO.getPageSize());
         List<MonthListOutVO> monthList = Optional.ofNullable(listResult.getData()).filter(e -> CollectionUtils.isNotEmpty(listResult.getData()))

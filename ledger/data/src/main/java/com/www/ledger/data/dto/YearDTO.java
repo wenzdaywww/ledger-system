@@ -15,7 +15,7 @@ import java.util.Date;
  */
 @Data
 @Accessors(chain = true)//开启链式编程
-public class YearDTO implements Serializable {
+public class YearDTO extends BaseDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     /** 年账单主键ID **/
     private Long ysId;
@@ -25,36 +25,8 @@ public class YearDTO implements Serializable {
     private Boolean allShop;
     /** 店铺名称 **/
     private String shopName;
-    /** 用户名 **/
-    private String userId;
     /** 账单年份 **/
     private Date year;
     /** 账单年份 **/
     private String yearStr;
-    /** 年净利润 **/
-    private BigDecimal retainedProfits;
-    /** 年净利率 **/
-    private BigDecimal retainedProfitsRate;
-    /** 年毛利润 **/
-    private BigDecimal grossProfit;
-    /** 年毛利率 **/
-    private BigDecimal grossProfitRate;
-    /** 年订单数 **/
-    private Long totalOrder;
-    /** 年成交单数 **/
-    private Long succeedOrder;
-    /** 年失败单数 **/
-    private Long failedOrder;
-    /** 年销售额 **/
-    private BigDecimal saleAmount;
-    /** 年成本费 **/
-    private BigDecimal costAmount;
-    /** 年推广费 **/
-    private BigDecimal advertAmount;
-    /** 年服务费 **/
-    private BigDecimal serviceAmount;
-    /** 年刷单费 **/
-    private BigDecimal virtualAmount;
-    /** 年支出费 **/
-    private BigDecimal totalCost;
 }

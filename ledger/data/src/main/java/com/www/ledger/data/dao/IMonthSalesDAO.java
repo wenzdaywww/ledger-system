@@ -61,6 +61,16 @@ public interface IMonthSalesDAO extends IService<MonthSalesEntity> {
      */
     List<MonthDTO> findLastMonthData(String userId, Long shopId, String startDate, String endDate);
     /**
+     * <p>@Description 查询月销售数据排行榜 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/28 21:46 </p>
+     * @param userId 用户ID
+     * @param shopId 店铺ID
+     * @param descField 排序的字段
+     * @return 月销售数据排行榜
+     */
+    List<MonthDTO> findMonthRank(String userId, Long shopId, String descField);
+    /**
      * <p>@Description 统计店铺的年销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 21:40 </p>

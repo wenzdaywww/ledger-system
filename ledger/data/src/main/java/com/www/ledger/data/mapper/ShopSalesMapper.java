@@ -29,6 +29,15 @@ public interface ShopSalesMapper extends BaseMapper<ShopSalesEntity> {
     @RowLimitInterceptor
     List<ShopDTO> exportShopSalesData(@Param("userId") String userId);
     /**
+     * <p>@Description 查询店销销售数据排行榜 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/2 21:58 </p>
+     * @param userId 用户ID
+     * @param descField 排序的字段
+     * @return 店销销售数据排行榜
+     */
+    List<ShopDTO> findShopRank(@Param("userId") String userId,@Param("descField") String descField);
+    /**
      * <p>@Description 查询用户的店销售数据 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/20 20:56 </p>

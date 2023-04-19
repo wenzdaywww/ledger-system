@@ -50,8 +50,9 @@ public class DayController {
     @GetMapping("list")
     public Result<List<DayListOutVO>> findDayList(@Validated DayListInVO dayInVO){
         DayDTO dayDTO = new DayDTO();
-        dayDTO.setUserId(JwtAuthorizationTokenFilter.getUserId()).setShopId(dayInVO.getShopId())
-                .setStartDateStr(dayInVO.getStrDat()).setEndDateStr(dayInVO.getEndDat()).setAllShop(dayInVO.getAll());
+        dayDTO.setShopId(dayInVO.getShopId())
+              .setStartDateStr(dayInVO.getStrDat()).setEndDateStr(dayInVO.getEndDat()).setAllShop(dayInVO.getAll());
+        dayDTO.setUserId(JwtAuthorizationTokenFilter.getUserId());
         Result<List<DayDTO>> listResult = dayService.findDayList(dayDTO,dayInVO.getPageNum(),dayInVO.getPageSize());
         List<DayListOutVO> dayList = Optional.ofNullable(listResult.getData()).filter(e -> CollectionUtils.isNotEmpty(listResult.getData()))
                 .map(list -> {

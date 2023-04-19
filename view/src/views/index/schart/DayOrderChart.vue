@@ -57,6 +57,8 @@ export default {
     const chartTitle = "{0} 至 {1} 订单量趋势图";
     //报表标题
     const noDataTitle = "查询不到 {0} 至 {1} 订单量数据";
+    //报表标题
+    const noOrderTitle = "没有日订单量数据";
     //日订单数据日期范围选择器
     const dayOrderRange = ref([]);
     //日订单数据
@@ -95,13 +97,15 @@ export default {
       }
       axios.$http.get(request.dayOrder,query).then(function (res) {
         let dayOrderChart = getInstanceByDom(document.getElementById("day-order-line"));
+        let option = {
+          title:{text: ""},
+          legend:{data:[]},
+          xAxis:{data:[]},
+          series:[]
+        };
         if (res.data && res.data.xaxis){
-          let option = {
-            title:{text: chartTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate)},
-            legend:{data:[]},
-            xAxis:{data:res.data.xaxis},
-            series:[]
-          };
+          option.title.text = chartTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate);
+          option.xAxis.data = res.data.xaxis;
           for (let i = 0; i < res.data.series.length; ++i) {
             let  item = res.data.series[i];
             item.type = "line";
@@ -113,20 +117,15 @@ export default {
             option.legend.data.push(item.name);
             option.series.push(item);
           }
-          dayOrderChart.setOption(option);
         }else {
+          option.title.text = res.data && res.data.startDate && res.data.endDate ?
+              noDataTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate) : noOrderTitle;
           let oldOption = dayOrderChart.getOption();
-          let option = {
-            title: {text:noDataTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate)},
-            legend: {data:[]},
-            xAxis: {data:[]},
-            series: []
-          };
           for (let i = 0; i < oldOption.series.length; ++i) {
             option.series.push({name:"",data:[]});
           }
-          dayOrderChart.setOption(option);
         }
+        dayOrderChart.setOption(option);
       }).catch(err => {});
     }
     //重置日订单数据查询日期

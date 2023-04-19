@@ -54,10 +54,40 @@
         </choose>
         ORDER BY Y.YEAR ASC
     </select>
+    <!--    查询年销售数据排行榜-->
+    <select id="findYearRank" resultType="com.www.ledger.data.dto.YearDTO">
+        SELECT  M.YEAR year,
+                DATE_FORMAT(M.YEAR,'%Y年') label,
+                (SELECT P.SHOP_NAME FROM USER_SHOP P WHERE P.SHOP_ID = M.SHOP_ID) shopName,
+                M.RETAINED_PROFITS retainedProfits,
+                M.GROSS_PROFIT grossProfit,
+                M.TOTAL_ORDER totalOrder,
+                M.SUCCEED_ORDER succeedOrder,
+                M.FAILED_ORDER failedOrder,
+                M.SALE_AMOUNT saleAmount,
+                M.COST_AMOUNT costAmount,
+                M.ADVERT_AMOUNT advertAmount,
+                M.SERVICE_AMOUNT serviceAmount,
+                M.VIRTUAL_AMOUNT virtualAmount,
+                M.TOTAL_COST totalCost
+        FROM year_sales M
+        WHERE M.USER_ID = #{userId}
+        <choose>
+            <when test="shopId != null">
+                AND EXISTS(SELECT 1 FROM USER_SHOP S WHERE S.USER_ID = #{userId}
+                AND S.SHOP_ID = M.SHOP_ID AND S.SHOP_STATE = '1' AND S.SHOP_ID = #{shopId})
+            </when>
+            <otherwise>
+                AND M.SHOP_ID IS NULL
+            </otherwise>
+        </choose>
+        ORDER BY ${descField} DESC
+        LIMIT 5
+    </select>
     <!--    查询年利润图表数据，最大范围10年-->
     <select id="findLastYearData" resultType="com.www.ledger.data.dto.YearDTO">
         SELECT  M.YEAR year,
-                DATE_FORMAT(M.YEAR,'%Y年') yearStr,
+                DATE_FORMAT(M.YEAR,'%Y年') label,
                 M.RETAINED_PROFITS retainedProfits,
                 M.GROSS_PROFIT grossProfit,
                 M.TOTAL_ORDER totalOrder,

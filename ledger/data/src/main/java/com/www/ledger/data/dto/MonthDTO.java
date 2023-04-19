@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -15,7 +14,7 @@ import java.util.Date;
  */
 @Data
 @Accessors(chain = true)//开启链式编程
-public class MonthDTO implements Serializable {
+public class MonthDTO extends BaseDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     /** 月账单主键ID **/
     private Long msId;
@@ -25,40 +24,8 @@ public class MonthDTO implements Serializable {
     private Boolean allShop;
     /** 店铺名称 **/
     private String shopName;
-    /** 用户名 **/
-    private String userId;
     /** 账单月份 **/
     private Date monthDate;
     /** 账单月份 **/
     private String monthDateStr;
-    /** 月净利润 **/
-    private BigDecimal retainedProfits;
-    /** 月净利率 **/
-    private BigDecimal retainedProfitsRate;
-    /** 月毛利润 **/
-    private BigDecimal grossProfit;
-    /** 月毛利率 **/
-    private BigDecimal grossProfitRate;
-    /** 月订单数 **/
-    private Long totalOrder;
-    /** 月成交单数 **/
-    private Long succeedOrder;
-    /** 月失败单数 **/
-    private Long failedOrder;
-    /** 月销售额 **/
-    private BigDecimal saleAmount;
-    /** 月成本费 **/
-    private BigDecimal costAmount;
-    /** 月推广费 **/
-    private BigDecimal advertAmount;
-    /** 月服务费 **/
-    private BigDecimal serviceAmount;
-    /** 月刷单费 **/
-    private BigDecimal virtualAmount;
-    /** 月支出费 **/
-    private BigDecimal totalCost;
-    /** 更新时间 **/
-    private Date updateTime;
-    /** 创建时间 **/
-    private Date createTime;
 }

@@ -22,6 +22,30 @@
         <result column="UPDATE_TIME" property="updateTime" />
         <result column="CREATE_TIME" property="createTime" />
     </resultMap>
+    <!--  查询店销销售数据排行榜-->
+    <select id="findShopRank" resultType="com.www.ledger.data.dto.ShopDTO">
+        SELECT  S.SHOP_ID shopId,
+                S.SHOP_NAME label,
+                S.SHOP_TYPE shopType,
+                A.RETAINED_PROFITS retainedProfits,
+                A.RETAINED_PROFITS_RATE retainedProfitsRate,
+                A.GROSS_PROFIT grossProfit,
+                A.GROSS_PROFIT_RATE grossProfitRate,
+                A.TOTAL_ORDER totalOrder,
+                A.SUCCEED_ORDER succeedOrder,
+                A.FAILED_ORDER failedOrder,
+                A.SALE_AMOUNT saleAmount,
+                A.COST_AMOUNT costAmount,
+                A.ADVERT_AMOUNT advertAmount,
+                A.SERVICE_AMOUNT serviceAmount,
+                A.VIRTUAL_AMOUNT virtualAmount,
+                A.TOTAL_COST totalCost
+        FROM USER_SHOP S
+             LEFT JOIN SHOP_SALES A ON A.SHOP_ID = S.SHOP_ID AND A.USER_ID = #{userId}
+        WHERE S.USER_ID = #{userId} AND S.SHOP_STATE = '1'
+        ORDER BY ${descField} DESC
+        LIMIT 5
+    </select>
     <!--  查询导出店铺销售额数据-->
     <select id="exportShopSalesData" resultType="com.www.ledger.data.dto.ShopDTO">
         SELECT  S.SHOP_ID shopId,

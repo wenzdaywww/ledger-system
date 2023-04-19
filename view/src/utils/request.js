@@ -100,16 +100,32 @@ export default {
     dayOrder: "api/chart/dayOrder",
     //查询日订单状态量图表数据
     dayState: "api/chart/dayState",
+    //查询日销售额排行榜数据
+    daySalesRank: "api/chart/daySalesRank",
+    //查询日订单量排行榜数据
+    dayOrderRank: "api/chart/dayOrderRank",
     //查询月销售图表数据
     monthSales: "api/chart/monthSales",
     //查询月订单量图表数据
     monthOrder: "api/chart/monthOrder",
     //查询月订单状态量图表数据
     monthState: "api/chart/monthState",
+    //查询月销售额排行榜数据
+    monthSalesRank: "api/chart/monthSalesRank",
+    //查询月订单量排行榜数据
+    monthOrderRank: "api/chart/monthOrderRank",
     //查询年销售图表数据
     yearSales: "api/chart/yearSales",
     //查询年订单量图表数据
     yearOrder: "api/chart/yearOrder",
     //查询年订单状态量图表数据
-    yearState: "api/chart/yearState"
+    yearState: "api/chart/yearState",
+    //查询年销售额排行榜数据
+    yearSalesRank: "api/chart/yearSalesRank",
+    //查询年订单量排行榜数据
+    yearOrderRank: "api/chart/yearOrderRank",
+    //查询店铺销售额排行榜数据
+    shopSalesRank: "api/chart/shopSalesRank",
+    //查询店铺订单量排行榜数据
+    shopOrderRank: "api/chart/shopOrderRank"
 }

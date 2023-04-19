@@ -51,10 +51,38 @@
         </choose>
         ORDER BY D.DAY_DATE ASC
     </select>
+    <!--    查询日销售数据排行榜-->
+    <select id="findDayRank" resultType="com.www.ledger.data.dto.DayDTO">
+        SELECT  A.DAY_DATE dayDate,
+                DATE_FORMAT(A.DAY_DATE,'%Y.%c.%e') label,
+                (SELECT P.SHOP_NAME FROM USER_SHOP P WHERE P.SHOP_ID = A.SHOP_ID) shopName,
+                A.RETAINED_PROFITS retainedProfits,
+                A.GROSS_PROFIT grossProfit,
+                A.TOTAL_ORDER totalOrder,
+                A.SUCCEED_ORDER succeedOrder,
+                A.FAILED_ORDER failedOrder,
+                A.SALE_AMOUNT saleAmount,
+                A.COST_AMOUNT costAmount,
+                A.VIRTUAL_AMOUNT virtualAmount,
+                A.TOTAL_COST totalCost
+        FROM DAY_SALES A
+        WHERE A.USER_ID = #{userId}
+        <choose>
+            <when test="shopId != null">
+                AND EXISTS(SELECT 1 FROM USER_SHOP S WHERE S.USER_ID = #{userId}
+                AND S.SHOP_ID = A.SHOP_ID AND S.SHOP_STATE = '1' AND S.SHOP_ID = #{shopId})
+            </when>
+            <otherwise>
+                AND A.SHOP_ID IS NULL
+            </otherwise>
+        </choose>
+        ORDER BY ${descField} DESC
+        LIMIT 10
+    </select>
     <!--    查询日期区间的日销售额-->
     <select id="findLastDaySales" resultType="com.www.ledger.data.dto.DayDTO">
         SELECT  A.DAY_DATE dayDate,
-                DATE_FORMAT(A.DAY_DATE,'%Y.%c.%e') dayDateStr,
+                DATE_FORMAT(A.DAY_DATE,'%Y.%c.%e') label,
                 A.RETAINED_PROFITS retainedProfits,
                 A.GROSS_PROFIT grossProfit,
                 A.TOTAL_ORDER totalOrder,

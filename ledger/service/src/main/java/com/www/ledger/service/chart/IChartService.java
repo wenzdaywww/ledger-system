@@ -3,6 +3,7 @@ package com.www.ledger.service.chart;
 import com.www.common.data.response.Result;
 import com.www.ledger.data.dto.ChartDataDTO;
 import com.www.ledger.data.dto.ChartPieDTO;
+import com.www.ledger.data.dto.ChartRankDTO;
 import com.www.ledger.data.enums.ChartEnum;
 
 import java.util.List;
@@ -26,6 +27,17 @@ public interface IChartService {
      * @return 日销售图表数据
      */
     Result<ChartDataDTO> findDayData(String userId, Long shopId, String startDateStr, String endDateStr, List<ChartEnum> chartList);
+    /**
+     * <p>@Description 查询日销售数据排行榜 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/1 00:28 </p>
+     * @param userId 用户ID
+     * @param shopId 店铺ID
+     * @param descField 排序的字段
+     * @param chartList 图表数据枚举值集合
+     * @return 日销售数据排行榜
+     */
+    Result<ChartRankDTO> findDayRank(String userId, Long shopId, String descField, List<ChartEnum> chartList);
     /**
      * <p>@Description 查询日期范围内订单状态饼状图表数据，最大范围60天 </p>
      * <p>@Author www </p>
@@ -72,6 +84,17 @@ public interface IChartService {
      */
     Result<ChartDataDTO> findMonthData(String userId, Long shopId,String startDateStr, String endDateStr,  List<ChartEnum> chartList);
     /**
+     * <p>@Description 查询月销售数据排行榜 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/1 00:28 </p>
+     * @param userId 用户ID
+     * @param shopId 店铺ID
+     * @param descField 排序的字段
+     * @param chartList 图表数据枚举值集合
+     * @return 月销售数据排行榜
+     */
+    Result<ChartRankDTO> findMonthRank(String userId, Long shopId, String descField, List<ChartEnum> chartList);
+    /**
      * <p>@Description 查询年利润图表数据，最大范围10年 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/4/1 00:28 </p>
@@ -83,4 +106,25 @@ public interface IChartService {
      * @return 年利润图表数据
      */
     Result<ChartDataDTO> findYearData(String userId, Long shopId,String startDateStr, String endDateStr,  List<ChartEnum> chartList);
+    /**
+     * <p>@Description 查询年销售数据排行榜 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/1 00:28 </p>
+     * @param userId 用户ID
+     * @param shopId 店铺ID
+     * @param descField 排序的字段
+     * @param chartList 图表数据枚举值集合
+     * @return 年销售数据排行榜
+     */
+    Result<ChartRankDTO> findYearRank(String userId, Long shopId, String descField, List<ChartEnum> chartList);
+    /**
+     * <p>@Description 查询店铺销售数据排行榜 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/4/1 00:28 </p>
+     * @param userId 用户ID
+     * @param descField 排序的字段
+     * @param chartList 图表数据枚举值集合
+     * @return 店铺销售数据排行榜
+     */
+    Result<ChartRankDTO> findShopRank(String userId, String descField, List<ChartEnum> chartList);
 }

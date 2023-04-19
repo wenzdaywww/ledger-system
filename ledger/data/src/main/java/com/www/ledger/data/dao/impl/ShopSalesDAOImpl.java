@@ -1,6 +1,5 @@
 package com.www.ledger.data.dao.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.www.ledger.data.dao.IShopSalesDAO;
@@ -46,6 +45,19 @@ public class ShopSalesDAOImpl extends ServiceImpl<ShopSalesMapper, ShopSalesEnti
     @Override
     public List<ShopSalesEntity> findShopSalesList(String userId) {
         return StringUtils.isBlank(userId) ? null : shopSalesMapper.findShopSalesList(userId);
+    }
+
+    /**
+     * <p>@Description 查询店销销售数据排行榜 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/28 21:46 </p>
+     * @param userId    用户ID
+     * @param descField 排序的字段
+     * @return 店销销售数据排行榜
+     */
+    @Override
+    public List<ShopDTO> findShopRank(String userId, String descField) {
+        return shopSalesMapper.findShopRank(userId, descField);
     }
     /**
      * <p>@Description 统计所有店铺销售额 </p>

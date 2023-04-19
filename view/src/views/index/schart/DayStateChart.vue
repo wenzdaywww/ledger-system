@@ -57,6 +57,8 @@ export default {
     const chartTitle = "{0} 至 {1} 订单交易状态数量比例图";
     //报表标题
     const noDataTitle = "查询不到 {0} 至 {1} 订单交易状态数量数据";
+    //报表标题
+    const noOrderTitle = "没有日订单交易状态数量数据";
     //日订单交易状态数量数据日期范围选择器
     const dayStateRange = ref([]);
     //日订单交易状态数量数据
@@ -106,35 +108,20 @@ export default {
       }
       axios.$http.get(request.dayState,query).then(function (res) {
         let dayStateChart = getInstanceByDom(document.getElementById("day-state-pie"));
+        let option = {
+          title: {text: ""},
+          graphic:[{ style:{ text: "总数：0" } }],
+          series:[{ data: [] }]
+        };
         if (res.data && res.data.series){
-          let option = {
-            title: {
-              text: chartTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate)
-            },
-            graphic:[{
-              style:{
-                text: "总数：" + res.data.total
-              }
-            }],
-            series:[{
-              data: res.data.series
-            }]
-          };
-          dayStateChart.setOption(option);
+          option.title.text = chartTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate);
+          option.graphic[0].style.text = "总数：" + res.data.total;
+          option.series[0].data = res.data.series;
         }else {
-          let option = {
-            title: {text:noDataTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate)},
-            graphic:[{
-              style:{
-                text: "总数：0"
-              }
-            }],
-            series:[{
-              data: []
-            }]
-          };
-          dayStateChart.setOption(option);
+          option.title.text = res.data && res.data.startDate && res.data.endDate ?
+              noDataTitle.replace("{0}",res.data.startDate).replace("{1}",res.data.endDate) : noOrderTitle;
         }
+        dayStateChart.setOption(option);
       }).catch(err => {});
     }
     //重置日订单交易状态数量数据查询日期
@@ -152,7 +139,6 @@ export default {
 <style scoped>
 .schart-box {
   display: inline-block;
-  margin: 20px;
   width: 100%;
 }
 .schart {

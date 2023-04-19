@@ -53,6 +53,19 @@ public class DaySalesDAOImpl extends ServiceImpl<DaySalesMapper, DaySalesEntity>
         return daySalesMapper.findLastDaySales(userId,shopId,startData,endDate);
     }
     /**
+     * <p>@Description 查询日销售数据排行榜 </p>
+     * <p>@Author www </p>
+     * <p>@Date 2023/3/28 21:46 </p>
+     * @param userId 用户ID
+     * @param shopId 店铺ID
+     * @param descField 排序的字段
+     * @return 日销售数据排行榜
+     */
+    @Override
+    public List<DayDTO> findDayRank(String userId, Long shopId, String descField) {
+        return daySalesMapper.findDayRank(userId, shopId, descField);
+    }
+    /**
      * <p>@Description 统计店铺月销售额 </p>
      * <p>@Author www </p>
      * <p>@Date 2023/3/18 15:19 </p>
