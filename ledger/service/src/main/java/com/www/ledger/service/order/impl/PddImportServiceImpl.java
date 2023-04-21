@@ -120,12 +120,13 @@ public class PddImportServiceImpl extends OrderImportService {
             stateMap.put(null,CodeDict.getValue(CodeTypeEnum.OrderState_Unconfirme.getType(), CodeTypeEnum.OrderState_Unconfirme.getKey()));//待确认
             stateMap.put("已发货，待签收",CodeDict.getValue(CodeTypeEnum.OrderState_Sended.getType(), CodeTypeEnum.OrderState_Sended.getKey()));//已发货，待签收
             stateMap.put("退款成功",CodeDict.getValue(CodeTypeEnum.OrderState_Nosend.getType(), CodeTypeEnum.OrderState_Nosend.getKey()));//未发货，退款成功
-            stateMap.put("已签收",CodeDict.getValue(CodeTypeEnum.OrderState_Success.getType(), CodeTypeEnum.OrderState_Success.getKey()));//已签收 
+            stateMap.put("已签收",CodeDict.getValue(CodeTypeEnum.OrderState_Success.getType(), CodeTypeEnum.OrderState_Success.getKey()));//已签收
             stateMap.put("未发货，退款成功",CodeDict.getValue(CodeTypeEnum.OrderState_Nosend.getType(), CodeTypeEnum.OrderState_Nosend.getKey()));//未发货，退款成功
             stateMap.put("已取消",CodeDict.getValue(CodeTypeEnum.OrderState_Unpaid.getType(), CodeTypeEnum.OrderState_Unpaid.getKey()));//未支付，交易关闭
             stateMap.put("待支付",CodeDict.getValue(CodeTypeEnum.OrderState_Paidding.getType(), CodeTypeEnum.OrderState_Paidding.getKey()));//待支付
             stateMap.put("待发货",CodeDict.getValue(CodeTypeEnum.OrderState_Sending.getType(), CodeTypeEnum.OrderState_Sending.getKey()));//待发货
             stateMap.put("已发货，退款成功",CodeDict.getValue(CodeTypeEnum.OrderState_Return.getType(), CodeTypeEnum.OrderState_Return.getKey()));//退货退款
+            stateMap.put("已签收，退款成功",CodeDict.getValue(CodeTypeEnum.OrderState_Refund.getType(), CodeTypeEnum.OrderState_Refund.getKey()));//仅退款
         }
         String code = stateMap.get(stateName.trim());
         //code为空，则赋值为【待确认】
