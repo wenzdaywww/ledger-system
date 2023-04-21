@@ -77,7 +77,7 @@ public abstract class OrderImportService implements IOrderImportService {
         orderDTO.setCostAmount(BigDecimal.ZERO);
         //商家备注存的是1688订单、和其他备注信息，格式如：3243663938570794151#10.8#这是备注内容
         String remark = this.getCellData(rowList,headMap,REMARK);
-        String[] arr = StringUtils.split(remark, CharConstant.JING_HAO);
+        String[] arr = remark != null ? remark.split(CharConstant.JING_HAO) : null;
         if(arr != null){
             if(arr.length >= 2){
                 //订单备注前2项处理

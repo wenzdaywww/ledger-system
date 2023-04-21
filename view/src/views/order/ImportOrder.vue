@@ -164,7 +164,7 @@ export default {
           "<span style='text-align: left;'>4.1、备注满足格式：<span style='color:red;'>值1#值2#值3</span>&nbsp;&nbsp;&nbsp;<span style='color:red;'>#</span>为分隔符。" +
           "<span style='color:red;'>值1</span>可选值为：1688订单ID和刷单，如果是刷单，则这笔订单导入后订单状态为【刷单】，反之则是为【1688订单】列取数来源；</span>" +
           "<span style='text-align: left;'><span style='color:red;'>值2</span>为【商品成本】取数来源；" +
-          "<span style='color:red;'>值3</span>为【备注】列取数来源。</span><br/>" +
+          "<span style='color:red;'>值3</span>为【备注】列取数来源。值123选填，全不填则备注字段置空，如果其中一个值要填，则两个#不可缺少</span><br/>" +
           "<span style='text-align: left;'>4.2、备注不满足以上格式，则将保存到【备注】列。</span>";
       ElMessageBox.confirm(explainText, "导入说明",
           {dangerouslyUseHTMLString: true,roundButton: true}).then(() => {}).catch(() => {});
