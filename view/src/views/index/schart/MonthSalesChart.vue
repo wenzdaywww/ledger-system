@@ -33,7 +33,6 @@
 </template>
 
 <script>
-import Schart from "vue-schart";
 import {getCurrentInstance, reactive, ref} from "vue";
 import request from "../../../utils/request";
 import {getInstanceByDom, init} from "echarts";

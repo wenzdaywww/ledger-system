@@ -5,7 +5,7 @@ export default  ({ mode }) => defineConfig({
     base: './',
     plugins: [vue()],
     optimizeDeps: {
-        include: ['schart.js']
+        include: []
     },
     server : {
         proxy: {
