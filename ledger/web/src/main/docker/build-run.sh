@@ -12,4 +12,4 @@ sleep 3s
 docker build -f Dockerfile -t ${app_name} .
 sleep 8s
 # 运行应用
-docker run -d -p 8090:8090 --name ${app_name} --restart always -e EUREKA_INSTANCE_IP-ADDRESS=192.168.1.140 -v /etc/localtime:/etc/localtime:ro -v /home/www/ap/ledger/logs/:/home/www/ap/ledger/logs/ -v /home/www/ap/ledger/doc/:/home/www/ap/ledger/doc/ ${app_name}
+docker run -d -p 8090:8090 --name ${app_name} --restart always -v /etc/localtime:/etc/localtime:ro -v /home/www/ap/ledger/logs/:/home/www/ap/ledger/logs/ -v /home/www/ap/ledger/doc/:/home/www/ap/ledger/doc/ ${app_name}
