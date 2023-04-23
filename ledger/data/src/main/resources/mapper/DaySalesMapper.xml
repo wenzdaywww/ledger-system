@@ -105,6 +105,7 @@
         </choose>
         AND A.DAY_DATE <![CDATA[ >= ]]> STR_TO_DATE(#{startData},'%Y-%m-%d')
         AND A.DAY_DATE <![CDATA[ <= ]]> STR_TO_DATE(#{endDate},'%Y-%m-%d')
+        ORDER BY A.DAY_DATE ASC
         LIMIT 30
     </select>
     <!-- 根据用户ID查询用户店铺日销售额数据-->

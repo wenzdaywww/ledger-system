@@ -14,11 +14,9 @@
 ##### docker run -d -p 6379:6379 --restart always --name redis -v /home/www/ap/redis/conf/redis.conf:/etc/redis/redis.conf -v /home/www/ap/redis/data:/data redis:6.2.4 redis-server /etc/redis/redis.conf
 ### 3、构建ledger的docker镜像
 #### 3.1、将ledger/web/src/main/docker文件夹中的Dockerfile文件和ledger的jar上传到服务器的/home/www/ap/ledger-system
-#### 3.2、cd进入3.1步骤上传文件的文件夹中，执行以下命令构建镜像
-##### docker build -f Dockerfile -t ledger .
+#### 3.2、cd进入3.1步骤上传文件的文件夹中，执行ledger/web/src/main/docker文件夹中的build-image.sh脚本创建镜像
 #### 3.3、3.1和3.2的步骤也可以使用docker插件创建镜像文件，执行Maven窗口的docker:build操作
-#### 3.4、执行以下命令创建容器
-##### docker run -d -p 8090:8090 --name ledger --restart always -e EUREKA_INSTANCE_IP-ADDRESS=192.168.1.140 -v /etc/localtime:/etc/localtime:ro -v /home/www/ap/ledger/logs/:/home/www/ap/ledger/logs/ -v /home/www/ap/ledger/doc/:/home/www/ap/ledger/doc/ ledger
+#### 3.4、执行ledger/web/src/main/docker文件夹中的run-ledger.sh脚本运行应用
 ### 4、部署前端应用
 #### 4.1、上传view.conf到/home/www/ap/nginx/conf/conf.d
 #### 4.2、上传nginx.conf到/home/www/ap/nginx/conf
