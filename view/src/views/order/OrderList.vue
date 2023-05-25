@@ -32,6 +32,12 @@
             <el-col :span="2.5">
               <el-input v-model="query.gdsId" placeholder="商品ID" class="handle-input mr10" style="width: 170px" clearable="true"></el-input>
             </el-col>
+            <el-col :span="2.5" v-if="remarkFlag">
+              <el-input v-model="query.remark" placeholder="备注(前缀模糊搜索)" class="handle-input mr10" style="width: 170px" clearable="true"></el-input>
+            </el-col>
+            <el-col :span="2" style="line-height: 38px;">
+              <el-checkbox @change="remarkCheck">有备注</el-checkbox>
+            </el-col>
           </el-row>
           <el-row style="margin-bottom: 5px;">
             <el-col>
@@ -149,11 +155,15 @@ export default {
       supId: "",
       gdsId: "",
       ordSta: "",
+      remark: "",
+      rmk: false,
       pageNum: 1,
       pageSize: 10
     });
     //日期范围选择器
     const datRange = ref([]);
+    // 备注搜索条件输入框显示控制
+    const remarkFlag = ref(false);
     // 整个页面Loading 加载遮罩层控制
     const pageLoading = ref(false);
     //订单弹出窗对象
@@ -189,6 +199,13 @@ export default {
         return 'tr-gray';
       }
     };
+    const remarkCheck = (checkItm) => {
+      query.rmk = checkItm;
+      remarkFlag.value = checkItm;
+      if (checkItm == false){
+        query.remark =  "";
+      }
+    };
     const handleSearch = () => {
       query.pageNum = 1;
       findOrderList();
@@ -202,6 +219,7 @@ export default {
       query.supId = "";
       query.gdsId = "";
       query.ordSta = "";
+      query.remark =  "";
       datRange.value = [];
       findOrderList();
     };
@@ -268,8 +286,8 @@ export default {
       });
     };
     getCodeDataArr();
-    return { query,orderDialog,tableData,pageTotal,userShop,orderState,importDialog,pageLoading,datRange,
-      handleSearch,handleReset,handlePageChange,handleEdit,handleAdd,handleDelete,findOrderList,addRowClass,handleImport};
+    return { query,orderDialog,tableData,pageTotal,userShop,orderState,importDialog,pageLoading,datRange,remarkFlag,
+      remarkCheck,handleSearch,handleReset,handlePageChange,handleEdit,handleAdd,handleDelete,findOrderList,addRowClass,handleImport};
   }
 };
 </script>

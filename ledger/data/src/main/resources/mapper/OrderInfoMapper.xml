@@ -127,6 +127,16 @@
         <if test="obj.endDateStr != null and obj.endDateStr != ''">
             AND O.ORDER_DATE <![CDATA[ <= ]]> STR_TO_DATE(#{obj.endDateStr},'%Y-%m-%d')
         </if>
+        <if test="obj.remarkFlag == true">
+            <choose>
+                <when test="obj.remark != null and obj.remark != ''">
+                    AND O.REMARK LIKE CONCAT(#{obj.remark},'%')
+                </when>
+                <otherwise>
+                    AND O.REMARK IS NOT NULL
+                </otherwise>
+            </choose>
+        </if>
         <if test="obj.orderId != null and obj.orderId != ''">
             AND O.ORDER_ID = #{obj.orderId}
         </if>

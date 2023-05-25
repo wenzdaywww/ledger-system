@@ -63,6 +63,8 @@ public class OrderDTO implements Serializable {
     private BigDecimal grossProfitRate;
     /** 备注 **/
     private String remark;
+    /** 是否查询有备注 **/
+    private boolean remarkFlag;
     /** 行号 **/
     private int rowNum;
     /** 错误信息 **/

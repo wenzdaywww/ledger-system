@@ -84,9 +84,9 @@ public abstract class OrderImportService implements IOrderImportService {
                 this.setOrderRemark(arr,orderDTO);
             }
             if(arr.length == 1){
-                orderDTO.setRemark(arr[0]);
+                orderDTO.setRemark(StringUtils.isNotBlank(arr[0]) ? arr[0] : null);
             }else if(arr.length == 3){
-                orderDTO.setRemark(arr[2]);
+                orderDTO.setRemark(StringUtils.isNotBlank(arr[2]) ? arr[2] : null);
             }
         }
         return orderDTO;

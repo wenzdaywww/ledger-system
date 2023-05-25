@@ -101,8 +101,8 @@ public class OrderController {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setUserId(JwtAuthorizationTokenFilter.getUserId())
                 .setShopId(orderInVO.getShopId()).setSupplyId(orderInVO.getSupId()).setOrderId(orderInVO.getOrdId())
-                .setGoodsId(orderInVO.getGdsId()).setOrderState(orderInVO.getOrdSta())
-                .setStartDateStr(orderInVO.getStrDat()).setEndDateStr(orderInVO.getEndDat());
+                .setGoodsId(orderInVO.getGdsId()).setOrderState(orderInVO.getOrdSta()).setRemark(orderInVO.getRemark())
+                .setStartDateStr(orderInVO.getStrDat()).setEndDateStr(orderInVO.getEndDat()).setRemarkFlag(orderInVO.getRmk());
         Result<List<OrderDTO>> listResult = orderService.findOrdeList(orderDTO,orderInVO.getPageNum(),orderInVO.getPageSize());
         List<OrderListOutVO> respList = Optional.ofNullable(listResult.getData()).filter(e -> CollectionUtils.isNotEmpty(listResult.getData()))
                 .map(list -> {

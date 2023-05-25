@@ -341,7 +341,7 @@ export default {
   background: rgb(100, 213, 114);
 }
 .grid-con-2 .grid-num {
-  color: rgb(45, 140, 240);
+  color: rgb(100, 213, 114);
 }
 .grid-con-3 .grid-con-icon {
   background: rgb(242, 94, 67);

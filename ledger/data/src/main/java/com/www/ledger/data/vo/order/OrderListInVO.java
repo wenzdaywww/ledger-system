@@ -30,6 +30,10 @@ public class OrderListInVO implements Serializable {
     private String gdsId;
     /** 订单状态 **/
     private String ordSta;
+    /** 备注 **/
+    private String remark;
+    /** 是否查询有备注 **/
+    private Boolean rmk;
     /** 当前页码 **/
     @Min(value = 1,message = "当前页码必须大于0")
     private int pageNum;
