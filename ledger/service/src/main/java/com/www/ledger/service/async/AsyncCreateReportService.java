@@ -96,7 +96,7 @@ public class AsyncCreateReportService {
         }
         DocInfoEntity docEntity = docInfoDAO.getById(docId);
         if(docEntity == null){
-            throw new BusinessException("文档ID:" + docId + "不存在，创建报表失败");
+            throw new BusinessException("文档ID:{}不存在，创建报表失败",docId);
         }
         //读取模板文件失败
         if(inputStream == null){

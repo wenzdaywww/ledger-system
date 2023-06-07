@@ -166,7 +166,7 @@ public abstract class OrderImportService implements IOrderImportService {
             return;
         }
         if(rowLimt > 0 && dataList.size() > rowLimt){
-            throw new BusinessException("导入文件的行数不能超过"+ rowLimt + "行");
+            throw new BusinessException("导入文件的行数不能超过{}行",rowLimt);
         }
         //去除读取的文件首行标题中的\uFEFF
         ArrayList<String> firstRow = Optional.ofNullable(dataList.get(0)).filter(e -> CollectionUtils.isNotEmpty(dataList.get(0)))
